@@ -608,7 +608,13 @@ async function loadProjects() {
         // Construimos la URL para pedir los proyectos
         const projectsUrl = `${WEBHOOK_URL}?action=getProjects`;
 
-        const response = await fetch(projectsUrl);
+        const response = await fetch(WEBHOOK_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8', // Usamos text/plain para evitar un "preflight request"
+    },
+    body: JSON.stringify({ action: 'getProjects' })
+});
         if (!response.ok) {
             throw new Error(`Error al cargar proyectos: ${response.statusText}`);
         }
@@ -650,36 +656,85 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // --- FINALMENTE, asegúrate que la función handleFormSubmit usa 'proyecto_id' ---
 async function handleFormSubmit(e) {
-  e.preventDefault();
-  // ...
-  const formData = {
-      titulo: document.getElementById('titulo')?.value || "",
-      descripcion: document.getElementById('descripcion')?.value || "",
-      estado: document.getElementById('estado')?.value || "",
-      prioridad: document.getElementById('prioridad')?.value || "",
-      area: document.getElementById('area')?.value || "",
-      // AÑADE/MODIFICA ESTA LÍNEA
-      proyecto_id: document.getElementById('proyecto_id')?.value || "",
-      // ... resto de los campos
-  };
-  // ... resto de la función
-}
-        // Toggle campos de recordatorio personalizado
-        function toggleCustomReminder() {
-            console.log('Toggle Custom Reminder');
-            const checkbox = document.getElementById('recordatorio_custom');
-            const fields = document.getElementById('custom_reminder_fields');
-            
-            if (checkbox && checkbox.checked) {
-                if (fields) {
-                    fields.classList.add('show');
-                }
-            } else {
-                if (fields) {
-                    fields.classList.remove('show');
-                }
-            }
+    e.preventDefault();
+    console.log('Formulario enviado vía POST');
+
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const loading = submitBtn.querySelector('.loading');
+    const successMsg = document.getElementById('successMessage');
+    const errorMsg = document.getElementById('errorMessage');
+
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+
+    submitBtn.disabled = true;
+    if (btnText) btnText.style.opacity = '0';
+    if (loading) loading.style.display = 'block';
+
+    try {
+        // Construimos el objeto con todos los datos del formulario
+        let fechaLimite = null;
+        const fechaLim = document.getElementById('fecha_limite')?.value;
+        const horaLim = document.getElementById('hora_limite')?.value;
+        if (fechaLim) {
+            fechaLimite = horaLim ? `${fechaLim} ${horaLim}` : fechaLim;
         }
+        const tiposTarea = Array.from(document.querySelectorAll('input[name="tipo_tarea"]:checked')).map(cb => cb.value);
+
+        const formData = {
+            titulo: document.getElementById('titulo')?.value,
+            descripcion: document.getElementById('descripcion')?.value,
+            estado: document.getElementById('estado')?.value,
+            prioridad: document.getElementById('prioridad')?.value,
+            area: document.getElementById('area')?.value,
+            proyecto_id: document.getElementById('proyecto_id')?.value,
+            tipo_tarea: tiposTarea.join(','),
+            nivel_esfuerzo: document.getElementById('nivel_esfuerzo')?.value,
+            fecha_limite: fechaLimite,
+            plazo: fechaLimite,
+            add_to_calendar: document.getElementById('add_to_calendar')?.checked || false,
+            recordatorio_2h: document.getElementById('recordatorio_2h')?.checked || false,
+            recordatorio_fecha: document.getElementById('recordatorio_fecha')?.value,
+            recordatorio_hora: document.getElementById('recordatorio_hora')?.value
+        };
+
+        // Enviamos los datos usando fetch con el método POST
+        const response = await fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'text/plain;charset=utf-8',
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.error);
+        }
+
+        // Mostramos un mensaje de éxito
+        successMsg.innerHTML = `✅ <strong>¡Tarea creada con éxito!</strong><br>
+            <small>
+                <a href="${result.notionUrl}" target="_blank">Ver en Notion</a>
+                ${result.calendarUrl ? `| <a href="${result.calendarUrl}" target="_blank">Ver en Calendar</a>` : ''}
+            </small>`;
+        successMsg.style.display = 'block';
+        document.getElementById('taskForm').reset();
+        // Resetea los estilos de los botones y menús... (código que ya tenías)
+
+    } catch (error) {
+        console.error('Error:', error);
+        errorMsg.innerHTML = `❌ <strong>Error:</strong> ${error.message}`;
+        errorMsg.style.display = 'block';
+    } finally {
+        // Restablecemos el botón
+        submitBtn.disabled = false;
+        if (btnText) btnText.style.opacity = '1';
+        if (loading) loading.style.display = 'none';
+    }
+}
         
         // Acciones rápidas
         function fillQuickTask(type) {
