@@ -11,6 +11,24 @@
             box-sizing: border-box;
         }
         
+        // Configurar listeners para campos de Calendar
+        function setupCalendarListeners() {
+            const fechaLimiteInput = document.getElementById('fecha_limite');
+            const horaLimiteInput = document.getElementById('hora_limite');
+            
+            fechaLimiteInput.addEventListener('change', function() {
+                if (document.getElementById('add_to_calendar').checked) {
+                    autoConfigurarRecordatorio();
+                }
+            });
+            
+            horaLimiteInput.addEventListener('change', function() {
+                if (document.getElementById('add_to_calendar').checked) {
+                    autoConfigurarRecordatorio();
+                }
+            });
+        }
+        
         // Toggle opciones de Calendar
         function toggleCalendarOptions() {
             const checkbox = document.getElementById('add_to_calendar');
@@ -19,36 +37,29 @@
             if (checkbox.checked) {
                 options.style.display = 'block';
                 options.style.animation = 'slideDown 0.3s ease';
+                
+                // Auto-configurar recordatorio 30 min antes de la tarea
+                autoConfigurarRecordatorio();
             } else {
                 options.style.display = 'none';
-                // Reset campos relacionados
-                document.getElementById('custom_reminder').checked = false;
-                toggleReminderFields();
             }
         }
         
-        // Toggle campos de recordatorio personalizado
-        function toggleReminderFields() {
-            const checkbox = document.getElementById('custom_reminder');
-            const fields = document.getElementById('reminder_fields');
+        // Auto-configurar recordatorio inteligente
+        function autoConfigurarRecordatorio() {
+            const fechaLimite = document.getElementById('fecha_limite').value;
+            const horaLimite = document.getElementById('hora_limite').value;
             
-            if (checkbox.checked) {
-                fields.style.display = 'block';
-                fields.style.animation = 'slideDown 0.3s ease';
+            if (fechaLimite && horaLimite) {
+                const limitDate = new Date(`${fechaLimite}T${horaLimite}`);
+                const reminderDate = new Date(limitDate.getTime() - 30 * 60 * 1000); // 30 min antes
                 
-                // Configurar fecha y hora por defecto para recordatorio (30 min antes de la tarea)
-                const fechaLimite = document.getElementById('fecha_limite').value;
-                const horaLimite = document.getElementById('hora_limite').value;
-                
-                if (fechaLimite && horaLimite) {
-                    const limitDate = new Date(`${fechaLimite}T${horaLimite}`);
-                    const reminderDate = new Date(limitDate.getTime() - 30 * 60 * 1000); // 30 min antes
-                    
-                    document.getElementById('recordatorio_fecha').valueAsDate = reminderDate;
-                    document.getElementById('recordatorio_hora').value = reminderDate.toTimeString().slice(0, 5);
-                }
-            } else {
-                fields.style.display = 'none';
+                document.getElementById('recordatorio_fecha').valueAsDate = reminderDate;
+                document.getElementById('recordatorio_hora').value = reminderDate.toTimeString().slice(0, 5);
+            } else if (fechaLimite) {
+                // Si solo hay fecha, recordatorio el mismo día a las 8:00 AM
+                document.getElementById('recordatorio_fecha').value = fechaLimite;
+                document.getElementById('recordatorio_hora').value = '08:00';
             }
         }
         
@@ -665,28 +676,23 @@
                             </div>
                             
                             <div id="calendar_options" style="display: none; margin-left: 30px; margin-top: 15px;">
-                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                                    <input type="checkbox" id="custom_reminder" style="width: auto; transform: scale(1.1);" onchange="toggleReminderFields()">
-                                    <label for="custom_reminder" style="margin: 0; color: #1976d2;">
-                                        🔔 Recordatorio personalizado
+                                <div style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                                    <label style="font-size: 14px; color: #1976d2; margin-bottom: 8px; display: block; font-weight: 600;">
+                                        🔔 ¿Cuándo quieres que te recordemos?
                                     </label>
-                                </div>
-                                
-                                <div id="reminder_fields" style="display: none; background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; margin-top: 10px;">
-                                    <label style="font-size: 14px; color: #1976d2; margin-bottom: 8px;">📅 Fecha y hora del recordatorio:</label>
-                                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px;">
-                                        <input type="date" id="recordatorio_fecha" name="recordatorio_fecha" style="font-size: 14px;">
-                                        <input type="time" id="recordatorio_hora" name="recordatorio_hora" style="font-size: 14px; min-width: 100px;">
+                                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 10px;">
+                                        <input type="date" id="recordatorio_fecha" name="recordatorio_fecha" required style="font-size: 14px;">
+                                        <input type="time" id="recordatorio_hora" name="recordatorio_hora" required style="font-size: 14px; min-width: 100px;">
                                     </div>
                                     <div style="font-size: 12px; color: #666; margin-top: 8px;">
-                                        💡 Se enviará recordatorio por email y popup en esta fecha/hora
+                                        💡 <strong>Ejemplo:</strong> Si tu tarea es el 18/06 a las 18:00, puedes poner recordatorio el 18/06 a las 17:30
                                     </div>
                                 </div>
                                 
-                                <div style="font-size: 13px; color: #1976d2; margin-top: 10px;">
-                                    ✅ Evento creado automáticamente<br>
-                                    ✅ Sincronizado con Notion<br>
-                                    ✅ Recordatorio por defecto: 15 min antes (si no personalizas)
+                                <div style="font-size: 13px; color: #1976d2;">
+                                    ✅ Evento creado automáticamente en tu calendario<br>
+                                    ✅ Recordatorio por email y popup en la fecha/hora que elijas<br>
+                                    ✅ Sincronizado automáticamente con Notion
                                 </div>
                             </div>
                         </div>
@@ -729,6 +735,7 @@
             setDefaultDateTime();
             setupMultiSelectHandlers();
             loadCustomAreas();
+            setupCalendarListeners();
         });
         
         // Configurar fecha y hora por defecto
@@ -985,10 +992,15 @@
                 add_to_calendar: document.getElementById('add_to_calendar').checked
             };
             
-            // Añadir campos de recordatorio si están configurados
-            if (document.getElementById('custom_reminder').checked) {
-                formData.recordatorio_fecha = document.getElementById('recordatorio_fecha').value;
-                formData.recordatorio_hora = document.getElementById('recordatorio_hora').value;
+            // Añadir campos de recordatorio si Calendar está activado
+            if (document.getElementById('add_to_calendar').checked) {
+                const fechaRecordatorio = document.getElementById('recordatorio_fecha').value;
+                const horaRecordatorio = document.getElementById('recordatorio_hora').value;
+                
+                if (fechaRecordatorio && horaRecordatorio) {
+                    formData.recordatorio_fecha = fechaRecordatorio;
+                    formData.recordatorio_hora = horaRecordatorio;
+                }
             }
             
             console.log('📤 Enviando datos completos:', formData);
@@ -1030,9 +1042,7 @@
                 
                 // Reset campos de Calendar
                 document.getElementById('add_to_calendar').checked = false;
-                document.getElementById('custom_reminder').checked = false;
                 toggleCalendarOptions();
-                toggleReminderFields();
                 
                 setDefaultDateTime();
                 
