@@ -5,488 +5,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor de Tareas - Mi Asistente de Productividad</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 300;
-        }
-
-        .header p {
-            opacity: 0.9;
-            font-size: 1.1em;
-        }
-
-        .form-container {
-            padding: 40px;
-        }
-
-        .form-section {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            border-left: 4px solid #667eea;
-        }
-
-        .section-title {
-            font-size: 1.3em;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 1em;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 15px;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .submit-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 18px 40px;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-top: 30px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .loading {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #ffffff33;
-            border-top: 2px solid #ffffff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .success-message, .error-message {
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-weight: 600;
-            display: none;
-        }
-
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
-        .quick-btn {
-            padding: 12px 10px;
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-
-        .quick-btn:hover {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-
-        .emoji {
-            display: block;
-            font-size: 1.5em;
-            margin-bottom: 5px;
-        }
-
-        .multi-select-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .multi-select-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-
-        .multi-select-item:hover {
-            border-color: #667eea;
-        }
-
-        .multi-select-item.selected {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-
-        .multi-select-item input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-        }
-
-        .datetime-group {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 10px;
-            align-items: end;
-        }
-
-        .time-input {
-            min-width: 120px;
-        }
-
-        .help-text {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-            font-style: italic;
-        }
-
-        .calendar-section {
-            background: #e3f2fd;
-            padding: 20px;
-            border-radius: 15px;
-            border-left: 4px solid #2196F3;
-            margin-top: 20px;
-        }
-
-        .reminder-options {
-            display: none;
-            margin-top: 15px;
-            background: rgba(255,255,255,0.8);
-            padding: 15px;
-            border-radius: 10px;
-        }
-
-        .reminder-options.show {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 768px) {
-            .form-row, .form-row-3 {
-                grid-template-columns: 1fr;
-            }
-        }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: rgba(255, 255, 255, 0.95); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-top-left-radius: 20px; border-top-right-radius: 20px; }
+        .form-container { padding: 40px; }
+        .form-section { background: #f8f9fa; border-radius: 15px; padding: 25px; margin-bottom: 25px; border-left: 4px solid #667eea; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
+        .submit-btn { background: #667eea; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 16px; cursor: pointer; }
+        .submit-btn:disabled { background: #ccc; }
+        .error-message, .success-message { padding: 15px; border-radius: 8px; margin-top: 20px; display: none; }
+        .error-message { background: #f8d7da; color: #721c24; }
+        .success-message { background: #d4edda; color: #155724; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>🎯 Mi Asistente de Productividad</h1>
-            <p>Sistema completo de gestión de tareas conectado a Notion</p>
         </div>
-        
         <div class="form-container">
             <form id="taskForm">
                 <div class="form-section">
-                    <div class="section-title">📝 Información Básica</div>
                     <div class="form-group">
                         <label for="titulo">¿Qué necesitas hacer?</label>
-                        <input type="text" id="titulo" name="titulo" placeholder="Ej: Añadir observaciones a alumnos en Yedra" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="descripcion">Descripción detallada (opcional)</label>
-                        <textarea id="descripcion" name="descripcion" placeholder="Añade más detalles sobre la tarea..."></textarea>
+                        <input type="text" id="titulo" required>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="estado">📊 Estado actual</label>
-                            <select id="estado" name="estado">
-                                <option value="Sin empezar">🔴 Sin empezar</option>
-                                <option value="En progreso">🟡 En progreso</option>
-                                <option value="Listo">🟢 Listo</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="prioridad">⚡ Prioridad</label>
-                            <select id="prioridad" name="prioridad">
-                                <option value="Medio">🟡 Medio</option>
-                                <option value="Alta">🔴 Alta</option>
-                                <option value="Baja">🟢 Baja</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <div class="section-title">🏷️ Categorización y Proyecto</div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="area">🏷️ Area</label>
-                            <select id="area" name="area">
-                                 <option value="">Seleccionar área...</option>
-                                 <option value="Profesional">💼 Profesional</option>
-                                 <option value="Académico">🎓 Académico</option>
-                                 <option value="Personal">😊 Personal</option>
-                                 <option value="Formación">📖 Formación</option>
-                                 <option value="Evaluación">📊 Evaluación</option>
-                                 <option value="Huerta">🌱 Huerta</option>
-                                 <option value="Taller">🔧 Taller</option>
-                                 <option value="Bungalow">🏡 Bungalow</option>
-                                 <option value="Hogar">🏠 Hogar</option>
-                                 <option value="Administrativo">📋 Administrativo</option>
-                            </select>
-                        </div>
                         <div class="form-group">
                             <label for="proyecto_id">Proyecto</label>
-                            <select id="proyecto_id" name="proyecto_id">
+                            <select id="proyecto_id">
                                 <option value="">Cargando proyectos...</option>
                             </select>
-                            <div class="help-text">Asocia esta tarea a un proyecto activo en Notion.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="estado">Estado</label>
+                            <select id="estado">
+                                <option value="Sin empezar">Sin empezar</option>
+                                <option value="En progreso">En progreso</option>
+                                <option value="Listo">Listo</option>
+                            </select>
                         </div>
                     </div>
-                </div>
-
-                <div class="form-section">
-                     <div class="section-title">📅 Fechas y Google Calendar</div>
                      <div class="form-group">
-                        <label for="fecha_limite">⏰ Fecha límite (Plazo)</label>
-                        <div class="datetime-group">
-                            <input type="date" id="fecha_limite" name="fecha_limite">
-                            <input type="time" id="hora_limite" name="hora_limite" class="time-input">
-                        </div>
-                     </div>
-                     <div class="calendar-section">
-                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                            <input type="checkbox" id="add_to_calendar" name="add_to_calendar" value="true" style="width: auto; transform: scale(1.2);">
-                            <label for="add_to_calendar" style="margin: 0; font-weight: 600; color: #1976d2;">
-                                📅 Añadir evento a Google Calendar
-                            </label>
-                         </div>
-                     </div>
-                </div>
-                
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <span class="btn-text">✨ Crear Tarea Completa en Notion</span>
-                    <div class="loading">
-                        <div class="spinner"></div>
+                        <label for="fecha_limite">Fecha límite</label>
+                        <input type="datetime-local" id="fecha_limite">
                     </div>
-                </button>
+                    <div>
+                        <input type="checkbox" id="add_to_calendar">
+                        <label for="add_to_calendar">Añadir a Google Calendar</label>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn" id="submitBtn">Crear Tarea</button>
             </form>
-            
             <div id="successMessage" class="success-message"></div>
             <div id="errorMessage" class="error-message"></div>
         </div>
     </div>
 
     <script>
-        // ========================================
-        // CONFIGURACIÓN
-        // ========================================
-        
-        // ¡¡¡IMPORTANTE!!! Reemplaza esta URL con la NUEVA URL de tu script de Google
-        // que obtuviste después de la última implementación.
+        // ¡¡¡PASO 3!!! Pega aquí la NUEVA URL de tu script de Google
         const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxdSL2hrdAO8AnnRAdrZhgizjO9keNTMpPjNXJ8AoWAEj0z0fB_qwxaC-MAy24PLCo1-Q/exec';
-        
-        // ========================================
-        // FUNCIONES PRINCIPALES
-        // ========================================
 
-       async function loadProjects() {
-    const selectElement = document.getElementById('proyecto_id');
-    if (!selectElement) return;
-
-    try {
-        const response = await fetch(WEBHOOK_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'getProjects' }),
-            redirect: 'follow' // <-- AÑADIMOS ESTA LÍNEA CLAVE
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProjects();
+            document.getElementById('taskForm').addEventListener('submit', handleFormSubmit);
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        async function loadProjects() {
+            const selectElement = document.getElementById('proyecto_id');
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'getProjects' }),
+                    redirect: 'follow'
+                });
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+                const projects = await response.json();
+                selectElement.innerHTML = '<option value="">Seleccionar un proyecto...</option>';
+                projects.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.name;
+                    selectElement.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error al cargar proyectos:", error);
+                selectElement.innerHTML = '<option value="">No se pudieron cargar los proyectos</option>';
+            }
         }
 
-        const projects = await response.json();
-
-        selectElement.innerHTML = '<option value="">Seleccionar un proyecto...</option>';
-
-        projects.forEach(project => {
-            const option = document.createElement('option');
-            option.value = project.id;
-            option.textContent = project.name;
-            selectElement.appendChild(option);
-        });
-
-    } catch (error) {
-        console.error("Error al cargar proyectos:", error);
-        selectElement.innerHTML = '<option value="">No se pudieron cargar los proyectos</option>';
-    }
-}
-
         async function handleFormSubmit(e) {
-    e.preventDefault();
-    // ... (resto del código inicial de la función se mantiene igual) ...
-    try {
-        // ... (la construcción de formDataObject se mantiene igual) ...
-         const formDataObject = {
-            action: 'createTask',
-            titulo: document.getElementById('titulo')?.value,
-            descripcion: document.getElementById('descripcion')?.value,
-            estado: document.getElementById('estado')?.value,
-            prioridad: document.getElementById('prioridad')?.value,
-            area: document.getElementById('area')?.value,
-            proyecto_id: document.getElementById('proyecto_id')?.value,
-            // ... etc
-        };
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const successMsg = document.getElementById('successMessage');
+            const errorMsg = document.getElementById('errorMessage');
+            submitBtn.disabled = true;
+            successMsg.style.display = 'none';
+            errorMsg.style.display = 'none';
 
-        const response = await fetch(WEBHOOK_URL, {
-            method: 'POST',
-            body: JSON.stringify(formDataObject),
-            redirect: 'follow' // <-- AÑADIMOS ESTA LÍNEA CLAVE
-        });
+            const formData = {
+                action: 'createTask',
+                titulo: document.getElementById('titulo').value,
+                proyecto_id: document.getElementById('proyecto_id').value,
+                estado: document.getElementById('estado').value,
+                fecha_limite: document.getElementById('fecha_limite').value,
+                add_to_calendar: document.getElementById('add_to_calendar').checked
+            };
 
-        const result = await response.json();
-        // ... (el resto de la función se mantiene igual) ...
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(formData),
+                    redirect: 'follow'
+                });
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error);
+                
+                successMsg.textContent = '¡Tarea creada con éxito!';
+                successMsg.style.display = 'block';
+                document.getElementById('taskForm').reset();
 
-    } catch (error) {
-        // ... (el bloque catch se mantiene igual) ...
-    } finally {
-        // ... (el bloque finally se mantiene igual) ...
-    }
-}
-        
-        // ========================================
-        // INICIALIZACIÓN
-        // ========================================
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM cargado, inicializando...');
-            
-            // Configurar formulario
-            const taskForm = document.getElementById('taskForm');
-            if (taskForm) {
-                taskForm.addEventListener('submit', handleFormSubmit);
+            } catch (error) {
+                errorMsg.textContent = `Error: ${error.message}`;
+                errorMsg.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
             }
-            
-            // Cargar los proyectos de Notion
-            loadProjects();
-
-            console.log('Inicialización completa.');
-        });
+        }
     </script>
 </body>
 </html>
