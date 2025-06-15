@@ -11,6 +11,47 @@
             box-sizing: border-box;
         }
         
+        // Toggle opciones de Calendar
+        function toggleCalendarOptions() {
+            const checkbox = document.getElementById('add_to_calendar');
+            const options = document.getElementById('calendar_options');
+            
+            if (checkbox.checked) {
+                options.style.display = 'block';
+                options.style.animation = 'slideDown 0.3s ease';
+            } else {
+                options.style.display = 'none';
+                // Reset campos relacionados
+                document.getElementById('custom_reminder').checked = false;
+                toggleReminderFields();
+            }
+        }
+        
+        // Toggle campos de recordatorio personalizado
+        function toggleReminderFields() {
+            const checkbox = document.getElementById('custom_reminder');
+            const fields = document.getElementById('reminder_fields');
+            
+            if (checkbox.checked) {
+                fields.style.display = 'block';
+                fields.style.animation = 'slideDown 0.3s ease';
+                
+                // Configurar fecha y hora por defecto para recordatorio (30 min antes de la tarea)
+                const fechaLimite = document.getElementById('fecha_limite').value;
+                const horaLimite = document.getElementById('hora_limite').value;
+                
+                if (fechaLimite && horaLimite) {
+                    const limitDate = new Date(`${fechaLimite}T${horaLimite}`);
+                    const reminderDate = new Date(limitDate.getTime() - 30 * 60 * 1000); // 30 min antes
+                    
+                    document.getElementById('recordatorio_fecha').valueAsDate = reminderDate;
+                    document.getElementById('recordatorio_hora').value = reminderDate.toTimeString().slice(0, 5);
+                }
+            } else {
+                fields.style.display = 'none';
+            }
+        }
+        
         // Cargar áreas personalizadas
         function loadCustomAreas() {
             const areaSelect = document.getElementById('area');
@@ -599,10 +640,10 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN 3: FECHAS Y HORARIOS -->
+                <!-- SECCIÓN 3: FECHAS Y CALENDAR -->
                 <div class="form-section">
                     <div class="section-title">
-                        📅 Fechas y Horarios
+                        📅 Fechas y Google Calendar
                     </div>
                     
                     <div class="form-group">
@@ -614,10 +655,41 @@
                         <div class="help-text">Fecha tope para completar la tarea</div>
                     </div>
                     
-                    <div style="background: #e3f2fd; padding: 15px; border-radius: 10px; margin-top: 15px;">
-                        <small style="color: #1976d2;">
-                            📝 <strong>Nota:</strong> La "Fecha de creación" se añade automáticamente en Notion cuando creas la tarea.
-                        </small>
+                    <div class="form-group">
+                        <div style="background: #e3f2fd; padding: 20px; border-radius: 15px; border-left: 4px solid #2196F3;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                <input type="checkbox" id="add_to_calendar" name="add_to_calendar" value="true" style="width: auto; transform: scale(1.2);" onchange="toggleCalendarOptions()">
+                                <label for="add_to_calendar" style="margin: 0; font-weight: 600; color: #1976d2;">
+                                    📅 Añadir evento a Google Calendar
+                                </label>
+                            </div>
+                            
+                            <div id="calendar_options" style="display: none; margin-left: 30px; margin-top: 15px;">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                    <input type="checkbox" id="custom_reminder" style="width: auto; transform: scale(1.1);" onchange="toggleReminderFields()">
+                                    <label for="custom_reminder" style="margin: 0; color: #1976d2;">
+                                        🔔 Recordatorio personalizado
+                                    </label>
+                                </div>
+                                
+                                <div id="reminder_fields" style="display: none; background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; margin-top: 10px;">
+                                    <label style="font-size: 14px; color: #1976d2; margin-bottom: 8px;">📅 Fecha y hora del recordatorio:</label>
+                                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px;">
+                                        <input type="date" id="recordatorio_fecha" name="recordatorio_fecha" style="font-size: 14px;">
+                                        <input type="time" id="recordatorio_hora" name="recordatorio_hora" style="font-size: 14px; min-width: 100px;">
+                                    </div>
+                                    <div style="font-size: 12px; color: #666; margin-top: 8px;">
+                                        💡 Se enviará recordatorio por email y popup en esta fecha/hora
+                                    </div>
+                                </div>
+                                
+                                <div style="font-size: 13px; color: #1976d2; margin-top: 10px;">
+                                    ✅ Evento creado automáticamente<br>
+                                    ✅ Sincronizado con Notion<br>
+                                    ✅ Recordatorio por defecto: 15 min antes (si no personalizas)
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -824,6 +896,7 @@
             const proyectoField = document.getElementById('proyecto_info');
             const areaField = document.getElementById('area');
             const titleField = document.getElementById('titulo');
+            const calendarCheckbox = document.getElementById('add_to_calendar');
             const typeCheckboxes = document.querySelectorAll('input[name="tipo_tarea"]');
             
             // Limpiar selecciones anteriores
@@ -837,6 +910,8 @@
                     proyectoField.value = 'Curso 24/25';
                     areaField.value = 'Profesional';
                     titleField.placeholder = 'Ej: Preparar examen de física, corregir trabajos...';
+                    calendarCheckbox.checked = true; // Auto-activar Calendar para trabajo
+                    toggleCalendarOptions(); // Mostrar opciones
                     document.querySelector('input[value="Trabajo"]').checked = true;
                     document.querySelector('input[value="Trabajo"]').closest('.multi-select-item').classList.add('selected');
                     break;
@@ -844,6 +919,8 @@
                     proyectoField.value = 'Oposiciones 2027';
                     areaField.value = 'Académico';
                     titleField.placeholder = 'Ej: Estudiar tema 15, hacer simulacro...';
+                    calendarCheckbox.checked = true; // Auto-activar Calendar para estudio
+                    toggleCalendarOptions(); // Mostrar opciones
                     document.querySelector('input[value="Estudio"]').checked = true;
                     document.querySelector('input[value="Estudio"]').closest('.multi-select-item').classList.add('selected');
                     break;
@@ -904,8 +981,15 @@
                 tipo_tarea: tiposTarea.join(','),
                 nivel_esfuerzo: document.getElementById('nivel_esfuerzo').value,
                 fecha_limite: fechaLimite,
-                plazo: fechaLimite // Alias para compatibilidad
+                plazo: fechaLimite, // Alias para compatibilidad
+                add_to_calendar: document.getElementById('add_to_calendar').checked
             };
+            
+            // Añadir campos de recordatorio si están configurados
+            if (document.getElementById('custom_reminder').checked) {
+                formData.recordatorio_fecha = document.getElementById('recordatorio_fecha').value;
+                formData.recordatorio_hora = document.getElementById('recordatorio_hora').value;
+            }
             
             console.log('📤 Enviando datos completos:', formData);
             
@@ -933,8 +1017,8 @@
                 
                 // Mostrar mensaje de éxito
                 successMsg.innerHTML = `
-                    ✅ <strong>Tarea completa enviada a Notion!</strong><br>
-                    <small>Se abrió una nueva pestaña para confirmar. Todos los campos estructurados se han guardado correctamente.</small>
+                    ✅ <strong>Tarea creada en Notion${formData.add_to_calendar ? ' y Calendar' : ''}!</strong><br>
+                    <small>Se abrió una nueva pestaña para confirmar. ${formData.add_to_calendar ? 'Evento sincronizado con Google Calendar.' : 'Solo guardada en Notion.'}</small>
                 `;
                 successMsg.style.display = 'block';
                 
@@ -943,6 +1027,13 @@
                 document.querySelectorAll('.multi-select-item').forEach(item => {
                     item.classList.remove('selected');
                 });
+                
+                // Reset campos de Calendar
+                document.getElementById('add_to_calendar').checked = false;
+                document.getElementById('custom_reminder').checked = false;
+                toggleCalendarOptions();
+                toggleReminderFields();
+                
                 setDefaultDateTime();
                 
                 successMsg.scrollIntoView({ behavior: 'smooth' });
