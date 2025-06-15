@@ -11,33 +11,47 @@
             box-sizing: border-box;
         }
         
-        // Toggle opciones de Calendar
+        // Toggle opciones de Calendar (CORREGIDA)
         function toggleCalendarOptions() {
             const checkbox = document.getElementById('add_to_calendar');
             const options = document.getElementById('calendar_options');
             
-            if (checkbox.checked) {
-                options.style.display = 'block';
-                options.style.animation = 'slideDown 0.3s ease';
+            console.log('Toggle Calendar - Checkbox:', checkbox?.checked, 'Options:', options);
+            
+            if (checkbox && checkbox.checked) {
+                if (options) {
+                    options.style.display = 'block';
+                    options.style.animation = 'slideDown 0.3s ease';
+                }
             } else {
-                options.style.display = 'none';
-                // Reset checkboxes
-                document.getElementById('recordatorio_2h').checked = false;
-                document.getElementById('recordatorio_custom').checked = false;
+                if (options) {
+                    options.style.display = 'none';
+                }
+                // Reset checkboxes si existen
+                const recordatorio2h = document.getElementById('recordatorio_2h');
+                const recordatorioCustom = document.getElementById('recordatorio_custom');
+                if (recordatorio2h) recordatorio2h.checked = false;
+                if (recordatorioCustom) recordatorioCustom.checked = false;
                 toggleCustomReminder();
             }
         }
         
-        // Toggle campos de recordatorio personalizado
+        // Toggle campos de recordatorio personalizado (CORREGIDA)
         function toggleCustomReminder() {
             const checkbox = document.getElementById('recordatorio_custom');
             const fields = document.getElementById('custom_reminder_fields');
             
-            if (checkbox.checked) {
-                fields.style.display = 'flex';
-                fields.style.animation = 'slideDown 0.3s ease';
+            console.log('Toggle Custom Reminder - Checkbox:', checkbox?.checked, 'Fields:', fields);
+            
+            if (checkbox && checkbox.checked) {
+                if (fields) {
+                    fields.style.display = 'flex';
+                    fields.style.animation = 'slideDown 0.3s ease';
+                }
             } else {
-                fields.style.display = 'none';
+                if (fields) {
+                    fields.style.display = 'none';
+                }
             }
         }
         
@@ -490,6 +504,25 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .dropdown-with-new {
+            position: relative;
+        }
+
+        .new-item-input {
+            display: none;
+            margin-top: 10px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .new-item-input.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         @media (max-width: 768px) {
             .form-row, .form-row-3, .form-row-4 {
                 grid-template-columns: 1fr;
@@ -622,8 +655,8 @@
                         
                         <div class="form-group">
                             <label for="proyecto_info">📁 Proyecto (informativo)</label>
-                            <input type="text" id="proyecto_info" name="proyecto_info" placeholder="Ej: Oposiciones 2027, Huerta, Curso 24/25..." disabled style="background: #f5f5f5; color: #666;">
-                            <div class="help-text">Por ahora solo informativo - próximamente conectado</div>
+                            <input type="text" id="proyecto_info" name="proyecto_info" placeholder="Ej: Oposiciones 2027, Huerta, Curso 24/25..." style="background: #f5f5f5;">
+                            <div class="help-text">Solo informativo - próximamente conectado a Notion</div>
                         </div>
                     </div>
 
@@ -736,7 +769,7 @@
                     </div>
                 </div>
                 
-                <button type="submit" class="submit-btn">
+                <button type="submit" class="submit-btn" id="submitBtn">
                     <span class="btn-text">✨ Crear Tarea Completa en Notion</span>
                     <div class="loading">
                         <div class="spinner"></div>
@@ -932,8 +965,10 @@
             }
         }
         
-        // Acciones rápidas mejoradas
+        // Acciones rápidas mejoradas (CORREGIDA)
         function fillQuickTask(type) {
+            console.log('Fill Quick Task:', type);
+            
             const proyectoField = document.getElementById('proyecto_info');
             const areaField = document.getElementById('area');
             const titleField = document.getElementById('titulo');
@@ -948,40 +983,56 @@
             
             switch(type) {
                 case 'trabajo':
-                    proyectoField.value = 'Curso 24/25';
-                    areaField.value = 'Profesional';
-                    titleField.placeholder = 'Ej: Preparar examen de física, corregir trabajos...';
-                    calendarCheckbox.checked = true; // Auto-activar Calendar para trabajo
-                    toggleCalendarOptions(); // Mostrar opciones
-                    document.querySelector('input[value="Trabajo"]').checked = true;
-                    document.querySelector('input[value="Trabajo"]').closest('.multi-select-item').classList.add('selected');
+                    if (proyectoField) proyectoField.value = 'Curso 24/25';
+                    if (areaField) areaField.value = 'Profesional';
+                    if (titleField) titleField.placeholder = 'Ej: Preparar examen de física, corregir trabajos...';
+                    if (calendarCheckbox) {
+                        calendarCheckbox.checked = true;
+                        toggleCalendarOptions();
+                    }
+                    const trabajoCheckbox = document.querySelector('input[value="Trabajo"]');
+                    if (trabajoCheckbox) {
+                        trabajoCheckbox.checked = true;
+                        trabajoCheckbox.closest('.multi-select-item').classList.add('selected');
+                    }
                     break;
                 case 'estudio':
-                    proyectoField.value = 'Oposiciones 2027';
-                    areaField.value = 'Académico';
-                    titleField.placeholder = 'Ej: Estudiar tema 15, hacer simulacro...';
-                    calendarCheckbox.checked = true; // Auto-activar Calendar para estudio
-                    toggleCalendarOptions(); // Mostrar opciones
-                    document.querySelector('input[value="Estudio"]').checked = true;
-                    document.querySelector('input[value="Estudio"]').closest('.multi-select-item').classList.add('selected');
+                    if (proyectoField) proyectoField.value = 'Oposiciones 2027';
+                    if (areaField) areaField.value = 'Académico';
+                    if (titleField) titleField.placeholder = 'Ej: Estudiar tema 15, hacer simulacro...';
+                    if (calendarCheckbox) {
+                        calendarCheckbox.checked = true;
+                        toggleCalendarOptions();
+                    }
+                    const estudioCheckbox = document.querySelector('input[value="Estudio"]');
+                    if (estudioCheckbox) {
+                        estudioCheckbox.checked = true;
+                        estudioCheckbox.closest('.multi-select-item').classList.add('selected');
+                    }
                     break;
                 case 'casa':
-                    proyectoField.value = 'Huerta';
-                    areaField.value = 'Hogar';
-                    titleField.placeholder = 'Ej: Arreglar la huerta, limpiar el taller...';
-                    document.querySelector('input[value="Casa"]').checked = true;
-                    document.querySelector('input[value="Casa"]').closest('.multi-select-item').classList.add('selected');
+                    if (proyectoField) proyectoField.value = 'Huerta';
+                    if (areaField) areaField.value = 'Hogar';
+                    if (titleField) titleField.placeholder = 'Ej: Arreglar la huerta, limpiar el taller...';
+                    const casaCheckbox = document.querySelector('input[value="Casa"]');
+                    if (casaCheckbox) {
+                        casaCheckbox.checked = true;
+                        casaCheckbox.closest('.multi-select-item').classList.add('selected');
+                    }
                     break;
                 case 'personal':
-                    proyectoField.value = 'Cambio Físico';
-                    areaField.value = 'Personal';
-                    titleField.placeholder = 'Ej: Hacer ejercicio, quedar con amigos...';
-                    document.querySelector('input[value="Personal"]').checked = true;
-                    document.querySelector('input[value="Personal"]').closest('.multi-select-item').classList.add('selected');
+                    if (proyectoField) proyectoField.value = 'Cambio Físico';
+                    if (areaField) areaField.value = 'Personal';
+                    if (titleField) titleField.placeholder = 'Ej: Hacer ejercicio, quedar con amigos...';
+                    const personalCheckbox = document.querySelector('input[value="Personal"]');
+                    if (personalCheckbox) {
+                        personalCheckbox.checked = true;
+                        personalCheckbox.closest('.multi-select-item').classList.add('selected');
+                    }
                     break;
             }
             
-            titleField.focus();
+            if (titleField) titleField.focus();
         }
         
         // Manejar envío del formulario
