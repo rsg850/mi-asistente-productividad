@@ -10,153 +10,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
-        // Toggle opciones de Calendar (CORREGIDA)
-        function toggleCalendarOptions() {
-            const checkbox = document.getElementById('add_to_calendar');
-            const options = document.getElementById('calendar_options');
-            
-            console.log('Toggle Calendar - Checkbox:', checkbox?.checked, 'Options:', options);
-            
-            if (checkbox && checkbox.checked) {
-                if (options) {
-                    options.style.display = 'block';
-                    options.style.animation = 'slideDown 0.3s ease';
-                }
-            } else {
-                if (options) {
-                    options.style.display = 'none';
-                }
-                // Reset checkboxes si existen
-                const recordatorio2h = document.getElementById('recordatorio_2h');
-                const recordatorioCustom = document.getElementById('recordatorio_custom');
-                if (recordatorio2h) recordatorio2h.checked = false;
-                if (recordatorioCustom) recordatorioCustom.checked = false;
-                toggleCustomReminder();
-            }
-        }
-        
-        // Toggle campos de recordatorio personalizado (CORREGIDA)
-        function toggleCustomReminder() {
-            const checkbox = document.getElementById('recordatorio_custom');
-            const fields = document.getElementById('custom_reminder_fields');
-            
-            console.log('Toggle Custom Reminder - Checkbox:', checkbox?.checked, 'Fields:', fields);
-            
-            if (checkbox && checkbox.checked) {
-                if (fields) {
-                    fields.style.display = 'flex';
-                    fields.style.animation = 'slideDown 0.3s ease';
-                }
-            } else {
-                if (fields) {
-                    fields.style.display = 'none';
-                }
-            }
-        }
-        
-        // Configurar listeners para campos de Calendar
-        function setupCalendarListeners() {
-            const fechaLimiteInput = document.getElementById('fecha_limite');
-            const horaLimiteInput = document.getElementById('hora_limite');
-            
-            if (fechaLimiteInput) {
-                fechaLimiteInput.addEventListener('change', function() {
-                    if (document.getElementById('add_to_calendar').checked) {
-                        autoConfigurarRecordatorio();
-                    }
-                });
-            }
-            
-            if (horaLimiteInput) {
-                horaLimiteInput.addEventListener('change', function() {
-                    if (document.getElementById('add_to_calendar').checked) {
-                        autoConfigurarRecordatorio();
-                    }
-                });
-            }
-        }
-        
-        // Toggle opciones de Calendar
-        function toggleCalendarOptions() {
-            const checkbox = document.getElementById('add_to_calendar');
-            const options = document.getElementById('calendar_options');
-            
-            if (checkbox.checked) {
-                options.style.display = 'block';
-                options.style.animation = 'slideDown 0.3s ease';
-                
-                // Auto-configurar recordatorio 30 min antes de la tarea
-                autoConfigurarRecordatorio();
-            } else {
-                options.style.display = 'none';
-            }
-        }
-        
-        // Auto-configurar recordatorio inteligente
-        function autoConfigurarRecordatorio() {
-            const fechaLimite = document.getElementById('fecha_limite').value;
-            const horaLimite = document.getElementById('hora_limite').value;
-            
-            if (fechaLimite && horaLimite) {
-                const limitDate = new Date(`${fechaLimite}T${horaLimite}`);
-                const reminderDate = new Date(limitDate.getTime() - 30 * 60 * 1000); // 30 min antes
-                
-                document.getElementById('recordatorio_fecha').valueAsDate = reminderDate;
-                document.getElementById('recordatorio_hora').value = reminderDate.toTimeString().slice(0, 5);
-            } else if (fechaLimite) {
-                // Si solo hay fecha, recordatorio el mismo día a las 8:00 AM
-                document.getElementById('recordatorio_fecha').value = fechaLimite;
-                document.getElementById('recordatorio_hora').value = '08:00';
-            }
-        }
-        
-        // Cargar áreas personalizadas
-        function loadCustomAreas() {
-            const areaSelect = document.getElementById('area');
-            
-            // Añadir áreas personalizadas antes de la opción "nuevo"
-            customAreas.forEach(area => {
-                const option = document.createElement('option');
-                option.value = area;
-                option.textContent = `🔸 ${area}`;
-                areaSelect.insertBefore(option, areaSelect.lastElementChild);
-            });
-        }
-        
-        // Manejar cambio de área
-        function handleAreaChange() {
-            const select = document.getElementById('area');
-            const newInput = document.getElementById('newAreaInput');
-            
-            if (select.value === 'nuevo') {
-                newInput.classList.add('show');
-                document.getElementById('newArea').focus();
-            } else {
-                newInput.classList.remove('show');
-            }
-        }
-        
-        // Añadir nueva área
-        function addNewArea() {
-            const input = document.getElementById('newArea');
-            const select = document.getElementById('area');
-            const newAreaName = input.value.trim();
-            
-            if (newAreaName && !customAreas.includes(newAreaName)) {
-                customAreas.push(newAreaName);
-                localStorage.setItem('customAreas', JSON.stringify(customAreas));
-                
-                const option = document.createElement('option');
-                option.value = newAreaName;
-                option.textContent = `🔸 ${newAreaName}`;
-                option.selected = true;
-                select.insertBefore(option, select.lastElementChild);
-                
-                input.value = '';
-                document.getElementById('newAreaInput').classList.remove('show');
-            }
-        }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -260,12 +113,6 @@
             gap: 15px;
         }
 
-        .form-row-4 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-            gap: 15px;
-        }
-
         .submit-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -285,10 +132,6 @@
         .submit-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .submit-btn:active {
-            transform: translateY(0);
         }
 
         .submit-btn:disabled {
@@ -369,69 +212,6 @@
             margin-bottom: 5px;
         }
 
-        .input-with-mic {
-            position: relative;
-        }
-
-        .mic-btn {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            font-size: 14px;
-            z-index: 10;
-        }
-
-        .mic-btn:hover {
-            background: #5a67d8;
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        .mic-btn.recording {
-            background: #e53e3e;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(229, 62, 62, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0); }
-        }
-
-        .input-with-mic input {
-            padding-right: 50px;
-        }
-
-        .input-with-mic textarea {
-            padding-right: 50px;
-        }
-
-        .voice-status {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .voice-status.show {
-            display: block;
-        }
-
-        .voice-status.recording {
-            color: #e53e3e;
-        }
-
         .multi-select-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -485,37 +265,46 @@
             font-style: italic;
         }
 
-        .dropdown-with-new {
-            position: relative;
+        .calendar-section {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 4px solid #2196F3;
+            margin-top: 20px;
         }
 
-        .new-item-input {
+        .reminder-options {
             display: none;
-            margin-top: 10px;
+            margin-top: 15px;
+            background: rgba(255,255,255,0.8);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .reminder-options.show {
+            display: block;
             animation: slideDown 0.3s ease;
         }
 
-        .new-item-input.show {
-            display: block;
+        .reminder-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
         }
 
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .dropdown-with-new {
-            position: relative;
-        }
-
-        .new-item-input {
+        .custom-reminder-fields {
             display: none;
             margin-top: 10px;
-            animation: slideDown 0.3s ease;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
         }
 
-        .new-item-input.show {
-            display: block;
+        .custom-reminder-fields.show {
+            display: grid;
         }
 
         @keyframes slideDown {
@@ -524,7 +313,7 @@
         }
 
         @media (max-width: 768px) {
-            .form-row, .form-row-3, .form-row-4 {
+            .form-row, .form-row-3 {
                 grid-template-columns: 1fr;
             }
             
@@ -586,20 +375,12 @@
                     
                     <div class="form-group">
                         <label for="titulo">¿Qué necesitas hacer?</label>
-                        <div class="input-with-mic">
-                            <input type="text" id="titulo" name="titulo" placeholder="Ej: Añadir observaciones a alumnos en Yedra" required>
-                            <button type="button" class="mic-btn" id="micBtn1" onclick="toggleVoiceInput('titulo')">🎤</button>
-                        </div>
-                        <div class="voice-status" id="voiceStatus1">Haz clic en el micrófono y habla...</div>
+                        <input type="text" id="titulo" name="titulo" placeholder="Ej: Añadir observaciones a alumnos en Yedra" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="descripcion">Descripción detallada (opcional)</label>
-                        <div class="input-with-mic">
-                            <textarea id="descripcion" name="descripcion" placeholder="Añade más detalles sobre la tarea..."></textarea>
-                            <button type="button" class="mic-btn" id="micBtn2" onclick="toggleVoiceInput('descripcion')">🎤</button>
-                        </div>
-                        <div class="voice-status" id="voiceStatus2">Haz clic en el micrófono y habla...</div>
+                        <textarea id="descripcion" name="descripcion" placeholder="Añade más detalles sobre la tarea..."></textarea>
                     </div>
 
                     <div class="form-row">
@@ -632,25 +413,19 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="area">🏷️ Area</label>
-                            <div class="dropdown-with-new">
-                                <select id="area" name="area" onchange="handleAreaChange()">
-                                    <option value="">Seleccionar área...</option>
-                                    <option value="Profesional">💼 Profesional</option>
-                                    <option value="Académico">🎓 Académico</option>
-                                    <option value="Personal">😊 Personal</option>
-                                    <option value="Formación">📖 Formación</option>
-                                    <option value="Evaluación">📊 Evaluación</option>
-                                    <option value="Huerta">🌱 Huerta</option>
-                                    <option value="Taller">🔧 Taller</option>
-                                    <option value="Bungalow">🏡 Bungalow</option>
-                                    <option value="Hogar">🏠 Hogar</option>
-                                    <option value="Administrativo">📋 Administrativo</option>
-                                    <option value="nuevo">➕ Nueva área...</option>
-                                </select>
-                                <div class="new-item-input" id="newAreaInput">
-                                    <input type="text" id="newArea" placeholder="Nombre de la nueva área" onblur="addNewArea()">
-                                </div>
-                            </div>
+                            <select id="area" name="area">
+                                <option value="">Seleccionar área...</option>
+                                <option value="Profesional">💼 Profesional</option>
+                                <option value="Académico">🎓 Académico</option>
+                                <option value="Personal">😊 Personal</option>
+                                <option value="Formación">📖 Formación</option>
+                                <option value="Evaluación">📊 Evaluación</option>
+                                <option value="Huerta">🌱 Huerta</option>
+                                <option value="Taller">🔧 Taller</option>
+                                <option value="Bungalow">🏡 Bungalow</option>
+                                <option value="Hogar">🏠 Hogar</option>
+                                <option value="Administrativo">📋 Administrativo</option>
+                            </select>
                         </div>
                         
                         <div class="form-group">
@@ -733,37 +508,42 @@
                         <div class="help-text">Fecha tope para completar la tarea</div>
                     </div>
                     
-                    <div class="form-group">
-                        <div style="background: #e3f2fd; padding: 20px; border-radius: 15px; border-left: 4px solid #2196F3;">
-                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                                <input type="checkbox" id="add_to_calendar" name="add_to_calendar" value="true" style="width: auto; transform: scale(1.2);" onchange="toggleCalendarOptions()">
-                                <label for="add_to_calendar" style="margin: 0; font-weight: 600; color: #1976d2;">
-                                    📅 Añadir evento a Google Calendar
+                    <div class="calendar-section">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                            <input type="checkbox" id="add_to_calendar" name="add_to_calendar" value="true" style="width: auto; transform: scale(1.2);" onchange="toggleCalendarOptions()">
+                            <label for="add_to_calendar" style="margin: 0; font-weight: 600; color: #1976d2;">
+                                📅 Añadir evento a Google Calendar
+                            </label>
+                        </div>
+                        
+                        <div id="calendar_options" class="reminder-options">
+                            <label style="font-size: 15px; color: #1976d2; margin-bottom: 10px; display: block; font-weight: 600;">
+                                🔔 Recordatorios (elige los que quieras)
+                            </label>
+                            
+                            <div class="reminder-option">
+                                <input type="checkbox" id="recordatorio_2h" name="recordatorio_2h" style="width: auto;">
+                                <label for="recordatorio_2h" style="margin: 0; font-size: 14px; color: #333;">
+                                    ⏰ Recordatorio 2 horas antes
                                 </label>
                             </div>
                             
-                            <div id="calendar_options" style="display: none; margin-left: 30px; margin-top: 15px;">
-                                <div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                                    <label style="font-size: 15px; color: #1976d2; margin-bottom: 10px; display: block; font-weight: 600;">
-                                        🔔 ¿Cuándo quieres que te recordemos?
-                                    </label>
-                                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 10px;">
-                                        <input type="date" id="recordatorio_fecha" name="recordatorio_fecha" required style="font-size: 14px; padding: 10px;">
-                                        <input type="time" id="recordatorio_hora" name="recordatorio_hora" required style="font-size: 14px; min-width: 120px; padding: 10px;">
-                                    </div>
-                                    <div style="font-size: 12px; color: #666; margin-top: 8px; background: #f0f8ff; padding: 8px; border-radius: 5px;">
-                                        💡 <strong>Sugerencias automáticas:</strong><br>
-                                        • Tareas de mañana → Recordatorio la noche anterior a las 20:00<br>
-                                        • Tareas de tarde → Recordatorio el mismo día a las 9:00<br>
-                                        • ¡Pero puedes cambiarlo a lo que quieras!
-                                    </div>
-                                </div>
-                                
-                                <div style="font-size: 13px; color: #1976d2;">
-                                    ✅ Se creará evento automáticamente en tu calendario<br>
-                                    ✅ Recibirás recordatorio por email y popup en la fecha/hora que elijas<br>
-                                    ✅ Sincronizado automáticamente con Notion
-                                </div>
+                            <div class="reminder-option">
+                                <input type="checkbox" id="recordatorio_custom" name="recordatorio_custom" style="width: auto;" onchange="toggleCustomReminder()">
+                                <label for="recordatorio_custom" style="margin: 0; font-size: 14px; color: #333;">
+                                    📅 Recordatorio personalizado
+                                </label>
+                            </div>
+                            
+                            <div id="custom_reminder_fields" class="custom-reminder-fields">
+                                <input type="date" id="recordatorio_fecha" name="recordatorio_fecha" style="font-size: 14px; padding: 8px;">
+                                <input type="time" id="recordatorio_hora" name="recordatorio_hora" style="font-size: 14px; padding: 8px; width: 120px;">
+                            </div>
+                            
+                            <div style="font-size: 13px; color: #1976d2; margin-top: 10px;">
+                                ✅ Evento creado automáticamente en tu calendario<br>
+                                ✅ Solo los recordatorios que selecciones<br>
+                                ✅ Sincronizado automáticamente con Notion
                             </div>
                         </div>
                     </div>
@@ -778,7 +558,7 @@
             </form>
             
             <div id="successMessage" class="success-message">
-                ✅ ¡Tarea creada exitosamente en Notion!
+                ✅ ¡Tarea creada exitosamente!
             </div>
             
             <div id="errorMessage" class="error-message">
@@ -788,184 +568,54 @@
     </div>
 
     <script>
-        // URL de tu webhook (ACTUALIZADA)
+        // URL del webhook
         const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxdSL2hrdAO8AnnRAdrZhgizjO9keNTMpPjNXJ8AoWAEj0z0fB_qwxaC-MAy24PLCo1-Q/exec';
-    
-        // Variables globales y configuración inicial
-        let recognition;
-        let isListening = false;
-        let currentInputId = null;
-        let customAreas = JSON.parse(localStorage.getItem('customAreas') || '[]');
         
-        // Inicializar al cargar la página
-        document.addEventListener('DOMContentLoaded', function() {
-            initSpeechRecognition();
-            setDefaultDateTime();
-            setupMultiSelectHandlers();
-            loadCustomAreas();
-        });
+        // ========================================
+        // FUNCIONES PRINCIPALES
+        // ========================================
         
-        // Configurar fecha y hora por defecto
-        function setDefaultDateTime() {
-            const today = new Date();
+        // Toggle opciones de Calendar
+        function toggleCalendarOptions() {
+            console.log('Toggle Calendar Options');
+            const checkbox = document.getElementById('add_to_calendar');
+            const options = document.getElementById('calendar_options');
             
-            // Fecha límite: en 3 días
-            const threeDaysLater = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
-            document.getElementById('fecha_limite').valueAsDate = threeDaysLater;
-            
-            // Hora por defecto: 18:00
-            document.getElementById('hora_limite').value = '18:00';
-        }
-        
-        // Configurar manejadores para multi-select
-        function setupMultiSelectHandlers() {
-            document.querySelectorAll('.multi-select-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    if (e.target.type !== 'checkbox') {
-                        const checkbox = this.querySelector('input[type="checkbox"]');
-                        checkbox.checked = !checkbox.checked;
-                    }
-                    this.classList.toggle('selected', this.querySelector('input[type="checkbox"]').checked);
-                });
-            });
-        }
-        
-        // Inicializar reconocimiento de voz
-        function initSpeechRecognition() {
-            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-                recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-                recognition.continuous = true;
-                recognition.interimResults = false;
-                recognition.lang = 'es-ES';
-                
-                recognition.onstart = function() {
-                    isListening = true;
-                    updateVoiceUI('recording');
-                };
-                
-                recognition.onresult = function(event) {
-                    const lastResult = event.results[event.results.length - 1];
-                    if (lastResult.isFinal) {
-                        const transcript = lastResult[0].transcript;
-                        
-                        const currentValue = document.getElementById(currentInputId).value;
-                        const newValue = currentValue ? currentValue + ' ' + transcript : transcript;
-                        document.getElementById(currentInputId).value = newValue.trim();
-                        
-                        if (currentInputId === 'titulo') {
-                            autoAdjustPriority(transcript);
-                            autoAdjustEffort(transcript);
-                        }
-                    }
-                };
-                
-                recognition.onerror = function(event) {
-                    console.error('Error de reconocimiento de voz:', event.error);
-                    if (event.error !== 'no-speech') {
-                        updateVoiceUI('error');
-                    }
-                };
-                
-                recognition.onend = function() {
-                    if (!isListening) {
-                        updateVoiceUI('idle');
-                    } else {
-                        try {
-                            recognition.start();
-                        } catch (e) {
-                            console.log('No se puede reiniciar el reconocimiento automáticamente');
-                            updateVoiceUI('idle');
-                        }
-                    }
-                };
+            if (checkbox && checkbox.checked) {
+                if (options) {
+                    options.classList.add('show');
+                }
             } else {
-                document.querySelectorAll('.mic-btn').forEach(btn => {
-                    btn.style.display = 'none';
-                });
+                if (options) {
+                    options.classList.remove('show');
+                }
+                // Reset checkboxes
+                const recordatorio2h = document.getElementById('recordatorio_2h');
+                const recordatorioCustom = document.getElementById('recordatorio_custom');
+                if (recordatorio2h) recordatorio2h.checked = false;
+                if (recordatorioCustom) recordatorioCustom.checked = false;
+                toggleCustomReminder();
             }
         }
         
-        // Activar/desactivar entrada de voz
-        function toggleVoiceInput(inputId) {
-            if (!recognition) {
-                alert('❌ Reconocimiento de voz no disponible en este navegador.\n\nPrueba con Chrome, Edge o Safari.');
-                return;
-            }
+        // Toggle campos de recordatorio personalizado
+        function toggleCustomReminder() {
+            console.log('Toggle Custom Reminder');
+            const checkbox = document.getElementById('recordatorio_custom');
+            const fields = document.getElementById('custom_reminder_fields');
             
-            currentInputId = inputId;
-            
-            if (isListening) {
-                recognition.stop();
-                isListening = false;
-                updateVoiceUI('idle');
+            if (checkbox && checkbox.checked) {
+                if (fields) {
+                    fields.classList.add('show');
+                }
             } else {
-                recognition.start();
+                if (fields) {
+                    fields.classList.remove('show');
+                }
             }
         }
         
-        // Actualizar interfaz según estado de voz
-        function updateVoiceUI(state) {
-            const micBtn = currentInputId === 'titulo' ? document.getElementById('micBtn1') : document.getElementById('micBtn2');
-            const voiceStatus = currentInputId === 'titulo' ? document.getElementById('voiceStatus1') : document.getElementById('voiceStatus2');
-            
-            micBtn.classList.remove('recording');
-            voiceStatus.classList.remove('show', 'recording');
-            
-            switch(state) {
-                case 'recording':
-                    micBtn.classList.add('recording');
-                    micBtn.innerHTML = '🔴';
-                    voiceStatus.textContent = '🎤 Grabando... Haz clic de nuevo para parar';
-                    voiceStatus.classList.add('show', 'recording');
-                    break;
-                    
-                case 'error':
-                    micBtn.innerHTML = '❌';
-                    voiceStatus.textContent = '❌ Error al reconocer voz. Inténtalo de nuevo.';
-                    voiceStatus.classList.add('show');
-                    setTimeout(() => updateVoiceUI('idle'), 3000);
-                    break;
-                    
-                case 'idle':
-                default:
-                    micBtn.innerHTML = '🎤';
-                    voiceStatus.classList.remove('show');
-                    isListening = false;
-                    break;
-            }
-        }
-        
-        // Auto-ajustar prioridad basada en contenido
-        function autoAdjustPriority(text) {
-            const lowerText = text.toLowerCase();
-            const priorityField = document.getElementById('prioridad');
-            
-            if (lowerText.includes('urgente') || lowerText.includes('ya') || lowerText.includes('ahora') || 
-                lowerText.includes('hoy') || lowerText.includes('inmediatamente') || lowerText.includes('rápido')) {
-                priorityField.value = 'Alta';
-            } else if (lowerText.includes('cuando pueda') || lowerText.includes('sin prisa') || 
-                      lowerText.includes('algún día') || lowerText.includes('cuando tenga tiempo')) {
-                priorityField.value = 'Baja';
-            }
-        }
-        
-        // Auto-ajustar esfuerzo basado en contenido
-        function autoAdjustEffort(text) {
-            const lowerText = text.toLowerCase();
-            const effortField = document.getElementById('nivel_esfuerzo');
-            
-            if (lowerText.includes('rápido') || lowerText.includes('revisar') || lowerText.includes('mirar') || 
-                lowerText.includes('comprobar') || lowerText.includes('enviar')) {
-                effortField.value = 'Pequeño';
-            } else if (lowerText.includes('hacer') || lowerText.includes('escribir') || lowerText.includes('preparar')) {
-                effortField.value = 'Medio';
-            } else if (lowerText.includes('estudiar') || lowerText.includes('analizar') || lowerText.includes('desarrollar') || 
-                      lowerText.includes('crear') || lowerText.includes('investigar')) {
-                effortField.value = 'Grande';
-            }
-        }
-        
-        // Acciones rápidas mejoradas (CORREGIDA)
+        // Acciones rápidas
         function fillQuickTask(type) {
             console.log('Fill Quick Task:', type);
             
@@ -1035,58 +685,94 @@
             if (titleField) titleField.focus();
         }
         
-        // Manejar envío del formulario
-        document.getElementById('taskForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        // Configurar fechas por defecto
+        function setDefaultDateTime() {
+            const today = new Date();
+            const threeDaysLater = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
             
-            const submitBtn = document.querySelector('.submit-btn');
-            const btnText = document.querySelector('.btn-text');
-            const loading = document.querySelector('.loading');
+            const fechaLimiteField = document.getElementById('fecha_limite');
+            const horaLimiteField = document.getElementById('hora_limite');
+            
+            if (fechaLimiteField) fechaLimiteField.valueAsDate = threeDaysLater;
+            if (horaLimiteField) horaLimiteField.value = '18:00';
+        }
+        
+        // Configurar multi-select handlers
+        function setupMultiSelectHandlers() {
+            document.querySelectorAll('.multi-select-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (e.target.type !== 'checkbox') {
+                        const checkbox = this.querySelector('input[type="checkbox"]');
+                        if (checkbox) {
+                            checkbox.checked = !checkbox.checked;
+                        }
+                    }
+                    const checkbox = this.querySelector('input[type="checkbox"]');
+                    if (checkbox) {
+                        this.classList.toggle('selected', checkbox.checked);
+                    }
+                });
+            });
+        }
+        
+        // Manejar envío del formulario
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            console.log('📤 Formulario enviado');
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = submitBtn ? submitBtn.querySelector('.btn-text') : null;
+            const loading = submitBtn ? submitBtn.querySelector('.loading') : null;
             const successMsg = document.getElementById('successMessage');
             const errorMsg = document.getElementById('errorMessage');
             
-            successMsg.style.display = 'none';
-            errorMsg.style.display = 'none';
+            // Reset mensajes
+            if (successMsg) successMsg.style.display = 'none';
+            if (errorMsg) errorMsg.style.display = 'none';
             
-            submitBtn.disabled = true;
-            btnText.style.opacity = '0';
-            loading.style.display = 'block';
-            
-            // Construir fecha límite completa
-            let fechaLimite = null;
-            const fechaLim = document.getElementById('fecha_limite').value;
-            const horaLim = document.getElementById('hora_limite').value;
-            if (fechaLim) {
-                fechaLimite = horaLim ? `${fechaLim} ${horaLim}` : fechaLim;
-            }
-            
-            // Obtener tipos de tarea seleccionados
-            const tiposTarea = Array.from(document.querySelectorAll('input[name="tipo_tarea"]:checked'))
-                .map(cb => cb.value);
-            
-            const formData = {
-                titulo: document.getElementById('titulo').value,
-                descripcion: document.getElementById('descripcion').value,
-                estado: document.getElementById('estado').value,
-                prioridad: document.getElementById('prioridad').value,
-                area: document.getElementById('area').value,
-                tipo_tarea: tiposTarea.join(','),
-                nivel_esfuerzo: document.getElementById('nivel_esfuerzo').value,
-                fecha_limite: fechaLimite,
-                plazo: fechaLimite, // Alias para compatibilidad
-                add_to_calendar: document.getElementById('add_to_calendar').checked
-            };
+            // UI de carga
+            if (submitBtn) submitBtn.disabled = true;
+            if (btnText) btnText.style.opacity = '0';
+            if (loading) loading.style.display = 'block';
             
             try {
+                // Construir fecha límite completa
+                let fechaLimite = null;
+                const fechaLim = document.getElementById('fecha_limite')?.value;
+                const horaLim = document.getElementById('hora_limite')?.value;
+                if (fechaLim) {
+                    fechaLimite = horaLim ? `${fechaLim} ${horaLim}` : fechaLim;
+                }
+                
+                // Obtener tipos de tarea seleccionados
+                const tiposTarea = Array.from(document.querySelectorAll('input[name="tipo_tarea"]:checked'))
+                    .map(cb => cb.value);
+                
+                const formData = {
+                    titulo: document.getElementById('titulo')?.value || '',
+                    descripcion: document.getElementById('descripcion')?.value || '',
+                    estado: document.getElementById('estado')?.value || '',
+                    prioridad: document.getElementById('prioridad')?.value || '',
+                    area: document.getElementById('area')?.value || '',
+                    tipo_tarea: tiposTarea.join(','),
+                    nivel_esfuerzo: document.getElementById('nivel_esfuerzo')?.value || '',
+                    fecha_limite: fechaLimite,
+                    plazo: fechaLimite,
+                    add_to_calendar: document.getElementById('add_to_calendar')?.checked || false
+                };
+                
                 // Añadir campos de recordatorio si Calendar está activado
-                if (document.getElementById('add_to_calendar').checked) {
-                    if (document.getElementById('recordatorio_2h').checked) {
+                if (formData.add_to_calendar) {
+                    const recordatorio2h = document.getElementById('recordatorio_2h');
+                    const recordatorioCustom = document.getElementById('recordatorio_custom');
+                    
+                    if (recordatorio2h?.checked) {
                         formData.recordatorio_2h = true;
                     }
                     
-                    if (document.getElementById('recordatorio_custom').checked) {
-                        const fechaRecordatorio = document.getElementById('recordatorio_fecha').value;
-                        const horaRecordatorio = document.getElementById('recordatorio_hora').value;
+                    if (recordatorioCustom?.checked) {
+                        const fechaRecordatorio = document.getElementById('recordatorio_fecha')?.value;
+                        const horaRecordatorio = document.getElementById('recordatorio_hora')?.value;
                         
                         if (!fechaRecordatorio || !horaRecordatorio) {
                             throw new Error('Si eliges recordatorio personalizado, debes completar fecha y hora');
@@ -1097,8 +783,9 @@
                     }
                 }
                 
-                console.log('📤 Enviando datos completos:', formData);
-                // Método usando formulario oculto para evitar CORS
+                console.log('📤 Enviando datos:', formData);
+                
+                // Crear formulario oculto para envío
                 const tempForm = document.createElement('form');
                 tempForm.method = 'POST';
                 tempForm.action = WEBHOOK_URL;
@@ -1106,7 +793,7 @@
                 tempForm.style.display = 'none';
                 
                 Object.keys(formData).forEach(key => {
-                    if (formData[key]) {
+                    if (formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
                         const input = document.createElement('input');
                         input.type = 'hidden';
                         input.name = key;
@@ -1120,45 +807,71 @@
                 document.body.removeChild(tempForm);
                 
                 // Mostrar mensaje de éxito
-                successMsg.innerHTML = `
-                    ✅ <strong>Tarea creada en Notion${formData.add_to_calendar ? ' y Calendar' : ''}!</strong><br>
-                    <small>Se abrió una nueva pestaña para confirmar. ${formData.add_to_calendar ? 'Evento sincronizado con Google Calendar.' : 'Solo guardada en Notion.'}</small>
-                `;
-                successMsg.style.display = 'block';
+                if (successMsg) {
+                    successMsg.innerHTML = `
+                        ✅ <strong>Tarea enviada correctamente!</strong><br>
+                        <small>Se abrió una nueva pestaña para confirmar. ${formData.add_to_calendar ? 'Evento incluido en Google Calendar.' : 'Solo guardada en Notion.'}</small>
+                    `;
+                    successMsg.style.display = 'block';
+                    successMsg.scrollIntoView({ behavior: 'smooth' });
+                }
                 
                 // Reset form
-                document.getElementById('taskForm').reset();
+                const taskForm = document.getElementById('taskForm');
+                if (taskForm) taskForm.reset();
+                
                 document.querySelectorAll('.multi-select-item').forEach(item => {
                     item.classList.remove('selected');
                 });
                 
                 // Reset campos de Calendar
-                document.getElementById('add_to_calendar').checked = false;
-                document.getElementById('recordatorio_2h').checked = false;
-                document.getElementById('recordatorio_custom').checked = false;
+                const addToCalendarCheckbox = document.getElementById('add_to_calendar');
+                const recordatorio2hCheckbox = document.getElementById('recordatorio_2h');
+                const recordatorioCustomCheckbox = document.getElementById('recordatorio_custom');
+                
+                if (addToCalendarCheckbox) addToCalendarCheckbox.checked = false;
+                if (recordatorio2hCheckbox) recordatorio2hCheckbox.checked = false;
+                if (recordatorioCustomCheckbox) recordatorioCustomCheckbox.checked = false;
+                
                 toggleCalendarOptions();
                 toggleCustomReminder();
-                
                 setDefaultDateTime();
                 
-                successMsg.scrollIntoView({ behavior: 'smooth' });
-                
             } catch (error) {
-                console.error('❌ Error completo:', error);
-                errorMsg.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
-                errorMsg.style.display = 'block';
-                errorMsg.scrollIntoView({ behavior: 'smooth' });
+                console.error('❌ Error:', error);
+                
+                if (errorMsg) {
+                    errorMsg.innerHTML = `❌ <strong>Error:</strong> ${error.message}`;
+                    errorMsg.style.display = 'block';
+                    errorMsg.scrollIntoView({ behavior: 'smooth' });
+                }
             } finally {
-                submitBtn.disabled = false;
-                btnText.style.opacity = '1';
-                loading.style.display = 'none';
+                if (submitBtn) submitBtn.disabled = false;
+                if (btnText) btnText.style.opacity = '1';
+                if (loading) loading.style.display = 'none';
             }
-        });
+        }
         
-        // Auto-ajustar prioridad al escribir manualmente
-        document.getElementById('titulo').addEventListener('input', function(e) {
-            autoAdjustPriority(e.target.value);
-            autoAdjustEffort(e.target.value);
+        // ========================================
+        // INICIALIZACIÓN
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM cargado, inicializando...');
+            
+            // Configurar fechas por defecto
+            setDefaultDateTime();
+            
+            // Configurar multi-select handlers
+            setupMultiSelectHandlers();
+            
+            // Configurar formulario
+            const taskForm = document.getElementById('taskForm');
+            if (taskForm) {
+                taskForm.addEventListener('submit', handleFormSubmit);
+            }
+            
+            console.log('Inicialización completa');
         });
     </script>
 </body>
