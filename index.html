@@ -385,6 +385,25 @@
             font-style: italic;
         }
 
+        .dropdown-with-new {
+            position: relative;
+        }
+
+        .new-item-input {
+            display: none;
+            margin-top: 10px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .new-item-input.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         @media (max-width: 768px) {
             .form-row, .form-row-3, .form-row-4 {
                 grid-template-columns: 1fr;
@@ -493,25 +512,6 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="proyecto">📁 Proyecto</label>
-                            <select id="proyecto" name="proyecto">
-                                <option value="">Seleccionar proyecto...</option>
-                                <option value="Lecturas">📚 Lecturas</option>
-                                <option value="Astronomía">🌟 Astronomía</option>
-                                <option value="Base de Datos">💾 Base de Datos</option>
-                                <option value="Web CI">🌐 Web CI</option>
-                                <option value="Huerta">🌱 Huerta</option>
-                                <option value="Cambio Físico">💪 Cambio Físico</option>
-                                <option value="Edición Vídeo">🎬 Edición Vídeo</option>
-                                <option value="Oposiciones 2027">📖 Oposiciones 2027</option>
-                                <option value="Apuntes Curso 25/26">📝 Apuntes Curso 25/26</option>
-                                <option value="Master 25/26">🎓 Master 25/26</option>
-                                <option value="Transcripción IA">🤖 Transcripción IA</option>
-                                <option value="Curso 24/25">🏫 Curso 24/25</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
                             <label for="area">🏷️ Area</label>
                             <div class="dropdown-with-new">
                                 <select id="area" name="area" onchange="handleAreaChange()">
@@ -532,6 +532,12 @@
                                     <input type="text" id="newArea" placeholder="Nombre de la nueva área" onblur="addNewArea()">
                                 </div>
                             </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="proyecto_info">📁 Proyecto (informativo)</label>
+                            <input type="text" id="proyecto_info" name="proyecto_info" placeholder="Ej: Oposiciones 2027, Huerta, Curso 24/25..." disabled style="background: #f5f5f5; color: #666;">
+                            <div class="help-text">Por ahora solo informativo - próximamente conectado</div>
                         </div>
                     </div>
 
@@ -599,24 +605,19 @@
                         📅 Fechas y Horarios
                     </div>
                     
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="fecha_programada">📅 Fecha programada</label>
-                            <div class="datetime-group">
-                                <input type="date" id="fecha_programada" name="fecha_programada">
-                                <input type="time" id="hora_programada" name="hora_programada" class="time-input">
-                            </div>
-                            <div class="help-text">Cuándo planeas trabajar en esta tarea</div>
+                    <div class="form-group">
+                        <label for="fecha_limite">⏰ Fecha límite (Plazo)</label>
+                        <div class="datetime-group">
+                            <input type="date" id="fecha_limite" name="fecha_limite">
+                            <input type="time" id="hora_limite" name="hora_limite" class="time-input">
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="fecha_limite">⏰ Fecha límite</label>
-                            <div class="datetime-group">
-                                <input type="date" id="fecha_limite" name="fecha_limite">
-                                <input type="time" id="hora_limite" name="hora_limite" class="time-input">
-                            </div>
-                            <div class="help-text">Fecha tope para completar la tarea</div>
-                        </div>
+                        <div class="help-text">Fecha tope para completar la tarea</div>
+                    </div>
+                    
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 10px; margin-top: 15px;">
+                        <small style="color: #1976d2;">
+                            📝 <strong>Nota:</strong> La "Fecha de creación" se añade automáticamente en Notion cuando creas la tarea.
+                        </small>
                     </div>
                 </div>
                 
@@ -661,17 +662,12 @@
         // Configurar fecha y hora por defecto
         function setDefaultDateTime() {
             const today = new Date();
-            const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-            
-            // Fecha programada: mañana
-            document.getElementById('fecha_programada').valueAsDate = tomorrow;
             
             // Fecha límite: en 3 días
             const threeDaysLater = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
             document.getElementById('fecha_limite').valueAsDate = threeDaysLater;
             
-            // Hora por defecto: 9:00 AM
-            document.getElementById('hora_programada').value = '09:00';
+            // Hora por defecto: 18:00
             document.getElementById('hora_limite').value = '18:00';
         }
         
@@ -825,7 +821,7 @@
         
         // Acciones rápidas mejoradas
         function fillQuickTask(type) {
-            const projectField = document.getElementById('proyecto');
+            const proyectoField = document.getElementById('proyecto_info');
             const areaField = document.getElementById('area');
             const titleField = document.getElementById('titulo');
             const typeCheckboxes = document.querySelectorAll('input[name="tipo_tarea"]');
@@ -838,28 +834,28 @@
             
             switch(type) {
                 case 'trabajo':
-                    projectField.value = 'Curso 24/25';
+                    proyectoField.value = 'Curso 24/25';
                     areaField.value = 'Profesional';
                     titleField.placeholder = 'Ej: Preparar examen de física, corregir trabajos...';
                     document.querySelector('input[value="Trabajo"]').checked = true;
                     document.querySelector('input[value="Trabajo"]').closest('.multi-select-item').classList.add('selected');
                     break;
                 case 'estudio':
-                    projectField.value = 'Oposiciones 2027';
+                    proyectoField.value = 'Oposiciones 2027';
                     areaField.value = 'Académico';
                     titleField.placeholder = 'Ej: Estudiar tema 15, hacer simulacro...';
                     document.querySelector('input[value="Estudio"]').checked = true;
                     document.querySelector('input[value="Estudio"]').closest('.multi-select-item').classList.add('selected');
                     break;
                 case 'casa':
-                    projectField.value = 'Huerta';
+                    proyectoField.value = 'Huerta';
                     areaField.value = 'Hogar';
                     titleField.placeholder = 'Ej: Arreglar la huerta, limpiar el taller...';
                     document.querySelector('input[value="Casa"]').checked = true;
                     document.querySelector('input[value="Casa"]').closest('.multi-select-item').classList.add('selected');
                     break;
                 case 'personal':
-                    projectField.value = 'Cambio Físico';
+                    proyectoField.value = 'Cambio Físico';
                     areaField.value = 'Personal';
                     titleField.placeholder = 'Ej: Hacer ejercicio, quedar con amigos...';
                     document.querySelector('input[value="Personal"]').checked = true;
@@ -887,14 +883,6 @@
             btnText.style.opacity = '0';
             loading.style.display = 'block';
             
-            // Construir fecha programada completa
-            let fechaProgramada = null;
-            const fechaProg = document.getElementById('fecha_programada').value;
-            const horaProg = document.getElementById('hora_programada').value;
-            if (fechaProg) {
-                fechaProgramada = horaProg ? `${fechaProg} ${horaProg}` : fechaProg;
-            }
-            
             // Construir fecha límite completa
             let fechaLimite = null;
             const fechaLim = document.getElementById('fecha_limite').value;
@@ -912,11 +900,9 @@
                 descripcion: document.getElementById('descripcion').value,
                 estado: document.getElementById('estado').value,
                 prioridad: document.getElementById('prioridad').value,
-                proyecto: document.getElementById('proyecto').value,
                 area: document.getElementById('area').value,
                 tipo_tarea: tiposTarea.join(','),
                 nivel_esfuerzo: document.getElementById('nivel_esfuerzo').value,
-                fecha_programada: fechaProgramada,
                 fecha_limite: fechaLimite,
                 plazo: fechaLimite // Alias para compatibilidad
             };
