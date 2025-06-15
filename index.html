@@ -10,6 +10,53 @@
             padding: 0;
             box-sizing: border-box;
         }
+        
+        // Cargar áreas personalizadas
+        function loadCustomAreas() {
+            const areaSelect = document.getElementById('area');
+            
+            // Añadir áreas personalizadas antes de la opción "nuevo"
+            customAreas.forEach(area => {
+                const option = document.createElement('option');
+                option.value = area;
+                option.textContent = `🔸 ${area}`;
+                areaSelect.insertBefore(option, areaSelect.lastElementChild);
+            });
+        }
+        
+        // Manejar cambio de área
+        function handleAreaChange() {
+            const select = document.getElementById('area');
+            const newInput = document.getElementById('newAreaInput');
+            
+            if (select.value === 'nuevo') {
+                newInput.classList.add('show');
+                document.getElementById('newArea').focus();
+            } else {
+                newInput.classList.remove('show');
+            }
+        }
+        
+        // Añadir nueva área
+        function addNewArea() {
+            const input = document.getElementById('newArea');
+            const select = document.getElementById('area');
+            const newAreaName = input.value.trim();
+            
+            if (newAreaName && !customAreas.includes(newAreaName)) {
+                customAreas.push(newAreaName);
+                localStorage.setItem('customAreas', JSON.stringify(customAreas));
+                
+                const option = document.createElement('option');
+                option.value = newAreaName;
+                option.textContent = `🔸 ${newAreaName}`;
+                option.selected = true;
+                select.insertBefore(option, select.lastElementChild);
+                
+                input.value = '';
+                document.getElementById('newAreaInput').classList.remove('show');
+            }
+        }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -465,8 +512,26 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="area">🏷️ Área (texto libre)</label>
-                            <input type="text" id="area" name="area" placeholder="Ej: Profesional, Académico, Huerta, Taller...">
+                            <label for="area">🏷️ Area</label>
+                            <div class="dropdown-with-new">
+                                <select id="area" name="area" onchange="handleAreaChange()">
+                                    <option value="">Seleccionar área...</option>
+                                    <option value="Profesional">💼 Profesional</option>
+                                    <option value="Académico">🎓 Académico</option>
+                                    <option value="Personal">😊 Personal</option>
+                                    <option value="Formación">📖 Formación</option>
+                                    <option value="Evaluación">📊 Evaluación</option>
+                                    <option value="Huerta">🌱 Huerta</option>
+                                    <option value="Taller">🔧 Taller</option>
+                                    <option value="Bungalow">🏡 Bungalow</option>
+                                    <option value="Hogar">🏠 Hogar</option>
+                                    <option value="Administrativo">📋 Administrativo</option>
+                                    <option value="nuevo">➕ Nueva área...</option>
+                                </select>
+                                <div class="new-item-input" id="newAreaInput">
+                                    <input type="text" id="newArea" placeholder="Nombre de la nueva área" onblur="addNewArea()">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -582,11 +647,15 @@
         let isListening = false;
         let currentInputId = null;
         
+        // Datos persistentes para áreas personalizadas
+        let customAreas = JSON.parse(localStorage.getItem('customAreas') || '[]');
+        
         // Inicializar al cargar la página
         document.addEventListener('DOMContentLoaded', function() {
             initSpeechRecognition();
             setDefaultDateTime();
             setupMultiSelectHandlers();
+            loadCustomAreas();
         });
         
         // Configurar fecha y hora por defecto
