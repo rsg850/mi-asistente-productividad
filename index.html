@@ -19,56 +19,25 @@
             if (checkbox.checked) {
                 options.style.display = 'block';
                 options.style.animation = 'slideDown 0.3s ease';
-                
-                // Auto-configurar recordatorio 30 min antes de la tarea
-                autoConfigurarRecordatorio();
             } else {
                 options.style.display = 'none';
+                // Reset checkboxes
+                document.getElementById('recordatorio_2h').checked = false;
+                document.getElementById('recordatorio_custom').checked = false;
+                toggleCustomReminder();
             }
         }
         
-        // Auto-configurar recordatorio inteligente
-        function autoConfigurarRecordatorio() {
-            const fechaLimite = document.getElementById('fecha_limite').value;
-            const horaLimite = document.getElementById('hora_limite').value;
+        // Toggle campos de recordatorio personalizado
+        function toggleCustomReminder() {
+            const checkbox = document.getElementById('recordatorio_custom');
+            const fields = document.getElementById('custom_reminder_fields');
             
-            if (fechaLimite && horaLimite) {
-                const limitDate = new Date(`${fechaLimite}T${horaLimite}`);
-                let reminderDate;
-                
-                // Sugerencia inteligente basada en la hora de la tarea
-                const hora = parseInt(horaLimite.split(':')[0]);
-                
-                if (hora <= 12) {
-                    // Si la tarea es por la mañana, recordatorio la noche anterior a las 20:00
-                    reminderDate = new Date(limitDate.getTime() - 24 * 60 * 60 * 1000); // Día anterior
-                    reminderDate.setHours(20, 0, 0, 0); // 20:00
-                } else if (hora >= 18) {
-                    // Si la tarea es por la tarde/noche, recordatorio el mismo día por la mañana a las 9:00
-                    reminderDate = new Date(limitDate);
-                    reminderDate.setHours(9, 0, 0, 0); // 9:00 AM
-                } else {
-                    // Para tareas de medio día, recordatorio 2 horas antes
-                    reminderDate = new Date(limitDate.getTime() - 2 * 60 * 60 * 1000); // 2 horas antes
-                }
-                
-                // Si el recordatorio queda en el pasado, usar 30 minutos antes
-                const now = new Date();
-                if (reminderDate < now) {
-                    reminderDate = new Date(limitDate.getTime() - 30 * 60 * 1000); // 30 min antes
-                }
-                
-                document.getElementById('recordatorio_fecha').valueAsDate = reminderDate;
-                document.getElementById('recordatorio_hora').value = reminderDate.toTimeString().slice(0, 5);
-                
-            } else if (fechaLimite) {
-                // Si solo hay fecha, recordatorio el día anterior a las 20:00
-                const limitDate = new Date(`${fechaLimite}T09:00:00`);
-                const reminderDate = new Date(limitDate.getTime() - 24 * 60 * 60 * 1000);
-                reminderDate.setHours(20, 0, 0, 0);
-                
-                document.getElementById('recordatorio_fecha').valueAsDate = reminderDate;
-                document.getElementById('recordatorio_hora').value = '20:00';
+            if (checkbox.checked) {
+                fields.style.display = 'flex';
+                fields.style.animation = 'slideDown 0.3s ease';
+            } else {
+                fields.style.display = 'none';
             }
         }
         
@@ -801,7 +770,6 @@
             setDefaultDateTime();
             setupMultiSelectHandlers();
             loadCustomAreas();
-            setupCalendarListeners();
         });
         
         // Configurar fecha y hora por defecto
@@ -1059,17 +1027,23 @@
             };
             
             try {
-                // Validación adicional para Calendar
+                // Añadir campos de recordatorio si Calendar está activado
                 if (document.getElementById('add_to_calendar').checked) {
-                    const fechaRecordatorio = document.getElementById('recordatorio_fecha').value;
-                    const horaRecordatorio = document.getElementById('recordatorio_hora').value;
-                    
-                    if (!fechaRecordatorio || !horaRecordatorio) {
-                        throw new Error('Si activas Google Calendar, debes elegir fecha y hora para el recordatorio');
+                    if (document.getElementById('recordatorio_2h').checked) {
+                        formData.recordatorio_2h = true;
                     }
                     
-                    formData.recordatorio_fecha = fechaRecordatorio;
-                    formData.recordatorio_hora = horaRecordatorio;
+                    if (document.getElementById('recordatorio_custom').checked) {
+                        const fechaRecordatorio = document.getElementById('recordatorio_fecha').value;
+                        const horaRecordatorio = document.getElementById('recordatorio_hora').value;
+                        
+                        if (!fechaRecordatorio || !horaRecordatorio) {
+                            throw new Error('Si eliges recordatorio personalizado, debes completar fecha y hora');
+                        }
+                        
+                        formData.recordatorio_fecha = fechaRecordatorio;
+                        formData.recordatorio_hora = horaRecordatorio;
+                    }
                 }
                 
                 console.log('📤 Enviando datos completos:', formData);
@@ -1109,7 +1083,10 @@
                 
                 // Reset campos de Calendar
                 document.getElementById('add_to_calendar').checked = false;
+                document.getElementById('recordatorio_2h').checked = false;
+                document.getElementById('recordatorio_custom').checked = false;
                 toggleCalendarOptions();
+                toggleCustomReminder();
                 
                 setDefaultDateTime();
                 
