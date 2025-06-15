@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Tareas - Mi Asistente de Productividad</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff33;
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message, .error-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .quick-btn {
+            padding: 10px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .quick-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .emoji {
+            display: block;
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .input-with-mic {
+            position: relative;
+        }
+
+        .mic-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            z-index: 10;
+        }
+
+        .mic-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .mic-btn.recording {
+            background: #e53e3e;
+            animation: pulse 1.5s infinite;
+        }
+
+        .mic-btn.processing {
+            background: #38a169;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(229, 62, 62, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0); }
+        }
+
+        .input-with-mic input {
+            padding-right: 60px;
+        }
+
+        .input-with-mic textarea {
+            padding-right: 60px;
+        }
+
+        .voice-status {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .voice-status.show {
+            display: block;
+        }
+
+        .voice-status.recording {
+            color: #e53e3e;
+        }
+
+        .voice-status.processing {
+            color: #38a169;
+        }
+
+        .dropdown-with-new {
+            position: relative;
+        }
+
+        .new-item-input {
+            display: none;
+            margin-top: 10px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .new-item-input.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reminder-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px dashed #dee2e6;
+        }
+
+        .reminder-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .reminder-toggle input[type="checkbox"] {
+            width: auto;
+            transform: scale(1.2);
+        }
+
+        .reminder-fields {
+            display: none;
+        }
+
+        .reminder-fields.show {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .datetime-input {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .time-input {
+            min-width: 120px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .reminder-fields {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                margin: 10px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Mi Asistente de Productividad</h1>
+            <p>Añade tareas fácilmente a tu sistema de Notion</p>
+        </div>
+        
+        <div class="form-container">
+            <div class="quick-actions">
+                <div class="quick-btn" onclick="fillQuickTask('trabajo')">
+                    <span class="emoji">👨‍🏫</span>
+                    Trabajo
+                </div>
+                <div class="quick-btn" onclick="fillQuickTask('estudio')">
+                    <span class="emoji">📚</span>
+                    Estudio
+                </div>
+                <div class="quick-btn" onclick="fillQuickTask('casa')">
+                    <span class="emoji">🏠</span>
+                    Casa
+                </div>
+                <div class="quick-btn" onclick="fillQuickTask('personal')">
+                    <span class="emoji">😊</span>
+                    Personal
+                </div>
+            </div>
+            
+            <form id="taskForm">
+                <div class="form-group">
+                    <label for="titulo">📝 ¿Qué necesitas hacer?</label>
+                    <div class="input-with-mic">
+                        <input type="text" id="titulo" name="titulo" placeholder="Ej: Añadir observaciones a alumnos en Yedra" required>
+                        <button type="button" class="mic-btn" id="micBtn1" onclick="toggleVoiceInput('titulo')">
+                            🎤
+                        </button>
+                    </div>
+                    <div class="voice-status" id="voiceStatus1">Haz clic en el micrófono y habla...</div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="proyecto">📁 Proyecto</label>
+                        <div class="dropdown-with-new">
+                            <select id="proyecto" name="proyecto" onchange="handleProjectChange()">
+                                <option value="">Seleccionar proyecto...</option>
+                                <option value="Trabajo docente">👨‍🏫 Trabajo docente</option>
+                                <option value="Oposiciones">📚 Oposiciones</option>
+                                <option value="Casa">🏠 Casa</option>
+                                <option value="Desarrollo personal">😊 Desarrollo personal</option>
+                                <option value="Salud">💪 Salud</option>
+                                <option value="Social">👥 Social</option>
+                                <option value="nuevo">➕ Nuevo proyecto...</option>
+                            </select>
+                            <div class="new-item-input" id="newProjectInput">
+                                <input type="text" id="newProject" placeholder="Nombre del nuevo proyecto" onblur="addNewProject()">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="area">🏷️ Área/Subproyecto</label>
+                        <div class="dropdown-with-new">
+                            <select id="area" name="area" onchange="handleAreaChange()">
+                                <option value="">Seleccionar área...</option>
+                                <option value="Profesional">💼 Profesional</option>
+                                <option value="Académico">🎓 Académico</option>
+                                <option value="Personal">😊 Personal</option>
+                                <option value="Formación">📖 Formación</option>
+                                <option value="Evaluación">📊 Evaluación</option>
+                                <option value="Huerta">🌱 Huerta</option>
+                                <option value="Taller">🔧 Taller</option>
+                                <option value="Bungalow">🏡 Bungalow</option>
+                                <option value="nuevo">➕ Nueva área...</option>
+                            </select>
+                            <div class="new-item-input" id="newAreaInput">
+                                <input type="text" id="newArea" placeholder="Nombre de la nueva área" onblur="addNewArea()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label for="prioridad">⚡ Prioridad</label>
+                        <select id="prioridad" name="prioridad">
+                            <option value="Medio">🟡 Media</option>
+                            <option value="Alta">🔴 Alta</option>
+                            <option value="Baja">🟢 Baja</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fecha_limite">📅 Fecha límite</label>
+                        <div class="datetime-input">
+                            <input type="date" id="fecha_limite" name="fecha_limite">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hora_limite">🕐 Hora límite</label>
+                        <input type="time" id="hora_limite" name="hora_limite" class="time-input">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="descripcion">📄 Descripción (opcional)</label>
+                    <div class="input-with-mic">
+                        <textarea id="descripcion" name="descripcion" placeholder="Detalles adicionales sobre la tarea..."></textarea>
+                        <button type="button" class="mic-btn" id="micBtn2" onclick="toggleVoiceInput('descripcion')">
+                            🎤
+                        </button>
+                    </div>
+                    <div class="voice-status" id="voiceStatus2">Haz clic en el micrófono y habla...</div>
+                </div>
+                
+                <div class="reminder-section">
+                    <div class="reminder-toggle">
+                        <input type="checkbox" id="enableReminder" onchange="toggleReminder()">
+                        <label for="enableReminder">🔔 Añadir recordatorio</label>
+                    </div>
+                    <div class="reminder-fields" id="reminderFields">
+                        <div class="form-group">
+                            <label for="reminder_date">📅 Fecha del recordatorio</label>
+                            <input type="date" id="reminder_date" name="reminder_date">
+                        </div>
+                        <div class="form-group">
+                            <label for="reminder_time">🕐 Hora del recordatorio</label>
+                            <input type="time" id="reminder_time" name="reminder_time">
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    <span class="btn-text">✨ Crear Tarea en Notion</span>
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </button>
+            </form>
+            
+            <div id="successMessage" class="success-message">
+                ✅ ¡Tarea creada exitosamente en Notion!
+            </div>
+            
+            <div id="errorMessage" class="error-message">
+                ❌ Error al crear la tarea. Por favor, inténtalo de nuevo.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URL de tu webhook (ACTUALIZADA)
+        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxdSL2hrdAO8AnnRAdrZhgjzjO9keNTMpPjNXJ8AoWAEjOzDfB_qwxaC-MAy24PLCo1-Q/exec';
+        
+        // Variables para reconocimiento de voz
+        let recognition;
+        let isListening = false;
+        let currentInputId = null;
+        
+        // Datos persistentes para proyectos y áreas
+        let customProjects = JSON.parse(localStorage.getItem('customProjects') || '[]');
+        let customAreas = JSON.parse(localStorage.getItem('customAreas') || '[]');
+        
+        // Inicializar al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            initSpeechRecognition();
+            loadCustomOptions();
+            setDefaultDateTime();
+        });
+        
+        // Configurar fecha y hora por defecto
+        function setDefaultDateTime() {
+            const today = new Date();
+            document.getElementById('fecha_limite').valueAsDate = today;
+            
+            // Hora por defecto: ahora + 2 horas
+            const defaultTime = new Date(today.getTime() + 2 * 60 * 60 * 1000);
+            const timeString = defaultTime.toTimeString().slice(0, 5);
+            document.getElementById('hora_limite').value = timeString;
+        }
+        
+        // Cargar opciones personalizadas
+        function loadCustomOptions() {
+            const projectSelect = document.getElementById('proyecto');
+            const areaSelect = document.getElementById('area');
+            
+            // Añadir proyectos personalizados
+            customProjects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project;
+                option.textContent = `🔹 ${project}`;
+                projectSelect.insertBefore(option, projectSelect.lastElementChild);
+            });
+            
+            // Añadir áreas personalizadas
+            customAreas.forEach(area => {
+                const option = document.createElement('option');
+                option.value = area;
+                option.textContent = `🔸 ${area}`;
+                areaSelect.insertBefore(option, areaSelect.lastElementChild);
+            });
+        }
+        
+        // Manejar cambio de proyecto
+        function handleProjectChange() {
+            const select = document.getElementById('proyecto');
+            const newInput = document.getElementById('newProjectInput');
+            
+            if (select.value === 'nuevo') {
+                newInput.classList.add('show');
+                document.getElementById('newProject').focus();
+            } else {
+                newInput.classList.remove('show');
+            }
+        }
+        
+        // Manejar cambio de área
+        function handleAreaChange() {
+            const select = document.getElementById('area');
+            const newInput = document.getElementById('newAreaInput');
+            
+            if (select.value === 'nuevo') {
+                newInput.classList.add('show');
+                document.getElementById('newArea').focus();
+            } else {
+                newInput.classList.remove('show');
+            }
+        }
+        
+        // Añadir nuevo proyecto
+        function addNewProject() {
+            const input = document.getElementById('newProject');
+            const select = document.getElementById('proyecto');
+            const newProjectName = input.value.trim();
+            
+            if (newProjectName && !customProjects.includes(newProjectName)) {
+                customProjects.push(newProjectName);
+                localStorage.setItem('customProjects', JSON.stringify(customProjects));
+                
+                const option = document.createElement('option');
+                option.value = newProjectName;
+                option.textContent = `🔹 ${newProjectName}`;
+                option.selected = true;
+                select.insertBefore(option, select.lastElementChild);
+                
+                input.value = '';
+                document.getElementById('newProjectInput').classList.remove('show');
+            }
+        }
+        
+        // Añadir nueva área
+        function addNewArea() {
+            const input = document.getElementById('newArea');
+            const select = document.getElementById('area');
+            const newAreaName = input.value.trim();
+            
+            if (newAreaName && !customAreas.includes(newAreaName)) {
+                customAreas.push(newAreaName);
+                localStorage.setItem('customAreas', JSON.stringify(customAreas));
+                
+                const option = document.createElement('option');
+                option.value = newAreaName;
+                option.textContent = `🔸 ${newAreaName}`;
+                option.selected = true;
+                select.insertBefore(option, select.lastElementChild);
+                
+                input.value = '';
+                document.getElementById('newAreaInput').classList.remove('show');
+            }
+        }
+        
+        // Toggle recordatorio
+        function toggleReminder() {
+            const checkbox = document.getElementById('enableReminder');
+            const fields = document.getElementById('reminderFields');
+            
+            if (checkbox.checked) {
+                fields.classList.add('show');
+                // Configurar fecha y hora por defecto para recordatorio (1 hora antes de la fecha límite)
+                const fechaLimite = document.getElementById('fecha_limite').value;
+                const horaLimite = document.getElementById('hora_limite').value;
+                
+                if (fechaLimite && horaLimite) {
+                    const limitDate = new Date(`${fechaLimite}T${horaLimite}`);
+                    const reminderDate = new Date(limitDate.getTime() - 60 * 60 * 1000); // 1 hora antes
+                    
+                    document.getElementById('reminder_date').valueAsDate = reminderDate;
+                    document.getElementById('reminder_time').value = reminderDate.toTimeString().slice(0, 5);
+                }
+            } else {
+                fields.classList.remove('show');
+            }
+        }
+        
+        // Inicializar reconocimiento de voz
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                recognition.continuous = true; // Cambiado a true para evitar paradas automáticas
+                recognition.interimResults = false;
+                recognition.lang = 'es-ES';
+                
+                recognition.onstart = function() {
+                    isListening = true;
+                    updateVoiceUI('recording');
+                };
+                
+                recognition.onresult = function(event) {
+                    // Obtener el último resultado
+                    const lastResult = event.results[event.results.length - 1];
+                    if (lastResult.isFinal) {
+                        const transcript = lastResult[0].transcript;
+                        
+                        // Añadir al contenido existente en lugar de reemplazar
+                        const currentValue = document.getElementById(currentInputId).value;
+                        const newValue = currentValue ? currentValue + ' ' + transcript : transcript;
+                        document.getElementById(currentInputId).value = newValue.trim();
+                        
+                        if (currentInputId === 'titulo') {
+                            autoAdjustPriority(transcript);
+                        }
+                    }
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Error de reconocimiento de voz:', event.error);
+                    if (event.error !== 'no-speech') { // Ignorar errores de silencio
+                        updateVoiceUI('error');
+                    }
+                };
+                
+                recognition.onend = function() {
+                    // Solo cambiar estado si no estamos escuchando intencionalmente
+                    if (!isListening) {
+                        updateVoiceUI('idle');
+                    } else {
+                        // Reiniciar automáticamente si aún estamos en modo escucha
+                        try {
+                            recognition.start();
+                        } catch (e) {
+                            console.log('No se puede reiniciar el reconocimiento automáticamente');
+                            updateVoiceUI('idle');
+                        }
+                    }
+                };
+            } else {
+                document.querySelectorAll('.mic-btn').forEach(btn => {
+                    btn.style.display = 'none';
+                });
+            }
+        }
+        
+        // Activar/desactivar entrada de voz (mejorado)
+        function toggleVoiceInput(inputId) {
+            if (!recognition) {
+                alert('❌ Reconocimiento de voz no disponible en este navegador.\n\nTrueba con Chrome, Edge o Safari.');
+                return;
+            }
+            
+            currentInputId = inputId;
+            
+            if (isListening) {
+                // Parar grabación manualmente
+                recognition.stop();
+                isListening = false;
+                updateVoiceUI('idle');
+            } else {
+                // Iniciar grabación
+                recognition.start();
+            }
+        }
+        
+        // Actualizar interfaz según estado de voz
+        function updateVoiceUI(state) {
+            const micBtn = currentInputId === 'titulo' ? document.getElementById('micBtn1') : document.getElementById('micBtn2');
+            const voiceStatus = currentInputId === 'titulo' ? document.getElementById('voiceStatus1') : document.getElementById('voiceStatus2');
+            
+            micBtn.classList.remove('recording', 'processing');
+            voiceStatus.classList.remove('show', 'recording', 'processing');
+            
+            switch(state) {
+                case 'recording':
+                    micBtn.classList.add('recording');
+                    micBtn.innerHTML = '🔴';
+                    voiceStatus.textContent = '🎤 Grabando... Haz clic de nuevo para parar';
+                    voiceStatus.classList.add('show', 'recording');
+                    break;
+                    
+                case 'success':
+                    micBtn.innerHTML = '✅';
+                    voiceStatus.textContent = '✅ ¡Texto transcrito correctamente!';
+                    voiceStatus.classList.add('show');
+                    setTimeout(() => updateVoiceUI('idle'), 2000);
+                    break;
+                    
+                case 'error':
+                    micBtn.innerHTML = '❌';
+                    voiceStatus.textContent = '❌ Error al reconocer voz. Inténtalo de nuevo.';
+                    voiceStatus.classList.add('show');
+                    setTimeout(() => updateVoiceUI('idle'), 3000);
+                    break;
+                    
+                case 'idle':
+                default:
+                    micBtn.innerHTML = '🎤';
+                    voiceStatus.classList.remove('show');
+                    isListening = false;
+                    break;
+            }
+        }
+        
+        // Auto-ajustar prioridad basada en contenido
+        function autoAdjustPriority(text) {
+            const lowerText = text.toLowerCase();
+            const priorityField = document.getElementById('prioridad');
+            
+            if (lowerText.includes('urgente') || lowerText.includes('ya') || lowerText.includes('ahora') || 
+                lowerText.includes('hoy') || lowerText.includes('inmediatamente') || lowerText.includes('rápido')) {
+                priorityField.value = 'Alta';
+            } else if (lowerText.includes('cuando pueda') || lowerText.includes('sin prisa') || 
+                      lowerText.includes('algún día') || lowerText.includes('cuando tenga tiempo')) {
+                priorityField.value = 'Baja';
+            }
+        }
+        
+        // Acciones rápidas mejoradas
+        function fillQuickTask(type) {
+            const projectField = document.getElementById('proyecto');
+            const areaField = document.getElementById('area');
+            const titleField = document.getElementById('titulo');
+            
+            switch(type) {
+                case 'trabajo':
+                    projectField.value = 'Trabajo docente';
+                    areaField.value = 'Profesional';
+                    titleField.placeholder = 'Ej: Preparar examen de física, corregir trabajos...';
+                    break;
+                case 'estudio':
+                    projectField.value = 'Oposiciones';
+                    areaField.value = 'Académico';
+                    titleField.placeholder = 'Ej: Estudiar tema 15, hacer simulacro...';
+                    break;
+                case 'casa':
+                    projectField.value = 'Casa';
+                    areaField.value = 'Personal';
+                    titleField.placeholder = 'Ej: Arreglar la huerta, limpiar el taller...';
+                    break;
+                case 'personal':
+                    projectField.value = 'Desarrollo personal';
+                    areaField.value = 'Personal';
+                    titleField.placeholder = 'Ej: Hacer ejercicio, quedar con amigos...';
+                    break;
+            }
+            
+            titleField.focus();
+        }
+        
+        // Manejar envío del formulario (con debugging real)
+        document.getElementById('taskForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.querySelector('.submit-btn');
+            const btnText = document.querySelector('.btn-text');
+            const loading = document.querySelector('.loading');
+            const successMsg = document.getElementById('successMessage');
+            const errorMsg = document.getElementById('errorMessage');
+            
+            successMsg.style.display = 'none';
+            errorMsg.style.display = 'none';
+            
+            submitBtn.disabled = true;
+            btnText.style.opacity = '0';
+            loading.style.display = 'block';
+            
+            // Construir fecha y hora límite completa
+            let fechaCompleta = document.getElementById('fecha_limite').value;
+            const horaLimite = document.getElementById('hora_limite').value;
+            if (fechaCompleta && horaLimite) {
+                fechaCompleta = `${fechaCompleta} ${horaLimite}`;
+            }
+            
+            // Construir recordatorio si está habilitado
+            let recordatorio = null;
+            if (document.getElementById('enableReminder').checked) {
+                const reminderDate = document.getElementById('reminder_date').value;
+                const reminderTime = document.getElementById('reminder_time').value;
+                if (reminderDate && reminderTime) {
+                    recordatorio = `${reminderDate} ${reminderTime}`;
+                }
+            }
+            
+            const formData = {
+                titulo: document.getElementById('titulo').value,
+                proyecto: document.getElementById('proyecto').value,
+                area: document.getElementById('area').value,
+                prioridad: document.getElementById('prioridad').value,
+                fecha_limite: fechaCompleta,
+                descripcion: document.getElementById('descripcion').value,
+                recordatorio: recordatorio
+            };
+            
+            console.log('📤 Enviando datos:', formData);
+            
+            try {
+                // Método temporal para evitar CORS usando un formulario oculto
+                const tempForm = document.createElement('form');
+                tempForm.method = 'POST';
+                tempForm.action = WEBHOOK_URL;
+                tempForm.target = '_blank'; // Abrir en nueva pestaña
+                tempForm.style.display = 'none';
+                
+                // Añadir todos los campos como inputs ocultos
+                Object.keys(formData).forEach(key => {
+                    if (formData[key]) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = key;
+                        input.value = formData[key];
+                        tempForm.appendChild(input);
+                    }
+                });
+                
+                document.body.appendChild(tempForm);
+                tempForm.submit();
+                document.body.removeChild(tempForm);
+                
+                // Simular éxito (ya que no podemos verificar la respuesta con este método)
+                successMsg.innerHTML = `✅ Tarea enviada a Notion!<br><small>Se abrió una nueva pestaña para confirmar</small>`;
+                successMsg.style.display = 'block';
+                document.getElementById('taskForm').reset();
+                setDefaultDateTime();
+                document.getElementById('enableReminder').checked = false;
+                toggleReminder();
+                
+                successMsg.scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (error) {
+                console.error('❌ Error completo:', error);
+                
+                if (error.name === 'TypeError' && error.message.includes('CORS')) {
+                    errorMsg.innerHTML = `
+                        <strong>❌ Error de CORS</strong><br>
+                        <small>El webhook está bloqueado por el navegador.</small><br>
+                        <strong>💡 Soluciones:</strong><br>
+                        1. Verificar que el webhook está desplegado como "Cualquier persona"<br>
+                        2. Probar en una pestaña de incógnito<br>
+                        3. Usar Chrome en lugar de otros navegadores
+                    `;
+                } else {
+                    errorMsg.innerHTML = `
+                        <strong>❌ Error:</strong> ${error.message}<br>
+                        <small>Revisa la consola del navegador (F12) para más detalles</small>
+                    `;
+                }
+                
+                errorMsg.style.display = 'block';
+                errorMsg.scrollIntoView({ behavior: 'smooth' });
+            } finally {
+                submitBtn.disabled = false;
+                btnText.style.opacity = '1';
+                loading.style.display = 'none';
+            }
+        });
+        
+        // Auto-ajustar prioridad al escribir manualmente
+        document.getElementById('titulo').addEventListener('input', function(e) {
+            autoAdjustPriority(e.target.value);
+        });
+    </script>
+</body>
+</html>
