@@ -34,14 +34,41 @@
             
             if (fechaLimite && horaLimite) {
                 const limitDate = new Date(`${fechaLimite}T${horaLimite}`);
-                const reminderDate = new Date(limitDate.getTime() - 30 * 60 * 1000); // 30 min antes
+                let reminderDate;
+                
+                // Sugerencia inteligente basada en la hora de la tarea
+                const hora = parseInt(horaLimite.split(':')[0]);
+                
+                if (hora <= 12) {
+                    // Si la tarea es por la mañana, recordatorio la noche anterior a las 20:00
+                    reminderDate = new Date(limitDate.getTime() - 24 * 60 * 60 * 1000); // Día anterior
+                    reminderDate.setHours(20, 0, 0, 0); // 20:00
+                } else if (hora >= 18) {
+                    // Si la tarea es por la tarde/noche, recordatorio el mismo día por la mañana a las 9:00
+                    reminderDate = new Date(limitDate);
+                    reminderDate.setHours(9, 0, 0, 0); // 9:00 AM
+                } else {
+                    // Para tareas de medio día, recordatorio 2 horas antes
+                    reminderDate = new Date(limitDate.getTime() - 2 * 60 * 60 * 1000); // 2 horas antes
+                }
+                
+                // Si el recordatorio queda en el pasado, usar 30 minutos antes
+                const now = new Date();
+                if (reminderDate < now) {
+                    reminderDate = new Date(limitDate.getTime() - 30 * 60 * 1000); // 30 min antes
+                }
                 
                 document.getElementById('recordatorio_fecha').valueAsDate = reminderDate;
                 document.getElementById('recordatorio_hora').value = reminderDate.toTimeString().slice(0, 5);
+                
             } else if (fechaLimite) {
-                // Si solo hay fecha, recordatorio el mismo día a las 8:00 AM
-                document.getElementById('recordatorio_fecha').value = fechaLimite;
-                document.getElementById('recordatorio_hora').value = '08:00';
+                // Si solo hay fecha, recordatorio el día anterior a las 20:00
+                const limitDate = new Date(`${fechaLimite}T09:00:00`);
+                const reminderDate = new Date(limitDate.getTime() - 24 * 60 * 60 * 1000);
+                reminderDate.setHours(20, 0, 0, 0);
+                
+                document.getElementById('recordatorio_fecha').valueAsDate = reminderDate;
+                document.getElementById('recordatorio_hora').value = '20:00';
             }
         }
         
@@ -723,7 +750,10 @@
                                         <input type="time" id="recordatorio_hora" name="recordatorio_hora" required style="font-size: 14px; min-width: 120px; padding: 10px;">
                                     </div>
                                     <div style="font-size: 12px; color: #666; margin-top: 8px; background: #f0f8ff; padding: 8px; border-radius: 5px;">
-                                        💡 <strong>Ejemplo:</strong> Si tu tarea es el 18/06 a las 18:00, puedes recordarte el 17/06 a las 20:00 (para prepararte la noche anterior) o el 18/06 a las 17:30 (30 min antes)
+                                        💡 <strong>Sugerencias automáticas:</strong><br>
+                                        • Tareas de mañana → Recordatorio la noche anterior a las 20:00<br>
+                                        • Tareas de tarde → Recordatorio el mismo día a las 9:00<br>
+                                        • ¡Pero puedes cambiarlo a lo que quieras!
                                     </div>
                                 </div>
                                 
@@ -1028,20 +1058,21 @@
                 add_to_calendar: document.getElementById('add_to_calendar').checked
             };
             
-            // Añadir campos de recordatorio si Calendar está activado
-            if (document.getElementById('add_to_calendar').checked) {
-                const fechaRecordatorio = document.getElementById('recordatorio_fecha').value;
-                const horaRecordatorio = document.getElementById('recordatorio_hora').value;
-                
-                if (fechaRecordatorio && horaRecordatorio) {
+            try {
+                // Validación adicional para Calendar
+                if (document.getElementById('add_to_calendar').checked) {
+                    const fechaRecordatorio = document.getElementById('recordatorio_fecha').value;
+                    const horaRecordatorio = document.getElementById('recordatorio_hora').value;
+                    
+                    if (!fechaRecordatorio || !horaRecordatorio) {
+                        throw new Error('Si activas Google Calendar, debes elegir fecha y hora para el recordatorio');
+                    }
+                    
                     formData.recordatorio_fecha = fechaRecordatorio;
                     formData.recordatorio_hora = horaRecordatorio;
                 }
-            }
-            
-            console.log('📤 Enviando datos completos:', formData);
-            
-            try {
+                
+                console.log('📤 Enviando datos completos:', formData);
                 // Método usando formulario oculto para evitar CORS
                 const tempForm = document.createElement('form');
                 tempForm.method = 'POST';
