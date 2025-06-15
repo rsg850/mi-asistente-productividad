@@ -107,12 +107,6 @@
             gap: 20px;
         }
 
-        .form-row-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
-        }
-
         .submit-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -286,27 +280,6 @@
             animation: slideDown 0.3s ease;
         }
 
-        .reminder-option {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            padding: 8px;
-            background: white;
-            border-radius: 8px;
-        }
-
-        .custom-reminder-fields {
-            display: none;
-            margin-top: 10px;
-            grid-template-columns: 1fr auto;
-            gap: 10px;
-        }
-
-        .custom-reminder-fields.show {
-            display: grid;
-        }
-
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -315,26 +288,6 @@
         @media (max-width: 768px) {
             .form-row, .form-row-3 {
                 grid-template-columns: 1fr;
-            }
-            
-            .container {
-                margin: 10px;
-            }
-            
-            .form-container {
-                padding: 20px;
-            }
-            
-            .header {
-                padding: 20px;
-            }
-            
-            .header h1 {
-                font-size: 2em;
-            }
-
-            .multi-select-container {
-                grid-template-columns: 1fr 1fr;
             }
         }
     </style>
@@ -347,42 +300,17 @@
         </div>
         
         <div class="form-container">
-            <div class="quick-actions">
-                <div class="quick-btn" onclick="fillQuickTask('trabajo')">
-                    <span class="emoji">👨‍🏫</span>
-                    Trabajo
-                </div>
-                <div class="quick-btn" onclick="fillQuickTask('estudio')">
-                    <span class="emoji">📚</span>
-                    Estudio
-                </div>
-                <div class="quick-btn" onclick="fillQuickTask('casa')">
-                    <span class="emoji">🏠</span>
-                    Casa
-                </div>
-                <div class="quick-btn" onclick="fillQuickTask('personal')">
-                    <span class="emoji">😊</span>
-                    Personal
-                </div>
-            </div>
-            
             <form id="taskForm">
-                <!-- SECCIÓN 1: INFORMACIÓN BÁSICA -->
                 <div class="form-section">
-                    <div class="section-title">
-                        📝 Información Básica
-                    </div>
-                    
+                    <div class="section-title">📝 Información Básica</div>
                     <div class="form-group">
                         <label for="titulo">¿Qué necesitas hacer?</label>
                         <input type="text" id="titulo" name="titulo" placeholder="Ej: Añadir observaciones a alumnos en Yedra" required>
                     </div>
-                    
                     <div class="form-group">
                         <label for="descripcion">Descripción detallada (opcional)</label>
                         <textarea id="descripcion" name="descripcion" placeholder="Añade más detalles sobre la tarea..."></textarea>
                     </div>
-
                     <div class="form-row">
                         <div class="form-group">
                             <label for="estado">📊 Estado actual</label>
@@ -392,7 +320,6 @@
                                 <option value="Listo">🟢 Listo</option>
                             </select>
                         </div>
-                        
                         <div class="form-group">
                             <label for="prioridad">⚡ Prioridad</label>
                             <select id="prioridad" name="prioridad">
@@ -404,151 +331,52 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN 2: CATEGORIZACIÓN -->
                 <div class="form-section">
-                    <div class="section-title">
-                        🏷️ Categorización y Proyecto
-                    </div>
-                    
+                    <div class="section-title">🏷️ Categorización y Proyecto</div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="area">🏷️ Area</label>
                             <select id="area" name="area">
-                                <option value="">Seleccionar área...</option>
-                                <option value="Profesional">💼 Profesional</option>
-                                <option value="Académico">🎓 Académico</option>
-                                <option value="Personal">😊 Personal</option>
-                                <option value="Formación">📖 Formación</option>
-                                <option value="Evaluación">📊 Evaluación</option>
-                                <option value="Huerta">🌱 Huerta</option>
-                                <option value="Taller">🔧 Taller</option>
-                                <option value="Bungalow">🏡 Bungalow</option>
-                                <option value="Hogar">🏠 Hogar</option>
-                                <option value="Administrativo">📋 Administrativo</option>
+                                 <option value="">Seleccionar área...</option>
+                                 <option value="Profesional">💼 Profesional</option>
+                                 <option value="Académico">🎓 Académico</option>
+                                 <option value="Personal">😊 Personal</option>
+                                 <option value="Formación">📖 Formación</option>
+                                 <option value="Evaluación">📊 Evaluación</option>
+                                 <option value="Huerta">🌱 Huerta</option>
+                                 <option value="Taller">🔧 Taller</option>
+                                 <option value="Bungalow">🏡 Bungalow</option>
+                                 <option value="Hogar">🏠 Hogar</option>
+                                 <option value="Administrativo">📋 Administrativo</option>
                             </select>
                         </div>
-                        
                         <div class="form-group">
                             <label for="proyecto_id">Proyecto</label>
-                            <select id="proyecto_id" name="proyecto_id" class="form-control">
+                            <select id="proyecto_id" name="proyecto_id">
                                 <option value="">Cargando proyectos...</option>
                             </select>
                             <div class="help-text">Asocia esta tarea a un proyecto activo en Notion.</div>
-                        </div>>
-                    </div>
-
-                    <div class="form-group">
-                        <label>🔖 Tipo de tarea (puedes seleccionar varios)</label>
-                        <div class="multi-select-container">
-                            <label class="multi-select-item">
-                                <input type="checkbox" name="tipo_tarea" value="Personal">
-                                <span>😊 Personal</span>
-                            </label>
-                            <label class="multi-select-item">
-                                <input type="checkbox" name="tipo_tarea" value="Trabajo">
-                                <span>👨‍🏫 Trabajo</span>
-                            </label>
-                            <label class="multi-select-item">
-                                <input type="checkbox" name="tipo_tarea" value="Social">
-                                <span>👥 Social</span>
-                            </label>
-                            <label class="multi-select-item">
-                                <input type="checkbox" name="tipo_tarea" value="Salud">
-                                <span>💪 Salud</span>
-                            </label>
-                            <label class="multi-select-item">
-                                <input type="checkbox" name="tipo_tarea" value="Hábitos">
-                                <span>🔄 Hábitos</span>
-                            </label>
-                            <label class="multi-select-item">
-                                <input type="checkbox" name="tipo_tarea" value="Viaje">
-                                <span>✈️ Viaje</span>
-                            </label>
-                            <label class="multi-select-item">
-                                <input type="checkbox" name="tipo_tarea" value="Casa">
-                                <span>🏠 Casa</span>
-                            </label>
-                            <label class="multi-select-item">
-                                <input type="checkbox" name="tipo_tarea" value="Furgoneta">
-                                <span>🚐 Furgoneta</span>
-                            </label>
-                            <label class="multi-select-item">
-                                <input type="checkbox" name="tipo_tarea" value="Formacion">
-                                <span>📖 Formación</span>
-                            </label>
-                            <label class="multi-select-item">
-                                <input type="checkbox" name="tipo_tarea" value="Estudio">
-                                <span>📚 Estudio</span>
-                            </label>
                         </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="nivel_esfuerzo">💪 Nivel de esfuerzo</label>
-                        <select id="nivel_esfuerzo" name="nivel_esfuerzo">
-                            <option value="">Seleccionar esfuerzo...</option>
-                            <option value="Pequeño">🟢 Pequeño (5-15 min)</option>
-                            <option value="Medio">🟡 Medio (30-60 min)</option>
-                            <option value="Grande">🔴 Grande (2+ horas)</option>
-                        </select>
-                        <div class="help-text">Ayuda a planificar mejor tu tiempo</div>
                     </div>
                 </div>
 
-                <!-- SECCIÓN 3: FECHAS Y CALENDAR -->
                 <div class="form-section">
-                    <div class="section-title">
-                        📅 Fechas y Google Calendar
-                    </div>
-                    
-                    <div class="form-group">
+                     <div class="section-title">📅 Fechas y Google Calendar</div>
+                     <div class="form-group">
                         <label for="fecha_limite">⏰ Fecha límite (Plazo)</label>
                         <div class="datetime-group">
                             <input type="date" id="fecha_limite" name="fecha_limite">
                             <input type="time" id="hora_limite" name="hora_limite" class="time-input">
                         </div>
-                        <div class="help-text">Fecha tope para completar la tarea</div>
-                    </div>
-                    
-                    <div class="calendar-section">
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                            <input type="checkbox" id="add_to_calendar" name="add_to_calendar" value="true" style="width: auto; transform: scale(1.2);" onchange="toggleCalendarOptions()">
+                     </div>
+                     <div class="calendar-section">
+                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                            <input type="checkbox" id="add_to_calendar" name="add_to_calendar" value="true" style="width: auto; transform: scale(1.2);">
                             <label for="add_to_calendar" style="margin: 0; font-weight: 600; color: #1976d2;">
                                 📅 Añadir evento a Google Calendar
                             </label>
-                        </div>
-                        
-                        <div id="calendar_options" class="reminder-options">
-                            <label style="font-size: 15px; color: #1976d2; margin-bottom: 10px; display: block; font-weight: 600;">
-                                🔔 Recordatorios (elige los que quieras)
-                            </label>
-                            
-                            <div class="reminder-option">
-                                <input type="checkbox" id="recordatorio_2h" name="recordatorio_2h" style="width: auto;">
-                                <label for="recordatorio_2h" style="margin: 0; font-size: 14px; color: #333;">
-                                    ⏰ Recordatorio 2 horas antes
-                                </label>
-                            </div>
-                            
-                            <div class="reminder-option">
-                                <input type="checkbox" id="recordatorio_custom" name="recordatorio_custom" style="width: auto;" onchange="toggleCustomReminder()">
-                                <label for="recordatorio_custom" style="margin: 0; font-size: 14px; color: #333;">
-                                    📅 Recordatorio personalizado
-                                </label>
-                            </div>
-                            
-                            <div id="custom_reminder_fields" class="custom-reminder-fields">
-                                <input type="date" id="recordatorio_fecha" name="recordatorio_fecha" style="font-size: 14px; padding: 8px;">
-                                <input type="time" id="recordatorio_hora" name="recordatorio_hora" style="font-size: 14px; padding: 8px; width: 120px;">
-                            </div>
-                            
-                            <div style="font-size: 13px; color: #1976d2; margin-top: 10px;">
-                                ✅ Evento creado automáticamente en tu calendario<br>
-                                ✅ Solo los recordatorios que selecciones<br>
-                                ✅ Sincronizado automáticamente con Notion
-                            </div>
-                        </div>
-                    </div>
+                         </div>
+                     </div>
                 </div>
                 
                 <button type="submit" class="submit-btn" id="submitBtn">
@@ -559,417 +387,127 @@
                 </button>
             </form>
             
-            <div id="successMessage" class="success-message">
-                ✅ ¡Tarea creada exitosamente!
-            </div>
-            
-            <div id="errorMessage" class="error-message">
-                ❌ Error al crear la tarea. Por favor, inténtalo de nuevo.
-            </div>
+            <div id="successMessage" class="success-message"></div>
+            <div id="errorMessage" class="error-message"></div>
         </div>
     </div>
 
     <script>
-        // URL del webhook
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxdSL2hrdAO8AnnRAdrZhgizjO9keNTMpPjNXJ8AoWAEj0z0fB_qwxaC-MAy24PLCo1-Q/exec';
+        // ========================================
+        // CONFIGURACIÓN
+        // ========================================
+        
+        // ¡¡¡IMPORTANTE!!! Reemplaza esta URL con la NUEVA URL de tu script de Google
+        // que obtuviste después de la última implementación.
+        const WEBHOOK_URL = 'PON_AQUI_LA_NUEVA_URL_DE_TU_SCRIPT';
         
         // ========================================
         // FUNCIONES PRINCIPALES
         // ========================================
-        
-        // Toggle opciones de Calendar
-        function toggleCalendarOptions() {
-            console.log('Toggle Calendar Options');
-            const checkbox = document.getElementById('add_to_calendar');
-            const options = document.getElementById('calendar_options');
-            
-            if (checkbox && checkbox.checked) {
-                if (options) {
-                    options.classList.add('show');
-                }
-            } else {
-                if (options) {
-                    options.classList.remove('show');
-                }
-                // Reset checkboxes
-                const recordatorio2h = document.getElementById('recordatorio_2h');
-                const recordatorioCustom = document.getElementById('recordatorio_custom');
-                if (recordatorio2h) recordatorio2h.checked = false;
-                if (recordatorioCustom) recordatorioCustom.checked = false;
-                toggleCustomReminder();
-            }
-        }
-        // --- Pega esta nueva función dentro de tu etiqueta <script> ---
-async function loadProjects() {
-    const selectElement = document.getElementById('proyecto_id');
-    if (!selectElement) return;
 
-    try {
-        // Construimos la URL para pedir los proyectos
-        const projectsUrl = `${WEBHOOK_URL}?action=getProjects`;
+        async function loadProjects() {
+            const selectElement = document.getElementById('proyecto_id');
+            if (!selectElement) return;
 
-        const response = await fetch(WEBHOOK_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'text/plain;charset=utf-8', // Usamos text/plain para evitar un "preflight request"
-    },
-    body: JSON.stringify({ action: 'getProjects' })
-});
-        if (!response.ok) {
-            throw new Error(`Error al cargar proyectos: ${response.statusText}`);
-        }
-
-        const projects = await response.json();
-
-        selectElement.innerHTML = '<option value="">Seleccionar un proyecto...</option>';
-
-        projects.forEach(project => {
-            const option = document.createElement('option');
-            option.value = project.id;
-            option.textContent = project.name;
-            selectElement.appendChild(option);
-        });
-
-    } catch (error) {
-        console.error(error);
-        selectElement.innerHTML = '<option value="">No se pudieron cargar los proyectos</option>';
-    }
-}
-
-// --- Y modifica el evento 'DOMContentLoaded' para que llame a la nueva función ---
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM cargado, inicializando...');
-
-  setDefaultDateTime();
-  setupMultiSelectHandlers();
-
-  const taskForm = document.getElementById('taskForm');
-  if (taskForm) {
-    taskForm.addEventListener('submit', handleFormSubmit);
-  }
-
-  // AÑADE ESTA LÍNEA PARA CARGAR LOS PROYECTOS
-  loadProjects();
-
-  console.log('Inicialización completa');
-});
-
-// --- FINALMENTE, asegúrate que la función handleFormSubmit usa 'proyecto_id' ---
-async function handleFormSubmit(e) {
-    e.preventDefault();
-    console.log('Formulario enviado vía POST');
-
-    const submitBtn = document.getElementById('submitBtn');
-    const btnText = submitBtn.querySelector('.btn-text');
-    const loading = submitBtn.querySelector('.loading');
-    const successMsg = document.getElementById('successMessage');
-    const errorMsg = document.getElementById('errorMessage');
-
-    successMsg.style.display = 'none';
-    errorMsg.style.display = 'none';
-
-    submitBtn.disabled = true;
-    if (btnText) btnText.style.opacity = '0';
-    if (loading) loading.style.display = 'block';
-
-    try {
-        // Construimos el objeto con todos los datos del formulario
-        let fechaLimite = null;
-        const fechaLim = document.getElementById('fecha_limite')?.value;
-        const horaLim = document.getElementById('hora_limite')?.value;
-        if (fechaLim) {
-            fechaLimite = horaLim ? `${fechaLim} ${horaLim}` : fechaLim;
-        }
-        const tiposTarea = Array.from(document.querySelectorAll('input[name="tipo_tarea"]:checked')).map(cb => cb.value);
-
-        const formData = {
-            titulo: document.getElementById('titulo')?.value,
-            descripcion: document.getElementById('descripcion')?.value,
-            estado: document.getElementById('estado')?.value,
-            prioridad: document.getElementById('prioridad')?.value,
-            area: document.getElementById('area')?.value,
-            proyecto_id: document.getElementById('proyecto_id')?.value,
-            tipo_tarea: tiposTarea.join(','),
-            nivel_esfuerzo: document.getElementById('nivel_esfuerzo')?.value,
-            fecha_limite: fechaLimite,
-            plazo: fechaLimite,
-            add_to_calendar: document.getElementById('add_to_calendar')?.checked || false,
-            recordatorio_2h: document.getElementById('recordatorio_2h')?.checked || false,
-            recordatorio_fecha: document.getElementById('recordatorio_fecha')?.value,
-            recordatorio_hora: document.getElementById('recordatorio_hora')?.value
-        };
-
-        // Enviamos los datos usando fetch con el método POST
-        const response = await fetch(WEBHOOK_URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'text/plain;charset=utf-8',
-            },
-            body: JSON.stringify(formData)
-        });
-
-        const result = await response.json();
-
-        if (!result.success) {
-            throw new Error(result.error);
-        }
-
-        // Mostramos un mensaje de éxito
-        successMsg.innerHTML = `✅ <strong>¡Tarea creada con éxito!</strong><br>
-            <small>
-                <a href="${result.notionUrl}" target="_blank">Ver en Notion</a>
-                ${result.calendarUrl ? `| <a href="${result.calendarUrl}" target="_blank">Ver en Calendar</a>` : ''}
-            </small>`;
-        successMsg.style.display = 'block';
-        document.getElementById('taskForm').reset();
-        // Resetea los estilos de los botones y menús... (código que ya tenías)
-
-    } catch (error) {
-        console.error('Error:', error);
-        errorMsg.innerHTML = `❌ <strong>Error:</strong> ${error.message}`;
-        errorMsg.style.display = 'block';
-    } finally {
-        // Restablecemos el botón
-        submitBtn.disabled = false;
-        if (btnText) btnText.style.opacity = '1';
-        if (loading) loading.style.display = 'none';
-    }
-}
-        
-        // Acciones rápidas
-        function fillQuickTask(type) {
-            console.log('Fill Quick Task:', type);
-            
-            const proyectoField = document.getElementById('proyecto_info');
-            const areaField = document.getElementById('area');
-            const titleField = document.getElementById('titulo');
-            const calendarCheckbox = document.getElementById('add_to_calendar');
-            const typeCheckboxes = document.querySelectorAll('input[name="tipo_tarea"]');
-            
-            // Limpiar selecciones anteriores
-            typeCheckboxes.forEach(cb => {
-                cb.checked = false;
-                cb.closest('.multi-select-item').classList.remove('selected');
-            });
-            
-            switch(type) {
-                case 'trabajo':
-                    if (proyectoField) proyectoField.value = 'Curso 24/25';
-                    if (areaField) areaField.value = 'Profesional';
-                    if (titleField) titleField.placeholder = 'Ej: Preparar examen de física, corregir trabajos...';
-                    if (calendarCheckbox) {
-                        calendarCheckbox.checked = true;
-                        toggleCalendarOptions();
-                    }
-                    const trabajoCheckbox = document.querySelector('input[value="Trabajo"]');
-                    if (trabajoCheckbox) {
-                        trabajoCheckbox.checked = true;
-                        trabajoCheckbox.closest('.multi-select-item').classList.add('selected');
-                    }
-                    break;
-                case 'estudio':
-                    if (proyectoField) proyectoField.value = 'Oposiciones 2027';
-                    if (areaField) areaField.value = 'Académico';
-                    if (titleField) titleField.placeholder = 'Ej: Estudiar tema 15, hacer simulacro...';
-                    if (calendarCheckbox) {
-                        calendarCheckbox.checked = true;
-                        toggleCalendarOptions();
-                    }
-                    const estudioCheckbox = document.querySelector('input[value="Estudio"]');
-                    if (estudioCheckbox) {
-                        estudioCheckbox.checked = true;
-                        estudioCheckbox.closest('.multi-select-item').classList.add('selected');
-                    }
-                    break;
-                case 'casa':
-                    if (proyectoField) proyectoField.value = 'Huerta';
-                    if (areaField) areaField.value = 'Hogar';
-                    if (titleField) titleField.placeholder = 'Ej: Arreglar la huerta, limpiar el taller...';
-                    const casaCheckbox = document.querySelector('input[value="Casa"]');
-                    if (casaCheckbox) {
-                        casaCheckbox.checked = true;
-                        casaCheckbox.closest('.multi-select-item').classList.add('selected');
-                    }
-                    break;
-                case 'personal':
-                    if (proyectoField) proyectoField.value = 'Cambio Físico';
-                    if (areaField) areaField.value = 'Personal';
-                    if (titleField) titleField.placeholder = 'Ej: Hacer ejercicio, quedar con amigos...';
-                    const personalCheckbox = document.querySelector('input[value="Personal"]');
-                    if (personalCheckbox) {
-                        personalCheckbox.checked = true;
-                        personalCheckbox.closest('.multi-select-item').classList.add('selected');
-                    }
-                    break;
-            }
-            
-            if (titleField) titleField.focus();
-        }
-        
-        // Configurar fechas por defecto
-        function setDefaultDateTime() {
-            const today = new Date();
-            const threeDaysLater = new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000);
-            
-            const fechaLimiteField = document.getElementById('fecha_limite');
-            const horaLimiteField = document.getElementById('hora_limite');
-            
-            if (fechaLimiteField) fechaLimiteField.valueAsDate = threeDaysLater;
-            if (horaLimiteField) horaLimiteField.value = '18:00';
-        }
-        
-        // Configurar multi-select handlers
-        function setupMultiSelectHandlers() {
-            document.querySelectorAll('.multi-select-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    if (e.target.type !== 'checkbox') {
-                        const checkbox = this.querySelector('input[type="checkbox"]');
-                        if (checkbox) {
-                            checkbox.checked = !checkbox.checked;
-                        }
-                    }
-                    const checkbox = this.querySelector('input[type="checkbox"]');
-                    if (checkbox) {
-                        this.classList.toggle('selected', checkbox.checked);
-                    }
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'text/plain;charset=utf-8',
+                    },
+                    body: JSON.stringify({ action: 'getProjects' })
                 });
-            });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const projects = await response.json();
+                
+                selectElement.innerHTML = '<option value="">Seleccionar un proyecto...</option>';
+                
+                projects.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.name;
+                    selectElement.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error("Error al cargar proyectos:", error);
+                selectElement.innerHTML = '<option value="">No se pudieron cargar los proyectos</option>';
+            }
         }
-        
-        // Manejar envío del formulario
+
         async function handleFormSubmit(e) {
             e.preventDefault();
-            console.log('📤 Formulario enviado');
-            
+            console.log('Formulario enviado vía POST');
+
             const submitBtn = document.getElementById('submitBtn');
-            const btnText = submitBtn ? submitBtn.querySelector('.btn-text') : null;
-            const loading = submitBtn ? submitBtn.querySelector('.loading') : null;
+            const btnText = submitBtn.querySelector('.btn-text');
+            const loading = submitBtn.querySelector('.loading');
             const successMsg = document.getElementById('successMessage');
             const errorMsg = document.getElementById('errorMessage');
+
+            if(successMsg) successMsg.style.display = 'none';
+            if(errorMsg) errorMsg.style.display = 'none';
             
-            // Reset mensajes
-            if (successMsg) successMsg.style.display = 'none';
-            if (errorMsg) errorMsg.style.display = 'none';
-            
-            // UI de carga
-            if (submitBtn) submitBtn.disabled = true;
-            if (btnText) btnText.style.opacity = '0';
-            if (loading) loading.style.display = 'block';
-            
+            if(submitBtn) submitBtn.disabled = true;
+            if(btnText) btnText.style.opacity = '0';
+            if(loading) loading.style.display = 'block';
+
             try {
-                // Construir fecha límite completa
                 let fechaLimite = null;
                 const fechaLim = document.getElementById('fecha_limite')?.value;
                 const horaLim = document.getElementById('hora_limite')?.value;
                 if (fechaLim) {
                     fechaLimite = horaLim ? `${fechaLim} ${horaLim}` : fechaLim;
                 }
-                
-                // Obtener tipos de tarea seleccionados
-                const tiposTarea = Array.from(document.querySelectorAll('input[name="tipo_tarea"]:checked'))
-                    .map(cb => cb.value);
-                
-                const formData = {
-                    titulo: document.getElementById('titulo')?.value || '',
-                    descripcion: document.getElementById('descripcion')?.value || '',
-                    estado: document.getElementById('estado')?.value || '',
-                    prioridad: document.getElementById('prioridad')?.value || '',
-                    area: document.getElementById('area')?.value || '',
-                    tipo_tarea: tiposTarea.join(','),
-                    nivel_esfuerzo: document.getElementById('nivel_esfuerzo')?.value || '',
+
+                const formDataObject = {
+                    action: 'createTask', // Acción para que el script sepa qué hacer
+                    titulo: document.getElementById('titulo')?.value,
+                    descripcion: document.getElementById('descripcion')?.value,
+                    estado: document.getElementById('estado')?.value,
+                    prioridad: document.getElementById('prioridad')?.value,
+                    area: document.getElementById('area')?.value,
+                    proyecto_id: document.getElementById('proyecto_id')?.value,
                     fecha_limite: fechaLimite,
                     plazo: fechaLimite,
-                    add_to_calendar: document.getElementById('add_to_calendar')?.checked || false
+                    add_to_calendar: document.getElementById('add_to_calendar')?.checked || false,
                 };
-                
-                // Añadir campos de recordatorio si Calendar está activado
-                if (formData.add_to_calendar) {
-                    const recordatorio2h = document.getElementById('recordatorio_2h');
-                    const recordatorioCustom = document.getElementById('recordatorio_custom');
-                    
-                    if (recordatorio2h?.checked) {
-                        formData.recordatorio_2h = true;
-                    }
-                    
-                    if (recordatorioCustom?.checked) {
-                        const fechaRecordatorio = document.getElementById('recordatorio_fecha')?.value;
-                        const horaRecordatorio = document.getElementById('recordatorio_hora')?.value;
-                        
-                        if (!fechaRecordatorio || !horaRecordatorio) {
-                            throw new Error('Si eliges recordatorio personalizado, debes completar fecha y hora');
-                        }
-                        
-                        formData.recordatorio_fecha = fechaRecordatorio;
-                        formData.recordatorio_hora = horaRecordatorio;
-                    }
-                }
-                
-                console.log('📤 Enviando datos:', formData);
-                
-                // Crear formulario oculto para envío
-                const tempForm = document.createElement('form');
-                tempForm.method = 'POST';
-                tempForm.action = WEBHOOK_URL;
-                tempForm.target = '_blank';
-                tempForm.style.display = 'none';
-                
-                Object.keys(formData).forEach(key => {
-                    if (formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        input.value = formData[key];
-                        tempForm.appendChild(input);
-                    }
+
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'text/plain;charset=utf-8',
+                    },
+                    body: JSON.stringify(formDataObject)
                 });
-                
-                document.body.appendChild(tempForm);
-                tempForm.submit();
-                document.body.removeChild(tempForm);
-                
-                // Mostrar mensaje de éxito
-                if (successMsg) {
-                    successMsg.innerHTML = `
-                        ✅ <strong>Tarea enviada correctamente!</strong><br>
-                        <small>Se abrió una nueva pestaña para confirmar. ${formData.add_to_calendar ? 'Evento incluido en Google Calendar.' : 'Solo guardada en Notion.'}</small>
-                    `;
-                    successMsg.style.display = 'block';
-                    successMsg.scrollIntoView({ behavior: 'smooth' });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.error || 'Ocurrió un error desconocido.');
                 }
-                
-                // Reset form
-                const taskForm = document.getElementById('taskForm');
-                if (taskForm) taskForm.reset();
-                
-                document.querySelectorAll('.multi-select-item').forEach(item => {
-                    item.classList.remove('selected');
-                });
-                
-                // Reset campos de Calendar
-                const addToCalendarCheckbox = document.getElementById('add_to_calendar');
-                const recordatorio2hCheckbox = document.getElementById('recordatorio_2h');
-                const recordatorioCustomCheckbox = document.getElementById('recordatorio_custom');
-                
-                if (addToCalendarCheckbox) addToCalendarCheckbox.checked = false;
-                if (recordatorio2hCheckbox) recordatorio2hCheckbox.checked = false;
-                if (recordatorioCustomCheckbox) recordatorioCustomCheckbox.checked = false;
-                
-                toggleCalendarOptions();
-                toggleCustomReminder();
-                setDefaultDateTime();
-                
+
+                successMsg.innerHTML = `✅ <strong>¡Tarea creada con éxito!</strong><br>
+                    <small>
+                        <a href="${result.notionUrl}" target="_blank" style="color: #155724;">Ver en Notion</a>
+                        ${result.calendarUrl ? `| <a href="${result.calendarUrl}" target="_blank" style="color: #155724;">Ver en Calendar</a>` : ''}
+                    </small>`;
+                successMsg.style.display = 'block';
+                document.getElementById('taskForm').reset();
+                loadProjects(); // Recargar proyectos por si acaso
+
             } catch (error) {
-                console.error('❌ Error:', error);
-                
-                if (errorMsg) {
-                    errorMsg.innerHTML = `❌ <strong>Error:</strong> ${error.message}`;
-                    errorMsg.style.display = 'block';
-                    errorMsg.scrollIntoView({ behavior: 'smooth' });
-                }
+                console.error('Error en handleFormSubmit:', error);
+                errorMsg.innerHTML = `❌ <strong>Error:</strong> ${error.message}`;
+                errorMsg.style.display = 'block';
             } finally {
-                if (submitBtn) submitBtn.disabled = false;
-                if (btnText) btnText.style.opacity = '1';
-                if (loading) loading.style.display = 'none';
+                if(submitBtn) submitBtn.disabled = false;
+                if(btnText) btnText.style.opacity = '1';
+                if(loading) loading.style.display = 'none';
             }
         }
         
@@ -980,19 +518,16 @@ async function handleFormSubmit(e) {
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM cargado, inicializando...');
             
-            // Configurar fechas por defecto
-            setDefaultDateTime();
-            
-            // Configurar multi-select handlers
-            setupMultiSelectHandlers();
-            
             // Configurar formulario
             const taskForm = document.getElementById('taskForm');
             if (taskForm) {
                 taskForm.addEventListener('submit', handleFormSubmit);
             }
             
-            console.log('Inicialización completa');
+            // Cargar los proyectos de Notion
+            loadProjects();
+
+            console.log('Inicialización completa.');
         });
     </script>
 </body>
