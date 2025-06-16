@@ -5,25 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor de Tareas - Mi Asistente de Productividad</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; background: rgba(255, 255, 255, 0.95); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-top-left-radius: 20px; border-top-right-radius: 20px; }
-        .form-container { padding: 40px; }
-        .form-section { background: #f8f9fa; border-radius: 15px; padding: 25px; margin-bottom: 25px; border-left: 4px solid #667eea; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .container { max-width: 700px; width: 100%; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; text-align: center; }
+        .header h1 { margin: 0; font-size: 1.8em; font-weight: 600; }
+        .form-container { padding: 30px; }
+        .form-section { margin-bottom: 20px; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
-        .submit-btn { background: #667eea; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 16px; cursor: pointer; }
-        .submit-btn:disabled { background: #ccc; }
-        .error-message, .success-message { padding: 15px; border-radius: 8px; margin-top: 20px; display: none; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1em; }
+        .submit-btn { background: #667eea; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 1.1em; cursor: pointer; transition: background-color 0.2s; }
+        .submit-btn:hover { background: #5a6bcf; }
+        .submit-btn:disabled { background: #b0b8d1; cursor: not-allowed; }
+        .message { padding: 15px; border-radius: 8px; margin-top: 20px; display: none; }
         .error-message { background: #f8d7da; color: #721c24; }
         .success-message { background: #d4edda; color: #155724; }
+        @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎯 Mi Asistente de Productividad</h1>
+            <h1>🎯 Asistente de Productividad</h1>
         </div>
         <div class="form-container">
             <form id="taskForm">
@@ -49,24 +52,24 @@
                         </div>
                     </div>
                      <div class="form-group">
-                        <label for="fecha_limite">Fecha límite</label>
+                        <label for="fecha_limite">Fecha y Hora Límite</label>
                         <input type="datetime-local" id="fecha_limite">
                     </div>
                     <div>
                         <input type="checkbox" id="add_to_calendar">
-                        <label for="add_to_calendar">Añadir a Google Calendar</label>
+                        <label for="add_to_calendar" style="display: inline; font-weight: normal;">Añadir a Google Calendar</label>
                     </div>
                 </div>
                 <button type="submit" class="submit-btn" id="submitBtn">Crear Tarea</button>
             </form>
-            <div id="successMessage" class="success-message"></div>
-            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="message success-message"></div>
+            <div id="errorMessage" class="message error-message"></div>
         </div>
     </div>
 
     <script>
         // ¡¡¡PASO 3!!! Pega aquí la NUEVA URL de tu script de Google
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxdSL2hrdAO8AnnRAdrZhgizjO9keNTMpPjNXJ8AoWAEj0z0fB_qwxaC-MAy24PLCo1-Q/exec';
+        const WEBHOOK_URL = 'PEGA_AQUI_LA_NUEVA_URL_DE_LA_IMPLEMENTACION';
 
         document.addEventListener('DOMContentLoaded', function() {
             loadProjects();
@@ -102,6 +105,7 @@
             const successMsg = document.getElementById('successMessage');
             const errorMsg = document.getElementById('errorMessage');
             submitBtn.disabled = true;
+            submitBtn.textContent = 'Creando...';
             successMsg.style.display = 'none';
             errorMsg.style.display = 'none';
 
@@ -123,15 +127,19 @@
                 const result = await response.json();
                 if (!result.success) throw new Error(result.error);
                 
-                successMsg.textContent = '¡Tarea creada con éxito!';
+                successMsg.innerHTML = `¡Tarea creada con éxito! <a href="${result.notionUrl}" target="_blank">Ver en Notion</a>`;
                 successMsg.style.display = 'block';
                 document.getElementById('taskForm').reset();
+                selectElement.innerHTML = '<option value="">Cargando proyectos...</option>';
+                loadProjects();
+
 
             } catch (error) {
                 errorMsg.textContent = `Error: ${error.message}`;
                 errorMsg.style.display = 'block';
             } finally {
                 submitBtn.disabled = false;
+                submitBtn.textContent = 'Crear Tarea';
             }
         }
     </script>
