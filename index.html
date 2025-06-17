@@ -5,15 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Asistente de Productividad</title>
     <style>
+        /* Tu CSS actual está bien, no requiere cambios urgentes. Se mantiene igual. */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        
         .container {
             max-width: 900px;
             margin: 0 auto;
@@ -22,29 +21,15 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
         }
-        
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
-        
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 300;
-        }
-        
-        .header p {
-            opacity: 0.9;
-            font-size: 1.1em;
-        }
-        
-        .form-container {
-            padding: 40px;
-        }
-        
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; font-weight: 300; }
+        .header p { opacity: 0.9; font-size: 1.1em; }
+        .form-container { padding: 40px; }
         .form-section {
             background: #f8f9fa;
             border-radius: 15px;
@@ -52,25 +37,14 @@
             margin-bottom: 25px;
             border-left: 4px solid #667eea;
         }
-        
         .section-title {
             font-size: 1.3em;
             font-weight: 600;
             color: #333;
             margin-bottom: 20px;
         }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
-        
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
         input, select, textarea {
             width: 100%;
             padding: 12px 15px;
@@ -79,553 +53,318 @@
             font-size: 15px;
             transition: border-color 0.3s;
         }
-        
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
         }
-        
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
+        textarea { min-height: 100px; resize: vertical; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .submit-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 18px 40px;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
+            color: white; border: none; padding: 18px 40px;
+            border-radius: 50px; font-size: 18px; font-weight: 600;
+            cursor: pointer; width: 100%; margin-top: 10px;
             transition: transform 0.3s, box-shadow 0.3s;
         }
-        
         .submit-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-        
-        .submit-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .message {
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            display: none;
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .datetime-group {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 10px;
-        }
-        
-        .calendar-section {
-            background: #e3f2fd;
-            padding: 20px;
-            border-radius: 15px;
-            border-left: 4px solid #2196F3;
-            margin-top: 20px;
-        }
-        
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 10px;
-        }
-        
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .checkbox-item input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-        }
-        
-        .checkbox-item label {
-            margin: 0;
-            font-weight: normal;
-        }
-        
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-left: 10px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        .reminder-custom-fields {
-            margin-top: 15px;
-            padding: 15px;
-            background: #fff;
-            border-radius: 10px;
-            border: 2px solid #e1e5e9;
-        }
-        
-        .info-message {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-        
-        /* Responsive */
+        .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .message { padding: 15px; border-radius: 10px; margin-top: 20px; display: none; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .error-message { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success-message { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .datetime-group { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+        .calendar-section { background: #e3f2fd; padding: 20px; border-radius: 15px; border-left: 4px solid #2196F3; margin-top: 20px; }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 10px; }
+        .checkbox-item { display: flex; align-items: center; gap: 5px; }
+        .checkbox-item input[type="checkbox"] { width: auto; margin: 0; }
+        .checkbox-item label { margin: 0; font-weight: normal; }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin-left: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .hidden { display: none; }
+        .reminder-custom-fields { margin-top: 15px; padding: 15px; background: #fff; border-radius: 10px; border: 2px solid #e1e5e9; }
+        .info-message { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; }
         @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .form-container {
-                padding: 20px;
-            }
-            
-            .header h1 {
-                font-size: 2em;
-            }
+            .form-row { grid-template-columns: 1fr; }
+            .form-container { padding: 20px; }
+            .header h1 { font-size: 2em; }
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <div class="header">
+            <h1>Mi Asistente de Productividad</h1>
+            <p>Gestiona tus tareas de forma eficiente</p>
+        </div>
+        <div class="form-container">
+            <form id="taskForm">
+                <div class="form-section">
+                    <div class="section-title">Información Básica</div>
+                    <div class="form-group">
+                        <label for="titulo">¿Qué necesitas hacer? *</label>
+                        <input type="text" id="titulo" name="titulo" placeholder="Ej: Preparar la clase de Termodinámica" required maxlength="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcion">Descripción detallada</label>
+                        <textarea id="descripcion" name="descripcion" placeholder="Añade más detalles, como conceptos clave o enlaces a recursos..." maxlength="500"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="estado">Estado actual</label>
+                            <select id="estado" name="estado">
+                                <option value="Sin empezar">Sin empezar</option>
+                                <option value="En progreso">En progreso</option>
+                                <option value="Listo">Listo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="prioridad">Prioridad</label>
+                            <select id="prioridad" name="prioridad">
+                                <option value="Alta">Alta</option>
+                                <option value="Medio" selected>Media</option>
+                                <option value="Baja">Baja</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
-<div class="container">
-    <div class="header">
-        <h1>📋 Mi Asistente de Productividad</h1>
-        <p>Gestiona tus tareas de forma eficiente</p>
+                <div class="form-section">
+                    <div class="section-title">Categorización y Proyecto</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="area">Área</label>
+                            <select id="area" name="area" onchange="toggleOtherArea()">
+                                <option value="">Seleccionar área...</option>
+                                <option value="Profesional">Profesional</option>
+                                <option value="Académico">Académico</option>
+                                <option value="Personal">Personal</option>
+                                <option value="Formación">Formación (Oposiciones)</option>
+                                <option value="Evaluación">Evaluación</option>
+                                <option value="Hogar">Hogar</option>
+                                <option value="Administrativo">Administrativo</option>
+                                <option value="other">Otra área...</option>
+                            </select>
+                            <input type="text" id="area_other" name="area_other" placeholder="Especifica el área" class="hidden" style="margin-top: 10px;">
+                        </div>
+                        <div class="form-group">
+                            <label for="proyecto_id">Proyecto</label>
+                            <div class="info-message">ℹ️ La selección de proyectos está en desarrollo.</div>
+                            <select id="proyecto_id" name="proyecto_id" disabled>
+                                <option value="unavailable">No disponible temporalmente</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="nivel_esfuerzo">Nivel de esfuerzo</label>
+                        <select id="nivel_esfuerzo" name="nivel_esfuerzo">
+                            <option value="">Seleccionar esfuerzo...</option>
+                            <option value="Pequeño">Pequeño (5-15 min)</option>
+                            <option value="Medio">Medio (30-60 min)</option>
+                            <option value="Grande">Grande (1-2+ horas)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de tarea</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_personal" name="tipo_tarea" value="Personal"><label for="tipo_personal">Personal</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_trabajo" name="tipo_tarea" value="Trabajo"><label for="tipo_trabajo">Trabajo</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_estudio" name="tipo_tarea" value="Estudio"><label for="tipo_estudio">Estudio</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_formacion" name="tipo_tarea" value="Formacion"><label for="tipo_formacion">Formación</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_salud" name="tipo_tarea" value="Salud"><label for="tipo_salud">Salud</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_casa" name="tipo_tarea" value="Casa"><label for="tipo_casa">Casa</label></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">Fechas y Google Calendar</div>
+                    <div class="form-group">
+                        <label for="fecha_limite">Fecha y Hora Límite (Plazo)</label>
+                        <div class="datetime-group">
+                            <input type="date" id="fecha_limite" name="fecha_limite">
+                            <input type="time" id="hora_limite" name="hora_limite">
+                        </div>
+                    </div>
+                    <div class="calendar-section">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="add_to_calendar" name="add_to_calendar" value="true" style="width: auto;">
+                            <label for="add_to_calendar" style="margin: 0; font-weight: 600;">Añadir evento a Google Calendar</label>
+                        </div>
+                        <div id="calendarOptions" class="hidden" style="margin-top: 15px;">
+                            <label style="font-size: 0.9em; color: #666;">Recordatorios:</label>
+                            <div class="checkbox-group" style="margin-top: 5px;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="recordatorio_2h" name="recordatorio_2h">
+                                    <label for="recordatorio_2h">2 horas antes</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="recordatorio_custom" name="recordatorio_custom" onchange="toggleCustomReminder()">
+                                    <label for="recordatorio_custom">Recordatorio personalizado</label>
+                                </div>
+                            </div>
+                            <div id="customReminderFields" class="reminder-custom-fields hidden">
+                                <label>Fecha y hora del recordatorio:</label>
+                                <div class="datetime-group" style="margin-top: 10px;">
+                                    <input type="date" id="recordatorio_fecha" name="recordatorio_fecha">
+                                    <input type="time" id="recordatorio_hora" name="recordatorio_hora">
+                                </div>
+                                <small style="color: #666; display: block; margin-top: 5px;">El recordatorio debe ser anterior a la fecha y hora del evento.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Crear Tarea
+                </button>
+            </form>
+            <div id="messageContainer" style="margin-top: 20px;"></div>
+        </div>
     </div>
-    
-    <div class="form-container">
-        <form id="taskForm">
-            <!-- Información Básica -->
-            <div class="form-section">
-                <div class="section-title">📝 Información Básica</div>
-                
-                <div class="form-group">
-                    <label for="titulo">¿Qué necesitas hacer? *</label>
-                    <input type="text" id="titulo" name="titulo" 
-                           placeholder="Ej: Revisar informes del trimestre" 
-                           required maxlength="100">
-                </div>
-                
-                <div class="form-group">
-                    <label for="descripcion">Descripción detallada</label>
-                    <textarea id="descripcion" name="descripcion" 
-                              placeholder="Añade más detalles sobre la tarea..."
-                              maxlength="500"></textarea>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="estado">🎯 Estado actual</label>
-                        <select id="estado" name="estado">
-                            <option value="Sin empezar">🔴 Sin empezar</option>
-                            <option value="En progreso">🟡 En progreso</option>
-                            <option value="Listo">🟢 Listo</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="prioridad">🔥 Prioridad</label>
-                        <select id="prioridad" name="prioridad">
-                            <option value="Medio">🟡 Media</option>
-                            <option value="Alta">🔴 Alta</option>
-                            <option value="Baja">🟢 Baja</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Categorización y Proyecto -->
-            <div class="form-section">
-                <div class="section-title">📁 Categorización y Proyecto</div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="area">🏷️ Área</label>
-                        <select id="area" name="area" onchange="toggleOtherArea()">
-                            <option value="">Seleccionar área...</option>
-                            <option value="Profesional">💼 Profesional</option>
-                            <option value="Académico">🎓 Académico</option>
-                            <option value="Personal">😊 Personal</option>
-                            <option value="Formación">📚 Formación</option>
-                            <option value="Evaluación">📊 Evaluación</option>
-                            <option value="Huerta">🌱 Huerta</option>
-                            <option value="Taller">🔧 Taller</option>
-                            <option value="Bungalow">🏠 Bungalow</option>
-                            <option value="Hogar">🏡 Hogar</option>
-                            <option value="Administrativo">📋 Administrativo</option>
-                            <option value="other">✏️ Otra área...</option>
-                        </select>
-                        <input type="text" id="area_other" name="area_other" 
-                               placeholder="Especifica el área" 
-                               class="hidden" style="margin-top: 10px;">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="proyecto_id">📂 Proyecto</label>
-                        <div class="info-message">
-                            ⚠️ La selección de proyectos no está disponible temporalmente
-                        </div>
-                        <select id="proyecto_id" name="proyecto_id" disabled>
-                            <option value="unavailable">No disponible en estos momentos</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="nivel_esfuerzo">💪 Nivel de esfuerzo</label>
-                    <select id="nivel_esfuerzo" name="nivel_esfuerzo">
-                        <option value="">Seleccionar esfuerzo...</option>
-                        <option value="Pequeño">🟢 Pequeño (5-15 min)</option>
-                        <option value="Medio">🟡 Medio (30-60 min)</option>
-                        <option value="Grande">🔴 Grande (2+ horas)</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>🏷️ Tipo de tarea</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="tipo_personal" name="tipo_tarea" value="Personal">
-                            <label for="tipo_personal">👤 Personal</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="tipo_trabajo" name="tipo_tarea" value="Trabajo">
-                            <label for="tipo_trabajo">💼 Trabajo</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="tipo_social" name="tipo_tarea" value="Social">
-                            <label for="tipo_social">👥 Social</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="tipo_salud" name="tipo_tarea" value="Salud">
-                            <label for="tipo_salud">❤️ Salud</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="tipo_habitos" name="tipo_tarea" value="Hábitos">
-                            <label for="tipo_habitos">🔄 Hábitos</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="tipo_viaje" name="tipo_tarea" value="Viaje">
-                            <label for="tipo_viaje">✈️ Viaje</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="tipo_casa" name="tipo_tarea" value="Casa">
-                            <label for="tipo_casa">🏠 Casa</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="tipo_furgoneta" name="tipo_tarea" value="Furgoneta">
-                            <label for="tipo_furgoneta">🚐 Furgoneta</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="tipo_formacion" name="tipo_tarea" value="Formacion">
-                            <label for="tipo_formacion">📖 Formación</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="tipo_estudio" name="tipo_tarea" value="Estudio">
-                            <label for="tipo_estudio">📚 Estudio</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Fechas y Google Calendar -->
-            <div class="form-section">
-                <div class="section-title">📅 Fechas y Google Calendar</div>
-                
-                <div class="form-group">
-                    <label for="fecha_limite">⏰ Fecha límite (Plazo)</label>
-                    <div class="datetime-group">
-                        <input type="date" id="fecha_limite" name="fecha_limite">
-                        <input type="time" id="hora_limite" name="hora_limite">
-                    </div>
-                </div>
-                
-                <div class="calendar-section">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <input type="checkbox" id="add_to_calendar" 
-                               name="add_to_calendar" value="true" 
-                               style="width: auto;">
-                        <label for="add_to_calendar" style="margin: 0; font-weight: 600;">
-                            📅 Añadir evento a Google Calendar
-                        </label>
-                    </div>
-                    
-                    <div id="calendarOptions" style="display: none; margin-top: 15px;">
-                        <label style="font-size: 0.9em; color: #666;">🔔 Recordatorios:</label>
-                        <div class="checkbox-group" style="margin-top: 5px;">
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="recordatorio_2h" name="recordatorio_2h">
-                                <label for="recordatorio_2h">2 horas antes</label>
-                            </div>
-                            <div class="checkbox-item">
-                                <input type="checkbox" id="recordatorio_custom" name="recordatorio_custom"
-                                       onchange="toggleCustomReminder()">
-                                <label for="recordatorio_custom">Recordatorio personalizado</label>
-                            </div>
-                        </div>
-                        
-                        <div id="customReminderFields" class="reminder-custom-fields hidden">
-                            <label>📅 Fecha y hora del recordatorio:</label>
-                            <div class="datetime-group" style="margin-top: 10px;">
-                                <input type="date" id="recordatorio_fecha" name="recordatorio_fecha">
-                                <input type="time" id="recordatorio_hora" name="recordatorio_hora">
-                            </div>
-                            <small style="color: #666; display: block; margin-top: 5px;">
-                                El recordatorio debe ser antes de la fecha del evento
-                            </small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <button type="submit" class="submit-btn" id="submitBtn">
-                ✨ Crear Tarea Completa
-            </button>
-        </form>
-        
-        <div id="successMessage" class="message success-message"></div>
-        <div id="errorMessage" class="message error-message"></div>
-    </div>
-</div>
 
 <script>
-    // Configuración
-    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxdSL2hrdAO8AnnRAdrZhgizjO9keNTMpPjNXJ8AoWAEj0z0fB_qwxaC-MAy24PLCo1-Q/exec'; // Tu URL real
-    
-    // Inicialización
+    // IMPORTANTE: Reemplaza esta URL con la URL de tu implementación de Google Apps Script
+    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwku8Vsz6ZMkixoLd-2jiNHpyFMjxO0Dnd0r1RbhtdU1nEkH5GQw1BZBOtWqd7n2jGgmQ/exec';
+
     document.addEventListener('DOMContentLoaded', function() {
-        initializeApp();
-    });
-    
-    function initializeApp() {
-        // Event listeners
-        document.getElementById('taskForm').addEventListener('submit', handleFormSubmit);
-        document.getElementById('add_to_calendar').addEventListener('change', toggleCalendarOptions);
-        
-        // Establecer fecha mínima como hoy
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('fecha_limite').setAttribute('min', today);
-    }
-    
+        document.getElementById('recordatorio_fecha').setAttribute('min', today);
+        
+        document.getElementById('taskForm').addEventListener('submit', handleFormSubmit);
+        document.getElementById('add_to_calendar').addEventListener('change', (e) => {
+            document.getElementById('calendarOptions').classList.toggle('hidden', !e.target.checked);
+        });
+    });
+
     function toggleOtherArea() {
         const areaSelect = document.getElementById('area');
         const otherAreaInput = document.getElementById('area_other');
-        
-        if (areaSelect.value === 'other') {
-            otherAreaInput.classList.remove('hidden');
-            otherAreaInput.required = true;
-        } else {
-            otherAreaInput.classList.add('hidden');
-            otherAreaInput.required = false;
-            otherAreaInput.value = '';
-        }
+        const isOther = areaSelect.value === 'other';
+        otherAreaInput.classList.toggle('hidden', !isOther);
+        otherAreaInput.required = isOther;
+        if (!isOther) otherAreaInput.value = '';
     }
-    
-    function toggleCalendarOptions(e) {
-        const options = document.getElementById('calendarOptions');
-        options.style.display = e.target.checked ? 'block' : 'none';
-    }
-    
+
     function toggleCustomReminder() {
         const customCheckbox = document.getElementById('recordatorio_custom');
         const customFields = document.getElementById('customReminderFields');
-        
-        if (customCheckbox.checked) {
-            customFields.classList.remove('hidden');
-            // Establecer fecha mínima como hoy
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('recordatorio_fecha').setAttribute('min', today);
-        } else {
-            customFields.classList.add('hidden');
-            document.getElementById('recordatorio_fecha').value = '';
-            document.getElementById('recordatorio_hora').value = '';
-        }
+        customFields.classList.toggle('hidden', !customCheckbox.checked);
     }
-    
-    async function handleFormSubmit(e) {
-        e.preventDefault();
-        
-        const submitBtn = document.getElementById('submitBtn');
-        const successMsg = document.getElementById('successMessage');
-        const errorMsg = document.getElementById('errorMessage');
-        
-        // Validación del formulario
-        if (!validateForm()) {
-            return;
-        }
-        
-        // UI feedback
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Creando... <div class="loading"></div>';
-        successMsg.style.display = 'none';
-        errorMsg.style.display = 'none';
-        
-        // Preparar datos
-        const formData = prepareFormData();
-        
-        try {
-            const response = await fetch(WEBHOOK_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'text/plain',
-                },
-                body: JSON.stringify(formData)
-            });
-            
-            const result = await response.json();
-            
-            if (!result.success) {
-                throw new Error(result.error || 'Error desconocido');
-            }
-            
-            // Mostrar éxito
-            showSuccess(result);
-            
-            // Limpiar formulario
-            document.getElementById('taskForm').reset();
-            
-        } catch (error) {
-            console.error('Error:', error);
-            showError(error.message);
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '✨ Crear Tarea Completa';
-        }
-    }
-    
+
     function validateForm() {
         const titulo = document.getElementById('titulo').value.trim();
-        
-        if (!titulo) {
-            showError('Por favor, ingresa un título para la tarea');
-            return false;
-        }
-        
         if (titulo.length < 3) {
-            showError('El título debe tener al menos 3 caracteres');
+            showMessage('El título debe tener al menos 3 caracteres.', 'error');
             return false;
         }
-        
-        // Validar área personalizada si está seleccionada
+
         const area = document.getElementById('area').value;
         const areaOther = document.getElementById('area_other').value.trim();
-        
         if (area === 'other' && !areaOther) {
-            showError('Por favor, especifica el área personalizada');
+            showMessage('Por favor, especifica el área personalizada.', 'error');
             return false;
         }
-        
-        // Validar recordatorio personalizado si está activado
-        if (document.getElementById('recordatorio_custom').checked) {
-            const recordatorioFecha = document.getElementById('recordatorio_fecha').value;
-            const recordatorioHora = document.getElementById('recordatorio_hora').value;
-            const fechaEvento = document.getElementById('fecha_limite').value;
-            const horaEvento = document.getElementById('hora_limite').value;
-            
-            if (!recordatorioFecha || !recordatorioHora) {
-                showError('Por favor, especifica fecha y hora para el recordatorio personalizado');
+
+        if (document.getElementById('add_to_calendar').checked) {
+            const fechaLimite = document.getElementById('fecha_limite').value;
+            if (!fechaLimite) {
+                showMessage('Para añadir a Calendar, la fecha límite es obligatoria.', 'error');
                 return false;
             }
-            
-            // Validar que el recordatorio sea antes del evento
-            if (fechaEvento) {
-                const fechaEventoCompleta = new Date(`${fechaEvento}T${horaEvento || '09:00'}`);
-                const fechaRecordatorio = new Date(`${recordatorioFecha}T${recordatorioHora}`);
-                
-                if (fechaRecordatorio >= fechaEventoCompleta) {
-                    showError('El recordatorio debe ser antes de la fecha del evento');
+
+            if (document.getElementById('recordatorio_custom').checked) {
+                const recordatorioFecha = document.getElementById('recordatorio_fecha').value;
+                const recordatorioHora = document.getElementById('recordatorio_hora').value;
+                if (!recordatorioFecha || !recordatorioHora) {
+                    showMessage('Debes especificar la fecha y hora para el recordatorio personalizado.', 'error');
+                    return false;
+                }
+
+                const horaLimite = document.getElementById('hora_limite').value || '00:00';
+                const eventoTimestamp = new Date(`${fechaLimite}T${horaLimite}`).getTime();
+                const recordatorioTimestamp = new Date(`${recordatorioFecha}T${recordatorioHora}`).getTime();
+
+                if (recordatorioTimestamp >= eventoTimestamp) {
+                    showMessage('El recordatorio personalizado debe ser anterior a la fecha del evento.', 'error');
                     return false;
                 }
             }
         }
-        
         return true;
     }
-    
+
+    async function handleFormSubmit(e) {
+        e.preventDefault();
+        if (!validateForm()) return;
+
+        const submitBtn = document.getElementById('submitBtn');
+        const originalBtnText = submitBtn.innerHTML;
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Creando... <div class="loading"></div>';
+        showMessage('', 'clear');
+
+        const formData = prepareFormData();
+
+        try {
+            const response = await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                mode: 'cors', // Necesario para peticiones cross-origin
+                body: JSON.stringify(formData),
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const result = await response.json();
+
+            if (!result.success) {
+                throw new Error(result.error || 'Error desconocido del servidor');
+            }
+            
+            let successHtml = `<strong>¡Éxito!</strong> Tarea creada correctamente.`;
+            if (result.notionUrl) {
+                successHtml += ` <a href="${result.notionUrl}" target="_blank" style="color: #155724; font-weight: bold;">Ver en Notion &rarr;</a>`;
+            }
+            if (result.calendarUrl) {
+                successHtml += ` | <a href="${result.calendarUrl}" target="_blank" style="color: #155724; font-weight: bold;">Ver en Calendar &rarr;</a>`;
+            }
+            showMessage(successHtml, 'success');
+            document.getElementById('taskForm').reset();
+            // Reset de campos que no se limpian con reset()
+            toggleOtherArea();
+            toggleCustomReminder();
+            document.getElementById('calendarOptions').classList.add('hidden');
+
+        } catch (error) {
+            console.error('Error en el envío:', error);
+            showMessage(`Error de conexión: ${error.message}`, 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    }
+
     function prepareFormData() {
-        // Preparar fecha y hora
-        let fechaLimiteCompleta = null;
         const fecha = document.getElementById('fecha_limite').value;
         const hora = document.getElementById('hora_limite').value;
-        
+        let fechaLimiteCompleta = null;
         if (fecha) {
-            fechaLimiteCompleta = hora ? `${fecha} ${hora}` : `${fecha} 09:00`;
+            fechaLimiteCompleta = `${fecha} ${hora || '09:00'}`;
         }
         
-        // Obtener tipos de tarea seleccionados
-        const tiposTarea = Array.from(document.querySelectorAll('input[name="tipo_tarea"]:checked'))
-            .map(cb => cb.value);
-        
-        // Obtener área
-        const areaSelect = document.getElementById('area').value;
-        const areaOther = document.getElementById('area_other').value.trim();
-        
+        const tiposTarea = Array.from(document.querySelectorAll('input[name="tipo_tarea"]:checked')).map(cb => cb.value);
+
         return {
             action: 'createTask',
             titulo: document.getElementById('titulo').value.trim(),
             descripcion: document.getElementById('descripcion').value.trim(),
             estado: document.getElementById('estado').value,
             prioridad: document.getElementById('prioridad').value,
-            area: areaSelect === 'other' ? null : areaSelect,
-            area_other: areaSelect === 'other' ? areaOther : null,
+            area: document.getElementById('area').value,
+            area_other: document.getElementById('area_other').value.trim(),
             proyecto_id: document.getElementById('proyecto_id').value,
             nivel_esfuerzo: document.getElementById('nivel_esfuerzo').value,
             fecha_limite: fechaLimiteCompleta,
@@ -637,37 +376,19 @@
             recordatorio_hora: document.getElementById('recordatorio_hora').value
         };
     }
-    
-    function showSuccess(result) {
-        const successMsg = document.getElementById('successMessage');
-        let message = '✅ ¡Tarea creada con éxito!';
-        
-        if (result.notionUrl) {
-            message += ` <a href="${result.notionUrl}" target="_blank" style="color: #155724; font-weight: bold;">Ver en Notion →</a>`;
+
+    function showMessage(content, type) {
+        const container = document.getElementById('messageContainer');
+        if (type === 'clear') {
+            container.innerHTML = '';
+            return;
         }
-        
-        if (result.calendarUrl) {
-            message += ` | <a href="${result.calendarUrl}" target="_blank" style="color: #155724; font-weight: bold;">Ver en Calendar →</a>`;
-        }
-        
-        successMsg.innerHTML = message;
-        successMsg.style.display = 'block';
-        
-        // Auto-ocultar después de 10 segundos
-        setTimeout(() => {
-            successMsg.style.display = 'none';
-        }, 10000);
-    }
-    
-    function showError(message) {
-        const errorMsg = document.getElementById('errorMessage');
-        errorMsg.textContent = `❌ Error: ${message}`;
-        errorMsg.style.display = 'block';
-        
-        // Auto-ocultar después de 5 segundos
-        setTimeout(() => {
-            errorMsg.style.display = 'none';
-        }, 5000);
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}-message`;
+        messageDiv.innerHTML = content;
+        container.innerHTML = ''; // Limpiar mensajes anteriores
+        container.appendChild(messageDiv);
+        messageDiv.style.display = 'block';
     }
 </script>
 
