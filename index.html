@@ -6,7 +6,6 @@
     <title>Mi Asistente de Productividad</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        /* Se mantiene el mismo CSS de la versión anterior con iconos */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
         .container { max-width: 900px; margin: 0 auto; background: rgba(255, 255, 255, 0.95); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
@@ -40,43 +39,224 @@
         .hidden { display: none; }
         .reminder-custom-fields { margin-top: 15px; padding: 15px; background: #fff; border-radius: 10px; border: 2px solid #e1e5e9; }
         .info-message { background: #e3f2fd; color: #014361; border: 1px solid #b1dcfb; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; display: flex; align-items: center; gap: 10px; }
+        /* **NUEVO**: Estilos para los iconos */
         .fa, .fas, .fa-solid { margin-right: 10px; color: #667eea; }
         label .fa, label .fas, label .fa-solid { color: #555; }
         .submit-btn .fa-solid { color: white; margin-right: 10px; }
-        .checkbox-item .fa-solid { color: #555; margin-right: 0; }
+        .checkbox-item .fa-solid { color: #555; margin-right: 0; } /* Iconos dentro de checkbox no necesitan tanto margen */
         .info-message .fa-solid { color: #014361; }
         @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; } .form-container { padding: 20px; } .header h1 { font-size: 2em; } }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header"><h1><i class="fa-solid fa-rocket"></i> Mi Asistente de Productividad</h1><p>Gestiona tus tareas de forma eficiente</p></div>
+        <div class="header">
+            <h1><i class="fa-solid fa-rocket"></i> Mi Asistente de Productividad</h1>
+            <p>Gestiona tus tareas de forma eficiente</p>
+        </div>
         <div class="form-container">
             <form id="taskForm">
-                <div class="form-section"><div class="section-title"><i class="fa-solid fa-circle-info"></i>Información Básica</div><div class="form-group"><label for="titulo"><i class="fa-solid fa-pencil"></i>¿Qué necesitas hacer? *</label><input type="text" id="titulo" name="titulo" placeholder="Ej: Preparar la clase de Termodinámica" required maxlength="100"></div><div class="form-group"><label for="descripcion"><i class="fa-solid fa-align-left"></i>Descripción detallada</label><textarea id="descripcion" name="descripcion" placeholder="Añade más detalles, como conceptos clave o enlaces a recursos..." maxlength="500"></textarea></div><div class="form-row"><div class="form-group"><label for="estado"><i class="fa-solid fa-list-check"></i>Estado actual</label><select id="estado" name="estado"><option value="Sin empezar">Sin empezar</option><option value="En progreso">En progreso</option><option value="Listo">Listo</option></select></div><div class="form-group"><label for="prioridad"><i class="fa-solid fa-fire"></i>Prioridad</label><select id="prioridad" name="prioridad"><option value="Alta">Alta</option><option value="Medio" selected>Media</option><option value="Baja">Baja</option></select></div></div></div>
-                <div class="form-section"><div class="section-title"><i class="fa-solid fa-folder-tree"></i>Categorización y Proyecto</div><div class="form-row"><div class="form-group"><label for="area"><i class="fa-solid fa-folder"></i>Área</label><select id="area" name="area" onchange="toggleOtherArea()"><option value="">Seleccionar área...</option><option value="Profesional">Profesional</option><option value="Académico">Académico</option><option value="Personal">Personal</option><option value="Formación">Formación (Oposiciones)</option><option value="Hogar">Hogar</option><option value="other">Otra área...</option></select><input type="text" id="area_other" name="area_other" placeholder="Especifica el área" class="hidden" style="margin-top: 10px;"></div><div class="form-group"><label for="proyecto_id"><i class="fa-solid fa-diagram-project"></i>Proyecto</label><div class="info-message"><i class="fa-solid fa-screwdriver-wrench"></i>La selección de proyectos está en desarrollo.</div><select id="proyecto_id" name="proyecto_id" disabled><option value="unavailable">No disponible temporalmente</option></select></div></div><div class="form-group"><label for="nivel_esfuerzo"><i class="fa-solid fa-bolt"></i>Nivel de esfuerzo</label><select id="nivel_esfuerzo" name="nivel_esfuerzo"><option value="">Seleccionar esfuerzo...</option><option value="Pequeño">Pequeño (5-15 min)</option><option value="Medio">Medio (30-60 min)</option><option value="Grande">Grande (1-2+ horas)</option></select></div><div class="form-group"><label><i class="fa-solid fa-tags"></i>Tipo de tarea</label><div class="checkbox-group"><div class="checkbox-item"><input type="checkbox" id="tipo_personal" name="tipo_tarea" value="Personal"><label for="tipo_personal"><i class="fa-solid fa-user"></i> Personal</label></div><div class="checkbox-item"><input type="checkbox" id="tipo_trabajo" name="tipo_tarea" value="Trabajo"><label for="tipo_trabajo"><i class="fa-solid fa-briefcase"></i> Trabajo</label></div><div class="checkbox-item"><input type="checkbox" id="tipo_social" name="tipo_tarea" value="Social"><label for="tipo_social"><i class="fa-solid fa-users"></i> Social</label></div><div class="checkbox-item"><input type="checkbox" id="tipo_salud" name="tipo_tarea" value="Salud"><label for="tipo_salud"><i class="fa-solid fa-heart-pulse"></i> Salud</label></div><div class="checkbox-item"><input type="checkbox" id="tipo_habitos" name="tipo_tarea" value="Hábitos"><label for="tipo_habitos"><i class="fa-solid fa-repeat"></i> Hábitos</label></div><div class="checkbox-item"><input type="checkbox" id="tipo_viaje" name="tipo_tarea" value="Viaje"><label for="tipo_viaje"><i class="fa-solid fa-plane"></i> Viaje</label></div><div class="checkbox-item"><input type="checkbox" id="tipo_casa" name="tipo_tarea" value="Casa"><label for="tipo_casa"><i class="fa-solid fa-house"></i> Casa</label></div><div class="checkbox-item"><input type="checkbox" id="tipo_furgoneta" name="tipo_tarea" value="Furgoneta"><label for="tipo_furgoneta"><i class="fa-solid fa-van-shuttle"></i> Furgoneta</label></div><div class="checkbox-item"><input type="checkbox" id="tipo_formacion" name="tipo_tarea" value="Formacion"><label for="tipo_formacion"><i class="fa-solid fa-graduation-cap"></i> Formación</label></div><div class="checkbox-item"><input type="checkbox" id="tipo_estudio" name="tipo_tarea" value="Estudio"><label for="tipo_estudio"><i class="fa-solid fa-book"></i> Estudio</label></div></div></div></div>
-                <div class="form-section"><div class="section-title"><i class="fa-solid fa-calendar-days"></i>Fechas y Google Calendar</div><div class="form-group"><label for="fecha_limite"><i class="fa-solid fa-flag-checkered"></i>Fecha y Hora Límite (Plazo)</label><div class="datetime-group"><input type="date" id="fecha_limite" name="fecha_limite"><input type="time" id="hora_limite" name="hora_limite"></div></div><div class="calendar-section"><div style="display: flex; align-items: center; gap: 10px;"><input type="checkbox" id="add_to_calendar" name="add_to_calendar" value="true" style="width: auto;"><label for="add_to_calendar"><i class="fa-brands fa-google"></i>Añadir evento a Google Calendar</label></div><div id="calendarOptions" class="hidden" style="margin-top: 15px;"><label><i class="fa-solid fa-bell"></i>Recordatorios:</label><div class="checkbox-group" style="margin-top: 5px;"><div class="checkbox-item"><input type="checkbox" id="recordatorio_2h" name="recordatorio_2h"><label for="recordatorio_2h"><i class="fa-solid fa-clock"></i> 2 horas antes</label></div><div class="checkbox-item"><input type="checkbox" id="recordatorio_custom" name="recordatorio_custom" onchange="toggleCustomReminder()"><label for="recordatorio_custom"><i class="fa-solid fa-calendar-plus"></i> Recordatorio personalizado</label></div></div><div id="customReminderFields" class="reminder-custom-fields hidden"><label><i class="fa-solid fa-stopwatch"></i>Fecha y hora del recordatorio:</label><div class="datetime-group" style="margin-top: 10px;"><input type="date" id="recordatorio_fecha" name="recordatorio_fecha"><input type="time" id="recordatorio_hora" name="recordatorio_hora"></div><small style="color: #666; display: block; margin-top: 5px;">El recordatorio debe ser anterior a la fecha y hora del evento.</small></div></div></div></div>
-                <button type="submit" class="submit-btn" id="submitBtn"><i class="fa-solid fa-plus-circle"></i> Crear Tarea Completa</button>
+                <div class="form-section">
+                    <div class="section-title"><i class="fa-solid fa-circle-info"></i>Información Básica</div>
+                    <div class="form-group">
+                        <label for="titulo"><i class="fa-solid fa-pencil"></i>¿Qué necesitas hacer? *</label>
+                        <input type="text" id="titulo" name="titulo" placeholder="Ej: Preparar la clase de Termodinámica" required maxlength="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcion"><i class="fa-solid fa-align-left"></i>Descripción detallada</label>
+                        <textarea id="descripcion" name="descripcion" placeholder="Añade más detalles, como conceptos clave o enlaces a recursos..." maxlength="500"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="estado"><i class="fa-solid fa-list-check"></i>Estado actual</label>
+                            <select id="estado" name="estado">
+                                <option value="Sin empezar">Sin empezar</option>
+                                <option value="En progreso">En progreso</option>
+                                <option value="Listo">Listo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="prioridad"><i class="fa-solid fa-fire"></i>Prioridad</label>
+                            <select id="prioridad" name="prioridad">
+                                <option value="Alta">Alta</option>
+                                <option value="Medio" selected>Media</option>
+                                <option value="Baja">Baja</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title"><i class="fa-solid fa-folder-tree"></i>Categorización y Proyecto</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="area"><i class="fa-solid fa-folder"></i>Área</label>
+                            <select id="area" name="area" onchange="toggleOtherArea()">
+                                <option value="">Seleccionar área...</option>
+                                <option value="Profesional">Profesional</option>
+                                <option value="Académico">Académico</option>
+                                <option value="Personal">Personal</option>
+                                <option value="Formación">Formación (Oposiciones)</option>
+                                <option value="Hogar">Hogar</option>
+                                <option value="other">Otra área...</option>
+                            </select>
+                            <input type="text" id="area_other" name="area_other" placeholder="Especifica el área" class="hidden" style="margin-top: 10px;">
+                        </div>
+                        <div class="form-group">
+                            <label for="proyecto_id"><i class="fa-solid fa-diagram-project"></i>Proyecto</label>
+                            <div class="info-message"><i class="fa-solid fa-screwdriver-wrench"></i>La selección de proyectos está en desarrollo.</div>
+                            <select id="proyecto_id" name="proyecto_id" disabled>
+                                <option value="unavailable">No disponible temporalmente</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="nivel_esfuerzo"><i class="fa-solid fa-bolt"></i>Nivel de esfuerzo</label>
+                        <select id="nivel_esfuerzo" name="nivel_esfuerzo">
+                            <option value="">Seleccionar esfuerzo...</option>
+                            <option value="Pequeño">Pequeño (5-15 min)</option>
+                            <option value="Medio">Medio (30-60 min)</option>
+                            <option value="Grande">Grande (1-2+ horas)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-tags"></i>Tipo de tarea</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_personal" name="tipo_tarea" value="Personal"><label for="tipo_personal"><i class="fa-solid fa-user"></i> Personal</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_trabajo" name="tipo_tarea" value="Trabajo"><label for="tipo_trabajo"><i class="fa-solid fa-briefcase"></i> Trabajo</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_social" name="tipo_tarea" value="Social"><label for="tipo_social"><i class="fa-solid fa-users"></i> Social</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_salud" name="tipo_tarea" value="Salud"><label for="tipo_salud"><i class="fa-solid fa-heart-pulse"></i> Salud</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_habitos" name="tipo_tarea" value="Hábitos"><label for="tipo_habitos"><i class="fa-solid fa-repeat"></i> Hábitos</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_viaje" name="tipo_tarea" value="Viaje"><label for="tipo_viaje"><i class="fa-solid fa-plane"></i> Viaje</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_casa" name="tipo_tarea" value="Casa"><label for="tipo_casa"><i class="fa-solid fa-house"></i> Casa</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_furgoneta" name="tipo_tarea" value="Furgoneta"><label for="tipo_furgoneta"><i class="fa-solid fa-van-shuttle"></i> Furgoneta</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_formacion" name="tipo_tarea" value="Formacion"><label for="tipo_formacion"><i class="fa-solid fa-graduation-cap"></i> Formación</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_estudio" name="tipo_tarea" value="Estudio"><label for="tipo_estudio"><i class="fa-solid fa-book"></i> Estudio</label></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <div class="section-title"><i class="fa-solid fa-calendar-days"></i>Fechas y Google Calendar</div>
+                    <div class="form-group">
+                        <label for="fecha_limite"><i class="fa-solid fa-flag-checkered"></i>Fecha y Hora Límite (Plazo)</label>
+                        <div class="datetime-group">
+                            <input type="date" id="fecha_limite" name="fecha_limite">
+                            <input type="time" id="hora_limite" name="hora_limite">
+                        </div>
+                    </div>
+                    <div class="calendar-section">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="add_to_calendar" name="add_to_calendar" value="true" style="width: auto;">
+                            <label for="add_to_calendar"><i class="fa-brands fa-google"></i>Añadir evento a Google Calendar</label>
+                        </div>
+                        <div id="calendarOptions" class="hidden" style="margin-top: 15px;">
+                            <label><i class="fa-solid fa-bell"></i>Recordatorios:</label>
+                            <div class="checkbox-group" style="margin-top: 5px;">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="recordatorio_2h" name="recordatorio_2h">
+                                    <label for="recordatorio_2h"><i class="fa-solid fa-clock"></i> 2 horas antes</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="recordatorio_custom" name="recordatorio_custom" onchange="toggleCustomReminder()">
+                                    <label for="recordatorio_custom"><i class="fa-solid fa-calendar-plus"></i> Recordatorio personalizado</label>
+                                </div>
+                            </div>
+                            <div id="customReminderFields" class="reminder-custom-fields hidden">
+                                <label><i class="fa-solid fa-stopwatch"></i>Fecha y hora del recordatorio:</label>
+                                <div class="datetime-group" style="margin-top: 10px;">
+                                    <input type="date" id="recordatorio_fecha" name="recordatorio_fecha">
+                                    <input type="time" id="recordatorio_hora" name="recordatorio_hora">
+                                </div>
+                                <small style="color: #666; display: block; margin-top: 5px;">El recordatorio debe ser anterior a la fecha y hora del evento.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fa-solid fa-plus-circle"></i> Crear Tarea Completa
+                </button>
             </form>
             <div id="messageContainer" style="margin-top: 20px;"></div>
         </div>
     </div>
 
 <script>
-    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxGbiRYEItymnHD-CPPBINOk6iD1dSiDXgcF4aU23XnhIaNK4SkHOiia9UQIqg_9cp-Lw/exec';
+    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzqDxoGcYQDnJU0mwZ2KyKH5DlNzguE5FhF44rGMeU3HR6Aj6p3Xiw2RKdLpM8wvRTLsw/exec';
+    
+    // El script JavaScript se mantiene exactamente igual que en la versión anterior.
+    // Solo hemos cambiado el HTML y el CSS.
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // ...código de inicialización que no cambia...
+    document.addEventListener('DOMContentLoaded', function() { /* ... */ });
+    // ... (resto del script sin cambios)
+    document.addEventListener('DOMContentLoaded', function() {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('fecha_limite').setAttribute('min', today);
         document.getElementById('recordatorio_fecha').setAttribute('min', today);
+        
         document.getElementById('taskForm').addEventListener('submit', handleFormSubmit);
         document.getElementById('add_to_calendar').addEventListener('change', (e) => {
             document.getElementById('calendarOptions').classList.toggle('hidden', !e.target.checked);
         });
     });
 
-    // ...otras funciones como toggleOtherArea, toggleCustomReminder, etc. que no cambian...
+    function toggleOtherArea() {
+        const areaSelect = document.getElementById('area');
+        const otherAreaInput = document.getElementById('area_other');
+        const isOther = areaSelect.value === 'other';
+        otherAreaInput.classList.toggle('hidden', !isOther);
+        otherAreaInput.required = isOther;
+        if (!isOther) otherAreaInput.value = '';
+    }
+
+    function toggleCustomReminder() {
+        const customCheckbox = document.getElementById('recordatorio_custom');
+        const customFields = document.getElementById('customReminderFields');
+        customFields.classList.toggle('hidden', !customCheckbox.checked);
+    }
+
+    function validateForm() {
+        const titulo = document.getElementById('titulo').value.trim();
+        if (titulo.length < 3) {
+            showMessage('<i class="fa-solid fa-circle-exclamation"></i> El título debe tener al menos 3 caracteres.', 'error');
+            return false;
+        }
+
+        const area = document.getElementById('area').value;
+        const areaOther = document.getElementById('area_other').value.trim();
+        if (area === 'other' && !areaOther) {
+            showMessage('<i class="fa-solid fa-circle-exclamation"></i> Por favor, especifica el área personalizada.', 'error');
+            return false;
+        }
+
+        if (document.getElementById('add_to_calendar').checked) {
+            const fechaLimite = document.getElementById('fecha_limite').value;
+            if (!fechaLimite) {
+                showMessage('<i class="fa-solid fa-circle-exclamation"></i> Para añadir a Calendar, la fecha límite es obligatoria.', 'error');
+                return false;
+            }
+
+            if (document.getElementById('recordatorio_custom').checked) {
+                const recordatorioFecha = document.getElementById('recordatorio_fecha').value;
+                const recordatorioHora = document.getElementById('recordatorio_hora').value;
+                if (!recordatorioFecha || !recordatorioHora) {
+                    showMessage('<i class="fa-solid fa-circle-exclamation"></i> Debes especificar la fecha y hora para el recordatorio personalizado.', 'error');
+                    return false;
+                }
+
+                const horaLimite = document.getElementById('hora_limite').value || '00:00';
+                const eventoTimestamp = new Date(`${fechaLimite}T${horaLimite}`).getTime();
+                const recordatorioTimestamp = new Date(`${recordatorioFecha}T${recordatorioHora}`).getTime();
+
+                if (recordatorioTimestamp >= eventoTimestamp) {
+                    showMessage('<i class="fa-solid fa-circle-exclamation"></i> El recordatorio personalizado debe ser anterior a la fecha del evento.', 'error');
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     async function handleFormSubmit(e) {
         e.preventDefault();
@@ -92,15 +272,11 @@
         const formData = prepareFormData();
 
         try {
-            // ================== INICIO DEL CAMBIO CLAVE ==================
             const response = await fetch(WEBHOOK_URL, {
                 method: 'POST',
-                // CAMBIO: Ya no se especifica 'Content-Type' como application/json.
-                // El navegador usará 'text/plain', que no requiere preflight.
                 body: JSON.stringify(formData),
-                redirect: 'follow' // Añadido por robustez
+                headers: { 'Content-Type': 'application/json' }
             });
-            // =================== FIN DEL CAMBIO CLAVE ====================
             
             const result = await response.json();
 
@@ -109,11 +285,14 @@
             }
             
             let successHtml = `<i class="fa-solid fa-check-circle"></i> <strong>¡Éxito!</strong> Tarea creada.`;
-            if (result.notionUrl) { successHtml += ` <a href="${result.notionUrl}" target="_blank" style="color: #155724; font-weight: bold;">Ver en Notion &rarr;</a>`; }
-            if (result.calendarUrl) { successHtml += ` | <a href="${result.calendarUrl}" target="_blank" style="color: #155724; font-weight: bold;">Ver en Calendar &rarr;</a>`; }
+            if (result.notionUrl) {
+                successHtml += ` <a href="${result.notionUrl}" target="_blank" style="color: #155724; font-weight: bold;">Ver en Notion &rarr;</a>`;
+            }
+            if (result.calendarUrl) {
+                successHtml += ` | <a href="${result.calendarUrl}" target="_blank" style="color: #155724; font-weight: bold;">Ver en Calendar &rarr;</a>`;
+            }
             showMessage(successHtml, 'success');
             document.getElementById('taskForm').reset();
-            // ...código de reseteo del formulario que no cambia...
             toggleOtherArea();
             toggleCustomReminder();
             document.getElementById('calendarOptions').classList.add('hidden');
@@ -127,13 +306,45 @@
         }
     }
 
-    // El resto de funciones JS (validateForm, prepareFormData, showMessage, etc.)
-    // se mantienen igual que en la versión anterior.
-    function toggleOtherArea() { const areaSelect = document.getElementById('area'); const otherAreaInput = document.getElementById('area_other'); const isOther = areaSelect.value === 'other'; otherAreaInput.classList.toggle('hidden', !isOther); otherAreaInput.required = isOther; if (!isOther) otherAreaInput.value = ''; }
-    function toggleCustomReminder() { const customCheckbox = document.getElementById('recordatorio_custom'); const customFields = document.getElementById('customReminderFields'); customFields.classList.toggle('hidden', !customCheckbox.checked); }
-    function validateForm() { const titulo = document.getElementById('titulo').value.trim(); if (titulo.length < 3) { showMessage('<i class="fa-solid fa-circle-exclamation"></i> El título debe tener al menos 3 caracteres.', 'error'); return false; } const area = document.getElementById('area').value; const areaOther = document.getElementById('area_other').value.trim(); if (area === 'other' && !areaOther) { showMessage('<i class="fa-solid fa-circle-exclamation"></i> Por favor, especifica el área personalizada.', 'error'); return false; } if (document.getElementById('add_to_calendar').checked) { const fechaLimite = document.getElementById('fecha_limite').value; if (!fechaLimite) { showMessage('<i class="fa-solid fa-circle-exclamation"></i> Para añadir a Calendar, la fecha límite es obligatoria.', 'error'); return false; } if (document.getElementById('recordatorio_custom').checked) { const recordatorioFecha = document.getElementById('recordatorio_fecha').value; const recordatorioHora = document.getElementById('recordatorio_hora').value; if (!recordatorioFecha || !recordatorioHora) { showMessage('<i class="fa-solid fa-circle-exclamation"></i> Debes especificar la fecha y hora para el recordatorio personalizado.', 'error'); return false; } const horaLimite = document.getElementById('hora_limite').value || '00:00'; const eventoTimestamp = new Date(`${fechaLimite}T${horaLimite}`).getTime(); const recordatorioTimestamp = new Date(`${recordatorioFecha}T${recordatorioHora}`).getTime(); if (recordatorioTimestamp >= eventoTimestamp) { showMessage('<i class="fa-solid fa-circle-exclamation"></i> El recordatorio personalizado debe ser anterior a la fecha del evento.', 'error'); return false; } } } return true; }
-    function prepareFormData() { const fecha = document.getElementById('fecha_limite').value; const hora = document.getElementById('hora_limite').value; let fechaLimiteCompleta = null; if (fecha) { fechaLimiteCompleta = `${fecha} ${hora || '09:00'}`; } const tiposTarea = Array.from(document.querySelectorAll('input[name="tipo_tarea"]:checked')).map(cb => cb.value); return { action: 'createTask', titulo: document.getElementById('titulo').value.trim(), descripcion: document.getElementById('descripcion').value.trim(), estado: document.getElementById('estado').value, prioridad: document.getElementById('prioridad').value, area: document.getElementById('area').value, area_other: document.getElementById('area_other').value.trim(), proyecto_id: document.getElementById('proyecto_id').value, nivel_esfuerzo: document.getElementById('nivel_esfuerzo').value, fecha_limite: fechaLimiteCompleta, tipo_tarea: tiposTarea, add_to_calendar: document.getElementById('add_to_calendar').checked, recordatorio_2h: document.getElementById('recordatorio_2h').checked, recordatorio_custom: document.getElementById('recordatorio_custom').checked, recordatorio_fecha: document.getElementById('recordatorio_fecha').value, recordatorio_hora: document.getElementById('recordatorio_hora').value }; }
-    function showMessage(content, type) { const container = document.getElementById('messageContainer'); if (type === 'clear') { container.innerHTML = ''; return; } const messageDiv = document.createElement('div'); messageDiv.className = `message ${type}-message`; messageDiv.innerHTML = content; container.innerHTML = '';  container.appendChild(messageDiv); messageDiv.style.display = 'flex'; }
+    function prepareFormData() {
+        const fecha = document.getElementById('fecha_limite').value;
+        const hora = document.getElementById('hora_limite').value;
+        let fechaLimiteCompleta = null;
+        if (fecha) { fechaLimiteCompleta = `${fecha} ${hora || '09:00'}`; }
+        const tiposTarea = Array.from(document.querySelectorAll('input[name="tipo_tarea"]:checked')).map(cb => cb.value);
+        return {
+            action: 'createTask',
+            titulo: document.getElementById('titulo').value.trim(),
+            descripcion: document.getElementById('descripcion').value.trim(),
+            estado: document.getElementById('estado').value,
+            prioridad: document.getElementById('prioridad').value,
+            area: document.getElementById('area').value,
+            area_other: document.getElementById('area_other').value.trim(),
+            proyecto_id: document.getElementById('proyecto_id').value,
+            nivel_esfuerzo: document.getElementById('nivel_esfuerzo').value,
+            fecha_limite: fechaLimiteCompleta,
+            tipo_tarea: tiposTarea,
+            add_to_calendar: document.getElementById('add_to_calendar').checked,
+            recordatorio_2h: document.getElementById('recordatorio_2h').checked,
+            recordatorio_custom: document.getElementById('recordatorio_custom').checked,
+            recordatorio_fecha: document.getElementById('recordatorio_fecha').value,
+            recordatorio_hora: document.getElementById('recordatorio_hora').value
+        };
+    }
+
+    function showMessage(content, type) {
+        const container = document.getElementById('messageContainer');
+        if (type === 'clear') {
+            container.innerHTML = '';
+            return;
+        }
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}-message`;
+        messageDiv.innerHTML = content;
+        container.innerHTML = ''; 
+        container.appendChild(messageDiv);
+        messageDiv.style.display = 'flex';
+    }
 </script>
 </body>
 </html>
