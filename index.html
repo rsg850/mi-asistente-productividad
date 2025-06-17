@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Asistente de Productividad</title>
     <style>
-        /* Tu CSS actual está bien, no requiere cambios urgentes. Se mantiene igual. */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -85,7 +84,7 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .hidden { display: none; }
         .reminder-custom-fields { margin-top: 15px; padding: 15px; background: #fff; border-radius: 10px; border: 2px solid #e1e5e9; }
-        .info-message { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; }
+        .info-message { background: #e3f2fd; color: #014361; border: 1px solid #b1dcfb; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; }
         @media (max-width: 768px) {
             .form-row { grid-template-columns: 1fr; }
             .form-container { padding: 20px; }
@@ -102,7 +101,7 @@
         <div class="form-container">
             <form id="taskForm">
                 <div class="form-section">
-                    <div class="section-title">Información Básica</div>
+                    <div class="section-title">📝 Información Básica</div>
                     <div class="form-group">
                         <label for="titulo">¿Qué necesitas hacer? *</label>
                         <input type="text" id="titulo" name="titulo" placeholder="Ej: Preparar la clase de Termodinámica" required maxlength="100">
@@ -132,7 +131,7 @@
                 </div>
 
                 <div class="form-section">
-                    <div class="section-title">Categorización y Proyecto</div>
+                    <div class="section-title">🗂️ Categorización y Proyecto</div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="area">Área</label>
@@ -171,16 +170,20 @@
                         <div class="checkbox-group">
                             <div class="checkbox-item"><input type="checkbox" id="tipo_personal" name="tipo_tarea" value="Personal"><label for="tipo_personal">Personal</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="tipo_trabajo" name="tipo_tarea" value="Trabajo"><label for="tipo_trabajo">Trabajo</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="tipo_estudio" name="tipo_tarea" value="Estudio"><label for="tipo_estudio">Estudio</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="tipo_formacion" name="tipo_tarea" value="Formacion"><label for="tipo_formacion">Formación</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_social" name="tipo_tarea" value="Social"><label for="tipo_social">Social</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="tipo_salud" name="tipo_tarea" value="Salud"><label for="tipo_salud">Salud</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_habitos" name="tipo_tarea" value="Hábitos"><label for="tipo_habitos">Hábitos</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_viaje" name="tipo_tarea" value="Viaje"><label for="tipo_viaje">Viaje</label></div>
                             <div class="checkbox-item"><input type="checkbox" id="tipo_casa" name="tipo_tarea" value="Casa"><label for="tipo_casa">Casa</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_furgoneta" name="tipo_tarea" value="Furgoneta"><label for="tipo_furgoneta">Furgoneta</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_formacion" name="tipo_tarea" value="Formacion"><label for="tipo_formacion">Formación</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_estudio" name="tipo_tarea" value="Estudio"><label for="tipo_estudio">Estudio</label></div>
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="form-section">
-                    <div class="section-title">Fechas y Google Calendar</div>
+                    <div class="section-title">🗓️ Fechas y Google Calendar</div>
                     <div class="form-group">
                         <label for="fecha_limite">Fecha y Hora Límite (Plazo)</label>
                         <div class="datetime-group">
@@ -226,9 +229,11 @@
     </div>
 
 <script>
-    // IMPORTANTE: Reemplaza esta URL con la URL de tu implementación de Google Apps Script
+    // IMPORTANTE: Reemplaza esta URL con la URL de tu *nueva* implementación de Google Apps Script
     const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwku8Vsz6ZMkixoLd-2jiNHpyFMjxO0Dnd0r1RbhtdU1nEkH5GQw1BZBOtWqd7n2jGgmQ/exec';
 
+    // El resto del script JavaScript se mantiene igual que en la versión anterior.
+    // ...
     document.addEventListener('DOMContentLoaded', function() {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('fecha_limite').setAttribute('min', today);
@@ -258,21 +263,21 @@
     function validateForm() {
         const titulo = document.getElementById('titulo').value.trim();
         if (titulo.length < 3) {
-            showMessage('El título debe tener al menos 3 caracteres.', 'error');
+            showMessage('❌ El título debe tener al menos 3 caracteres.', 'error');
             return false;
         }
 
         const area = document.getElementById('area').value;
         const areaOther = document.getElementById('area_other').value.trim();
         if (area === 'other' && !areaOther) {
-            showMessage('Por favor, especifica el área personalizada.', 'error');
+            showMessage('❌ Por favor, especifica el área personalizada.', 'error');
             return false;
         }
 
         if (document.getElementById('add_to_calendar').checked) {
             const fechaLimite = document.getElementById('fecha_limite').value;
             if (!fechaLimite) {
-                showMessage('Para añadir a Calendar, la fecha límite es obligatoria.', 'error');
+                showMessage('❌ Para añadir a Calendar, la fecha límite es obligatoria.', 'error');
                 return false;
             }
 
@@ -280,7 +285,7 @@
                 const recordatorioFecha = document.getElementById('recordatorio_fecha').value;
                 const recordatorioHora = document.getElementById('recordatorio_hora').value;
                 if (!recordatorioFecha || !recordatorioHora) {
-                    showMessage('Debes especificar la fecha y hora para el recordatorio personalizado.', 'error');
+                    showMessage('❌ Debes especificar la fecha y hora para el recordatorio personalizado.', 'error');
                     return false;
                 }
 
@@ -289,7 +294,7 @@
                 const recordatorioTimestamp = new Date(`${recordatorioFecha}T${recordatorioHora}`).getTime();
 
                 if (recordatorioTimestamp >= eventoTimestamp) {
-                    showMessage('El recordatorio personalizado debe ser anterior a la fecha del evento.', 'error');
+                    showMessage('❌ El recordatorio personalizado debe ser anterior a la fecha del evento.', 'error');
                     return false;
                 }
             }
@@ -313,18 +318,20 @@
         try {
             const response = await fetch(WEBHOOK_URL, {
                 method: 'POST',
-                mode: 'cors', // Necesario para peticiones cross-origin
+                // quitamos mode: 'cors' ya que el servidor ahora lo maneja correctamente
                 body: JSON.stringify(formData),
                 headers: { 'Content-Type': 'application/json' }
             });
 
+            // No es necesario comprobar response.ok, ya que nuestro script siempre devuelve un JSON con 'success: true/false'
             const result = await response.json();
 
             if (!result.success) {
+                // El error viene del backend y es controlado
                 throw new Error(result.error || 'Error desconocido del servidor');
             }
             
-            let successHtml = `<strong>¡Éxito!</strong> Tarea creada correctamente.`;
+            let successHtml = `✅ <strong>¡Éxito!</strong> Tarea creada correctamente.`;
             if (result.notionUrl) {
                 successHtml += ` <a href="${result.notionUrl}" target="_blank" style="color: #155724; font-weight: bold;">Ver en Notion &rarr;</a>`;
             }
@@ -333,14 +340,13 @@
             }
             showMessage(successHtml, 'success');
             document.getElementById('taskForm').reset();
-            // Reset de campos que no se limpian con reset()
             toggleOtherArea();
             toggleCustomReminder();
             document.getElementById('calendarOptions').classList.add('hidden');
 
         } catch (error) {
             console.error('Error en el envío:', error);
-            showMessage(`Error de conexión: ${error.message}`, 'error');
+            showMessage(`❌ Error de conexión: ${error.message}`, 'error');
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalBtnText;
@@ -386,11 +392,10 @@
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}-message`;
         messageDiv.innerHTML = content;
-        container.innerHTML = ''; // Limpiar mensajes anteriores
+        container.innerHTML = ''; 
         container.appendChild(messageDiv);
         messageDiv.style.display = 'block';
     }
 </script>
-
 </body>
 </html>
