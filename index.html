@@ -133,7 +133,7 @@
     </div>
 
     <script>
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxRFi-tmWk8hn4kw9HmIzdndaRWl-9In5DCiQ5i5KEwHD1j2jygTVy_nNSJ47i3RwvPQw/exec';
+        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwjV88HV1o1T6iodoaEH2dR_1ppoQJaFDpYe3ryEjVxEnbfFV2WzxADdZEktkeuywqO5Q/exec';
         let projectsCache = [];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -255,13 +255,14 @@
                     <div class="task-meta">
                         ${project ? `<div class="meta-item">📁 ${project.name}</div>` : ''}
                         ${task.area ? `<div class="meta-item">📍 ${task.area}</div>` : ''}
-                        ${task.deadline ? `<div class="meta-item">🗓️ ${new Date(task.deadline).toLocaleDateString()}</div>` : ''}
+                        <div class="meta-item">🗓️ <input type="date" class="task-deadline-input" data-task-id="${task.id}" value="${task.deadline || ''}"></div>
                     </div>
                 `;
                 list.appendChild(card);
             });
             container.appendChild(list);
             document.querySelectorAll('.task-status-select').forEach(s => s.addEventListener('change', handleStatusUpdate));
+            document.querySelectorAll('.task-deadline-input').forEach(i => i.addEventListener('change', handleDeadlineUpdate));
         }
         
         function renderProjectDetails(details) {
@@ -347,7 +348,7 @@
         }
         
         async function handleAnnotationSave(button) {
-            const textarea = button.previousElementSibling;
+            const textarea = button.closest('.task-annotations').querySelector('textarea');
             button.textContent = 'Guardando...';
             button.disabled = true;
             try {
@@ -379,6 +380,19 @@
                 button.textContent = 'Error';
             } finally {
                 button.disabled = false;
+            }
+        }
+
+        async function handleDeadlineUpdate(e) {
+            const input = e.target;
+            input.disabled = true;
+            try {
+                 await apiCall({ action: 'updateTaskDeadline', taskId: input.dataset.taskId, newDeadline: input.value });
+            } catch (error) {
+                console.error('Error al actualizar fecha límite:', error);
+                loadTasks();
+            } finally {
+                input.disabled = false;
             }
         }
 
