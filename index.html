@@ -4,646 +4,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Asistente de Productividad</title>
+    <title>Mi Centro de Productividad</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #00A99D; /* Un verde azulado vibrante */
-            --secondary-color: #0077B6; /* Un azul corporativo */
-            --background-color: #F8F9FA;
-            --form-background: #ffffff;
-            --text-color: #212529;
-            --label-color: #495057;
-            --border-color: #DEE2E6;
-            --success-color: #198754;
-            --error-color: #DC3545;
-            --shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
-            --border-radius: 12px;
+            --primary-color: #00A99D; --secondary-color: #0077B6; --background-color: #F8F9FA; --form-background: #ffffff; --text-color: #212529; --label-color: #495057; --border-color: #DEE2E6; --success-color: #198754; --error-color: #DC3545; --shadow: 0 6px 20px rgba(0, 0, 0, 0.07); --border-radius: 12px;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background: var(--form-background);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.2em;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
-        .form-container {
-            padding: 30px 40px;
-        }
-
-        .form-section {
-            margin-bottom: 30px;
-        }
-
-        .section-title {
-            font-size: 1.4em;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #F1F3F5;
-            display: flex;
-            align-items: center;
-        }
-        
-        .section-title svg {
-            margin-right: 12px;
-            stroke: var(--primary-color);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--label-color);
-            font-size: 0.95em;
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1em;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s;
-            background-color: #FDFDFD;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.2);
-        }
-
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .submit-btn {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 20px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .submit-btn:disabled {
-            background: #BDBDBD;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .message {
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: none;
-            animation: fadeIn 0.5s ease-out;
-            text-align: center;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .error-message {
-            background: #FFF3F3; color: var(--error-color); border: 1px solid var(--error-color);
-        }
-
-        .success-message {
-            background: #F0FFF4; color: var(--success-color); border: 1px solid var(--success-color);
-        }
-        .success-message a { color: var(--success-color); font-weight: 600; text-decoration: none; }
-        .success-message a:hover { text-decoration: underline; }
-
-        .datetime-group {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 10px;
-        }
-
-        .calendar-section {
-            background: #F8F9FA;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            border: 1px solid #F1F3F5;
-            margin-top: 20px;
-        }
-
-        .checkbox-group, .main-checkbox {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .checkbox-item, .main-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .checkbox-item input[type="checkbox"], .main-checkbox input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-            accent-color: var(--primary-color);
-            height: 1.2em;
-            width: 1.2em;
-        }
-
-        .checkbox-item label, .main-checkbox label {
-            margin: 0;
-            font-weight: 500;
-            color: var(--text-color);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--background-color); color: var(--text-color); line-height: 1.6; padding: 20px; }
+        .container { max-width: 900px; margin: 20px auto; background: var(--form-background); border-radius: var(--border-radius); box-shadow: var(--shadow); overflow: hidden; }
+        .header { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; padding: 30px; text-align: center; }
+        .header h1 { font-size: 2.2em; font-weight: 700; margin-bottom: 8px; }
+        .main-content { padding: 30px 40px; }
+        .tab-navigation { display: flex; border-bottom: 2px solid var(--border-color); margin-bottom: 30px; }
+        .tab-btn { padding: 15px 25px; cursor: pointer; background: none; border: none; font-size: 1.1em; font-weight: 600; color: var(--label-color); transition: all 0.3s; border-bottom: 3px solid transparent; }
+        .tab-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Estilos del formulario (Asistente) */
+        .form-section { margin-bottom: 30px; }
+        .section-title { font-size: 1.4em; font-weight: 600; color: var(--primary-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #F1F3F5; display: flex; align-items: center; }
+        .section-title svg { margin-right: 12px; stroke: var(--primary-color); }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--label-color); font-size: 0.95em; }
+        input, select, textarea { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1em; font-family: 'Inter', sans-serif; transition: all 0.3s; background-color: #FDFDFD; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.2); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .submit-btn { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.1em; font-weight: 600; cursor: pointer; width: 100%; margin-top: 20px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); }
+        .submit-btn:disabled { background: #BDBDBD; cursor: not-allowed; }
+        .message { padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center; }
+        .error-message { background: #FFF3F3; color: var(--error-color); border: 1px solid var(--error-color); }
+        .success-message { background: #F0FFF4; color: var(--success-color); border: 1px solid var(--success-color); }
+        .datetime-group { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+        .calendar-section { background: #F8F9FA; padding: 20px; border-radius: var(--border-radius); border: 1px solid #F1F3F5; margin-top: 20px; }
+        .checkbox-group, .main-checkbox { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; }
+        .checkbox-item, .main-checkbox { display: flex; align-items: center; gap: 8px; }
+        .checkbox-item input[type="checkbox"], .main-checkbox input[type="checkbox"] { width: auto; margin: 0; accent-color: var(--primary-color); height: 1.2em; width: 1.2em; }
+        .checkbox-item label, .main-checkbox label { margin: 0; font-weight: 500; }
         .main-checkbox label { font-weight: 600; }
-
-        .loading-spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
+        .loading-spinner { width: 20px; height: 20px; border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         .hidden { display: none; }
-        
-        small {
-            color: #6C757D;
-            font-size: 0.85em;
-            display: block;
-            margin-top: 5px;
-        }
-
-        @media (max-width: 768px) {
-            .form-row, .datetime-group {
-                grid-template-columns: 1fr;
-            }
-            .form-container {
-                padding: 20px;
-            }
-            .header {
-                padding: 30px 20px;
-            }
-            .header h1 {
-                font-size: 1.8em;
-            }
-        }
+        /* Estilos del Gestor de Tareas */
+        .filters-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 30px; padding: 20px; background-color: #F8F9FA; border-radius: var(--border-radius); }
+        .task-list { display: grid; gap: 15px; }
+        .task-card { background-color: #fff; border-radius: var(--border-radius); padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid; transition: all 0.3s; }
+        .task-card.priority-Alta { border-color: #e53e3e; }
+        .task-card.priority-Medio { border-color: #dd6b20; }
+        .task-card.priority-Baja { border-color: #3182ce; }
+        .task-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .task-card-header h3 { font-size: 1.2em; margin-right: 10px; }
+        .task-status-select { font-weight: 600; border: none; background: #f1f3f5; border-radius: 20px; padding: 5px 10px; cursor: pointer; }
+        .task-meta { display: flex; flex-wrap: wrap; gap: 15px; font-size: 0.9em; color: var(--label-color); margin-top: 15px; }
+        .meta-item { display: flex; align-items: center; gap: 5px; background-color: #F8F9FA; padding: 5px 10px; border-radius: 20px; }
+        #task-list-container.loading::after { content: 'Cargando tareas...'; display: block; text-align: center; padding: 40px; font-size: 1.2em; color: var(--label-color); }
+        @media (max-width: 768px) { .form-row, .datetime-group, .filters-panel { grid-template-columns: 1fr; } .main-content { padding: 20px; } }
     </style>
 </head>
 
 <body>
     <div class="container">
         <header class="header">
-            <h1>Asistente de Productividad</h1>
-            <p>Centraliza tus tareas de Notion y Google Calendar</p>
+            <h1>Centro de Productividad</h1>
         </header>
 
-        <main class="form-container">
-            <form id="taskForm" novalidate>
-                <!-- Sección de Información Básica -->
-                <section class="form-section">
-                    <h2 class="section-title">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                        Información de la Tarea
-                    </h2>
-                    <div class="form-group">
-                        <label for="titulo">¿Qué necesitas hacer? *</label>
-                        <input type="text" id="titulo" name="titulo" placeholder="Ej: Preparar la presentación de Física Cuántica" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="descripcion">Descripción</label>
-                        <textarea id="descripcion" name="descripcion" placeholder="Añade más detalles, enlaces o notas..."></textarea>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="estado">Estado</label>
-                            <select id="estado" name="estado">
-                                <option value="Sin empezar">⚪️ Sin empezar</option>
-                                <option value="En progreso">🟡 En progreso</option>
-                                <option value="Listo">🟢 Listo</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="prioridad">Prioridad</label>
-                            <select id="prioridad" name="prioridad">
-                                <option value="Alta">🔴 Alta</option>
-                                <option value="Medio">🟠 Media</option>
-                                <option value="Baja">🔵 Baja</option>
-                            </select>
-                        </div>
-                    </div>
-                </section>
+        <nav class="tab-navigation">
+            <button class="tab-btn active" data-tab="asistente">➕ Asistente de Tareas</button>
+            <button class="tab-btn" data-tab="gestor">📋 Gestor de Tareas</button>
+        </nav>
 
-                <!-- Sección de Categorización -->
-                <section class="form-section">
-                    <h2 class="section-title">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                        Categorización
-                    </h2>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="area">Área</label>
-                            <select id="area" name="area">
-                                <option value="">Seleccionar área...</option>
-                                <option value="Profesional">💼 Profesional</option>
-                                <option value="Académico">🎓 Académico</option>
-                                <option value="Personal">👤 Personal</option>
-                                <option value="Formación">📚 Formación</option>
-                                <option value="Evaluación">📝 Evaluación</option>
-                                <option value="Huerta">🌱 Huerta</option>
-                                <option value="Taller">🛠️ Taller</option>
-                                <option value="Hogar">🏠 Hogar</option>
-                                <option value="Administrativo">📂 Administrativo</option>
-                                <option value="other">✨ Otra...</option>
-                            </select>
-                            <input type="text" id="area_other" name="area_other" placeholder="Especifica el área" class="hidden" style="margin-top: 10px;">
+        <main class="main-content">
+            <!-- PESTAÑA 1: ASISTENTE (FORMULARIO) -->
+            <div id="asistente" class="tab-content active">
+                <form id="taskForm" novalidate>
+                    <!-- Contenido del formulario que ya conoces -->
+                    <section class="form-section">
+                        <h2 class="section-title"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>Información de la Tarea</h2>
+                        <div class="form-group"><label for="titulo">¿Qué necesitas hacer? *</label><input type="text" id="titulo" name="titulo" placeholder="Ej: Preparar la presentación de Física Cuántica" required></div>
+                        <div class="form-group"><label for="descripcion">Descripción</label><textarea id="descripcion" name="descripcion" placeholder="Añade más detalles, enlaces o notas..."></textarea></div>
+                        <div class="form-row">
+                            <div class="form-group"><label for="estado">Estado</label><select id="estado" name="estado"><option value="Sin empezar">⚪️ Sin empezar</option><option value="En progreso">🟡 En progreso</option><option value="Listo">🟢 Listo</option></select></div>
+                            <div class="form-group"><label for="prioridad">Prioridad</label><select id="prioridad" name="prioridad"><option value="Alta">🔴 Alta</option><option value="Medio">🟠 Media</option><option value="Baja">🔵 Baja</option></select></div>
                         </div>
-                        <div class="form-group">
-                            <label for="proyecto_id">Proyecto</label>
-                            <select id="proyecto_id" name="proyecto_id">
-                                <option value="none">Cargando proyectos...</option>
-                            </select>
+                    </section>
+                    <section class="form-section">
+                        <h2 class="section-title"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>Categorización</h2>
+                        <div class="form-row">
+                            <div class="form-group"><label for="area">Área</label><select id="area" name="area"><option value="">Seleccionar área...</option><option value="Profesional">💼 Profesional</option><option value="Académico">🎓 Académico</option><option value="Personal">👤 Personal</option><option value="Formación">📚 Formación</option><option value="Evaluación">📝 Evaluación</option><option value="Huerta">🌱 Huerta</option><option value="Taller">🛠️ Taller</option><option value="Hogar">🏠 Hogar</option><option value="Administrativo">📂 Administrativo</option><option value="other">✨ Otra...</option></select><input type="text" id="area_other" name="area_other" placeholder="Especifica el área" class="hidden" style="margin-top: 10px;"></div>
+                            <div class="form-group"><label for="proyecto_id">Proyecto</label><select id="proyecto_id" name="proyecto_id"><option value="none">Cargando proyectos...</option></select></div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="nivel_esfuerzo">Nivel de esfuerzo</label>
-                        <select id="nivel_esfuerzo" name="nivel_esfuerzo">
-                            <option value="">Seleccionar esfuerzo...</option>
-                            <option value="Pequeño">☕️ Pequeño ( &lt; 30 min)</option>
-                            <option value="Medio">💪 Medio (30-90 min)</option>
-                            <option value="Grande">🚀 Grande ( &gt; 90 min)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Tipo de tarea</label>
-                        <div class="checkbox-group">
-                            <div class="checkbox-item"><input type="checkbox" id="tipo_personal" name="tipo_tarea" value="Personal"><label for="tipo_personal">👤 Personal</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="tipo_trabajo" name="tipo_tarea" value="Trabajo"><label for="tipo_trabajo">💼 Trabajo</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="tipo_social" name="tipo_tarea" value="Social"><label for="tipo_social">🎉 Social</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="tipo_salud" name="tipo_tarea" value="Salud"><label for="tipo_salud">❤️ Salud</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="tipo_habitos" name="tipo_tarea" value="Hábitos"><label for="tipo_habitos">🔄 Hábitos</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="tipo_estudio" name="tipo_tarea" value="Estudio"><label for="tipo_estudio">📚 Estudio</label></div>
-                        </div>
-                    </div>
-                </section>
+                    </section>
+                    <div id="messageBoxForm"></div>
+                    <button type="submit" class="submit-btn" id="submitBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>Crear Tarea</span></button>
+                </form>
+            </div>
 
-                <!-- Sección de Fechas y Calendar -->
-                <section class="form-section">
-                    <h2 class="section-title">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                        Fechas y Recordatorios
-                    </h2>
-                    <div class="form-group">
-                        <label for="fecha_limite">Fecha y hora límite (opcional)</label>
-                        <div class="datetime-group">
-                            <input type="date" id="fecha_limite" name="fecha_limite">
-                            <input type="time" id="hora_limite" name="hora_limite">
-                        </div>
-                    </div>
-                    <div class="calendar-section">
-                        <div class="main-checkbox">
-                            <input type="checkbox" id="add_to_calendar" name="add_to_calendar">
-                            <label for="add_to_calendar">Añadir a Google Calendar</label>
-                        </div>
-                        <div id="calendarOptions" class="hidden" style="margin-top: 15px;">
-                            <label>Opciones de recordatorio:</label>
-                            <div class="checkbox-group" style="margin-top: 10px;">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="recordatorio_2h" name="recordatorio_2h">
-                                    <label for="recordatorio_2h">⏰ 2 horas antes</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="recordatorio_custom" name="recordatorio_custom">
-                                    <label for="recordatorio_custom">🗓️ Personalizado</label>
-                                </div>
-                            </div>
-                            <div id="customReminderFields" class="hidden" style="margin-top: 15px;">
-                                <label>Fecha y hora del recordatorio:</label>
-                                <div class="datetime-group">
-                                    <input type="date" id="recordatorio_fecha" name="recordatorio_fecha">
-                                    <input type="time" id="recordatorio_hora" name="recordatorio_hora">
-                                </div>
-                                <small>El recordatorio debe ser anterior a la fecha del evento.</small>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                
-                <div id="messageBox"></div>
-
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    <span>Crear Tarea</span>
-                </button>
-            </form>
+            <!-- PESTAÑA 2: GESTOR DE TAREAS -->
+            <div id="gestor" class="tab-content">
+                <div class="filters-panel">
+                    <div class="form-group"><label for="filter-project">Filtrar por Proyecto</label><select id="filter-project"><option value="all">Todos los proyectos</option></select></div>
+                    <div class="form-group"><label for="filter-area">Filtrar por Área</label><select id="filter-area"><option value="all">Todas las áreas</option><option value="Profesional">💼 Profesional</option><option value="Académico">🎓 Académico</option><option value="Personal">👤 Personal</option><option value="Formación">📚 Formación</option><option value="Evaluación">📝 Evaluación</option><option value="Huerta">🌱 Huerta</option><option value="Taller">🛠️ Taller</option><option value="Hogar">🏠 Hogar</option><option value="Administrativo">📂 Administrativo</option></select></div>
+                    <div class="form-group"><label for="filter-date">Filtrar por Fecha</label><select id="filter-date"><option value="all">Cualquier fecha</option><option value="today">Hoy</option><option value="week">Esta semana</option><option value="month">Este mes</option></select></div>
+                </div>
+                <div id="task-list-container"></div>
+            </div>
         </main>
     </div>
 
     <script>
-        // =================================================
-        // 1. CONFIGURACIÓN
-        // =================================================
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwOqPBHFq_5ISNcd_XVaowUhbkUSSQPrRTpwI4-tUUSJZQkV461CUCSmeUCmOkrn1VDIw/exec';
+        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz607q4f8mpilo_XtScEP6XsxmMOqvgb9HIXRtrdoIr-K5RzJXhMMXON_MvWNhaoM7q4Q/exec';
+        let projectsCache = [];
 
-        // =================================================
-        // 2. SELECTORES DE ELEMENTOS DEL DOM
-        // =================================================
-        const taskForm = document.getElementById('taskForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const messageBox = document.getElementById('messageBox');
-        const areaSelect = document.getElementById('area');
-        const otherAreaInput = document.getElementById('area_other');
-        const addToCalendarCheck = document.getElementById('add_to_calendar');
-        const calendarOptionsDiv = document.getElementById('calendarOptions');
-        const customReminderCheck = document.getElementById('recordatorio_custom');
-        const customReminderFieldsDiv = document.getElementById('customReminderFields');
-        const fechaLimiteInput = document.getElementById('fecha_limite');
-        const proyectoSelect = document.getElementById('proyecto_id');
-
-        // =================================================
-        // 3. LÓGICA DE LA APLICACIÓN
-        // =================================================
+        // --- INICIALIZACIÓN Y NAVEGACIÓN ---
         document.addEventListener('DOMContentLoaded', () => {
-            const today = new Date().toISOString().split('T')[0];
-            fechaLimiteInput.setAttribute('min', today);
-            document.getElementById('recordatorio_fecha').setAttribute('min', today);
-
-            taskForm.addEventListener('submit', handleFormSubmit);
-            areaSelect.addEventListener('change', toggleOtherArea);
-            addToCalendarCheck.addEventListener('change', toggleCalendarOptions);
-            customReminderCheck.addEventListener('change', toggleCustomReminder);
-            
-            // NUEVA LLAMADA PARA CARGAR LOS PROYECTOS
-            loadProjects();
+            initializeApp();
+            setupTabNavigation();
         });
 
-        function toggleOtherArea() {
-            otherAreaInput.classList.toggle('hidden', areaSelect.value !== 'other');
-            otherAreaInput.required = (areaSelect.value === 'other');
+        function initializeApp() {
+            loadProjects();
+            loadTasks();
+            
+            // Listeners del formulario
+            document.getElementById('taskForm').addEventListener('submit', handleFormSubmit);
+            document.getElementById('area').addEventListener('change', () => {
+                const otherArea = document.getElementById('area_other');
+                otherArea.classList.toggle('hidden', document.getElementById('area').value !== 'other');
+                otherArea.required = (document.getElementById('area').value === 'other');
+            });
+
+            // Listeners de los filtros del gestor
+            document.getElementById('filter-project').addEventListener('change', loadTasks);
+            document.getElementById('filter-area').addEventListener('change', loadTasks);
+            document.getElementById('filter-date').addEventListener('change', loadTasks);
         }
 
-        function toggleCalendarOptions() {
-            calendarOptionsDiv.classList.toggle('hidden', !addToCalendarCheck.checked);
-            if (!addToCalendarCheck.checked) {
-                customReminderCheck.checked = false;
-                toggleCustomReminder();
-            }
-        }
-
-        function toggleCustomReminder() {
-            customReminderFieldsDiv.classList.toggle('hidden', !customReminderCheck.checked);
-        }
-
-        async function handleFormSubmit(e) {
-            e.preventDefault();
-            if (!validateForm()) return;
-
-            setLoadingState(true);
-            const formData = prepareFormData();
-
-            try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    body: JSON.stringify(formData)
+        function setupTabNavigation() {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(button.dataset.tab).classList.add('active');
                 });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => null);
-                    throw new Error(errorData?.error || `Error del servidor: ${response.statusText}`);
-                }
-
-                const result = await response.json();
-
-                if (result.success) {
-                    showMessage('success', result.message, result.notionUrl, result.calendarUrl);
-                    taskForm.reset();
-                    toggleOtherArea();
-                    toggleCalendarOptions();
-                } else {
-                    throw new Error(result.error || 'Ocurrió un error desconocido.');
-                }
-
-            } catch (error) {
-                console.error('Error al enviar el formulario:', error);
-                showMessage('error', error.message);
-            } finally {
-                setLoadingState(false);
-            }
+            });
         }
-        
-        // =================================================
-        // 4. NUEVA FUNCIÓN PARA CARGAR PROYECTOS
-        // =================================================
+
+        // --- LÓGICA DE CARGA DE DATOS (PROYECTOS Y TAREAS) ---
         async function loadProjects() {
             try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    body: JSON.stringify({ action: 'getProjects' })
-                });
-                
-                if (!response.ok) throw new Error('No se pudo conectar con el servidor de proyectos.');
-
+                const response = await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify({ action: 'getProjects' }) });
                 const result = await response.json();
-
-                if (result.success) {
-                    proyectoSelect.innerHTML = '<option value="none">Sin proyecto asignado</option>'; // Opción por defecto
-                    if (result.data.length === 0) {
-                         const option = document.createElement('option');
-                         option.textContent = 'No hay proyectos activos';
-                         option.disabled = true;
-                         proyectoSelect.appendChild(option);
-                    } else {
-                        result.data.forEach(project => {
-                            const option = document.createElement('option');
-                            option.value = project.id;
-                            option.textContent = `📁 ${project.name}`;
-                            proyectoSelect.appendChild(option);
-                        });
-                    }
-                } else {
-                    throw new Error(result.error);
-                }
-
+                if (!result.success) throw new Error(result.error);
+                
+                projectsCache = result.data;
+                const projectSelects = [document.getElementById('proyecto_id'), document.getElementById('filter-project')];
+                
+                projectSelects.forEach(select => {
+                    if(select.id === 'proyecto_id') select.innerHTML = '<option value="none">Sin proyecto asignado</option>';
+                    else select.innerHTML = '<option value="all">Todos los proyectos</option>';
+                    
+                    projectsCache.forEach(project => {
+                        const option = document.createElement('option');
+                        option.value = project.id;
+                        option.textContent = `📁 ${project.name}`;
+                        select.appendChild(option);
+                    });
+                });
             } catch (error) {
                 console.error('Error al cargar proyectos:', error);
-                proyectoSelect.innerHTML = `<option value="none">Error al cargar proyectos</option>`;
+                document.getElementById('proyecto_id').innerHTML = `<option value="none">Error al cargar</option>`;
+                document.getElementById('filter-project').innerHTML = `<option value="all">Error al cargar</option>`;
             }
         }
 
+        async function loadTasks() {
+            const taskContainer = document.getElementById('task-list-container');
+            taskContainer.innerHTML = '';
+            taskContainer.classList.add('loading');
 
-        // =================================================
-        // 5. FUNCIONES AUXILIARES
-        // =================================================
-        function validateForm() {
-            clearMessages();
-            const titulo = document.getElementById('titulo').value.trim();
-            if (!titulo) {
-                showMessage('error', 'El título de la tarea es obligatorio.');
-                return false;
+            const filters = {
+                projectId: document.getElementById('filter-project').value,
+                area: document.getElementById('filter-area').value,
+                dateRange: document.getElementById('filter-date').value
+            };
+
+            try {
+                const response = await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify({ action: 'getTasks', filters }) });
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error);
+                renderTasks(result.data);
+            } catch (error) {
+                console.error('Error al cargar tareas:', error);
+                taskContainer.innerHTML = `<div class="message error-message">Error al cargar las tareas: ${error.message}</div>`;
+            } finally {
+                taskContainer.classList.remove('loading');
             }
+        }
 
-            if (addToCalendarCheck.checked && !fechaLimiteInput.value) {
-                showMessage('error', 'Para añadir a Calendar, debes especificar una fecha límite.');
-                return false;
+        // --- LÓGICA DE RENDERIZADO ---
+        function renderTasks(tasks) {
+            const taskContainer = document.getElementById('task-list-container');
+            if (tasks.length === 0) {
+                taskContainer.innerHTML = '<div class="message">No se encontraron tareas con los filtros seleccionados.</div>';
+                return;
             }
-
-            if (customReminderCheck.checked) {
-                const reminderDate = document.getElementById('recordatorio_fecha').value;
-                const reminderTime = document.getElementById('recordatorio_hora').value;
-                if (!reminderDate || !reminderTime) {
-                    showMessage('error', 'Debes especificar fecha y hora para el recordatorio personalizado.');
-                    return false;
-                }
+            const taskList = document.createElement('div');
+            taskList.className = 'task-list';
+            tasks.forEach(task => {
+                const card = document.createElement('div');
+                card.className = `task-card priority-${task.priority || 'default'}`;
                 
-                const eventDate = new Date(`${fechaLimiteInput.value}T${document.getElementById('hora_limite').value || '00:00'}`);
-                const customRemDate = new Date(`${reminderDate}T${reminderTime}`);
-                if (customRemDate >= eventDate) {
-                    showMessage('error', 'La fecha del recordatorio debe ser anterior a la del evento.');
-                    return false;
-                }
-            }
-            return true;
+                const project = projectsCache.find(p => p.id === task.project);
+
+                card.innerHTML = `
+                    <div class="task-card-header">
+                        <h3>${task.title}</h3>
+                        <select class="task-status-select" data-task-id="${task.id}">
+                            <option value="Sin empezar" ${task.status === 'Sin empezar' ? 'selected' : ''}>⚪️ Sin empezar</option>
+                            <option value="En progreso" ${task.status === 'En progreso' ? 'selected' : ''}>🟡 En progreso</option>
+                            <option value="Listo" ${task.status === 'Listo' ? 'selected' : ''}>🟢 Listo</option>
+                        </select>
+                    </div>
+                    <div class="task-meta">
+                        ${project ? `<div class="meta-item">📁 ${project.name}</div>` : ''}
+                        ${task.area ? `<div class="meta-item">📍 ${task.area}</div>` : ''}
+                        ${task.deadline ? `<div class="meta-item">🗓️ ${new Date(task.deadline).toLocaleDateString()}</div>` : ''}
+                    </div>
+                `;
+                taskList.appendChild(card);
+            });
+            taskContainer.appendChild(taskList);
+
+            // Añadir listeners a los nuevos selectores de estado
+            document.querySelectorAll('.task-status-select').forEach(select => {
+                select.addEventListener('change', handleStatusUpdate);
+            });
         }
 
-        function prepareFormData() {
-            const fecha = fechaLimiteInput.value;
-            const hora = document.getElementById('hora_limite').value;
-            let fechaLimiteCompleta = null;
-            if (fecha) {
-                fechaLimiteCompleta = `${fecha} ${hora || '09:00'}`;
-            }
-
-            const tiposTarea = Array.from(document.querySelectorAll('input[name="tipo_tarea"]:checked')).map(cb => cb.value);
+        // --- LÓGICA DE FORMULARIO Y ACTUALIZACIONES ---
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const messageBox = document.getElementById('messageBoxForm');
+            messageBox.innerHTML = '';
             
-            return {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loading-spinner"></div><span>Creando...</span>';
+
+            const formData = {
                 action: 'createTask',
-                titulo: document.getElementById('titulo').value.trim(),
-                descripcion: document.getElementById('descripcion').value.trim(),
+                titulo: document.getElementById('titulo').value,
+                descripcion: document.getElementById('descripcion').value,
                 estado: document.getElementById('estado').value,
                 prioridad: document.getElementById('prioridad').value,
-                area: areaSelect.value,
-                area_other: otherAreaInput.value.trim(),
-                proyecto_id: proyectoSelect.value, // Capturamos el ID del proyecto seleccionado
-                nivel_esfuerzo: document.getElementById('nivel_esfuerzo').value,
-                tipo_tarea: tiposTarea,
-                fecha_limite: fechaLimiteCompleta,
-                add_to_calendar: addToCalendarCheck.checked,
-                recordatorio_2h: document.getElementById('recordatorio_2h').checked,
-                recordatorio_custom: customReminderCheck.checked,
-                recordatorio_fecha: document.getElementById('recordatorio_fecha').value,
-                recordatorio_hora: document.getElementById('recordatorio_hora').value
+                area: document.getElementById('area').value,
+                area_other: document.getElementById('area_other').value,
+                proyecto_id: document.getElementById('proyecto_id').value,
             };
-        }
 
-        function setLoadingState(isLoading) {
-            submitBtn.disabled = isLoading;
-            if (isLoading) {
-                submitBtn.innerHTML = '<div class="loading-spinner"></div><span>Creando...</span>';
-            } else {
-                submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>Crear Tarea</span>';
+            try {
+                const response = await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify(formData) });
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error);
+                messageBox.innerHTML = `<div class="message success-message">¡Tarea creada con éxito!</div>`;
+                document.getElementById('taskForm').reset();
+                loadTasks(); // Recargar las tareas en el gestor
+            } catch (error) {
+                messageBox.innerHTML = `<div class="message error-message">Error: ${error.message}</div>`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>Crear Tarea</span>';
             }
         }
 
-        function showMessage(type, text, notionUrl = null, calendarUrl = null) {
-            messageBox.innerHTML = '';
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}-message`;
-            
-            let content = `<strong>${type === 'success' ? 'Éxito:' : 'Error:'}</strong> ${text}`;
-            if (type === 'success') {
-                if (notionUrl) content += ` | <a href="${notionUrl}" target="_blank">Ver en Notion</a>`;
-                if (calendarUrl) content += ` | <a href="${calendarUrl}" target="_blank">Ver en Calendar</a>`;
+        async function handleStatusUpdate(e) {
+            const select = e.target;
+            const taskId = select.dataset.taskId;
+            const newStatus = select.value;
+            select.disabled = true;
+
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'updateTaskStatus', taskId, newStatus })
+                });
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error);
+                // Opcional: mostrar una pequeña notificación de éxito
+            } catch (error) {
+                console.error('Error al actualizar estado:', error);
+                // Revertir el cambio en la UI si falla
+                loadTasks(); 
+            } finally {
+                select.disabled = false;
             }
-            messageDiv.innerHTML = content;
-            messageBox.appendChild(messageDiv);
-
-            setTimeout(() => {
-                messageDiv.style.opacity = '0';
-                setTimeout(() => messageDiv.remove(), 500);
-            }, 8000);
         }
-
-        function clearMessages() {
-            messageBox.innerHTML = '';
-        }
-
     </script>
 </body>
 </html>
