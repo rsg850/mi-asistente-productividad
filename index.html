@@ -241,19 +241,6 @@
         }
 
         .hidden { display: none; }
-
-        .info-message {
-            background: #eef2f5;
-            color: #5a6a78;
-            padding: 12px 15px;
-            border-radius: 8px;
-            font-size: 0.9em;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
         
         small {
             color: #6C757D;
@@ -348,10 +335,9 @@
                         </div>
                         <div class="form-group">
                             <label for="proyecto_id">Proyecto</label>
-                            <div class="info-message">
-                                <span>🔒</span>
-                                <span>No disponible temporalmente</span>
-                            </div>
+                            <select id="proyecto_id" name="proyecto_id">
+                                <option value="none">Cargando proyectos...</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">
@@ -432,8 +418,7 @@
         // =================================================
         // 1. CONFIGURACIÓN
         // =================================================
-        // IMPORTANTE: Reemplaza esta URL con la URL de tu Web App de Google Apps Script.
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycby1I0y2UxAgWao3iJAjO1IuWdE98BJD_X7A0h4XM27wlTgB9vYU-ejF-5GK9bD76JDX/exec';
+        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyig4dVaFG7zYQ0UzWdN98bWg2eDbiA4hG2yHiNcRlL3vLQStCvZNFHTUdq0JzFyDD7Yw/exec';
 
         // =================================================
         // 2. SELECTORES DE ELEMENTOS DEL DOM
@@ -448,21 +433,23 @@
         const customReminderCheck = document.getElementById('recordatorio_custom');
         const customReminderFieldsDiv = document.getElementById('customReminderFields');
         const fechaLimiteInput = document.getElementById('fecha_limite');
+        const proyectoSelect = document.getElementById('proyecto_id');
 
         // =================================================
         // 3. LÓGICA DE LA APLICACIÓN
         // =================================================
         document.addEventListener('DOMContentLoaded', () => {
-            // Establecer la fecha mínima para los inputs de fecha a hoy
             const today = new Date().toISOString().split('T')[0];
             fechaLimiteInput.setAttribute('min', today);
             document.getElementById('recordatorio_fecha').setAttribute('min', today);
 
-            // Añadir event listeners
             taskForm.addEventListener('submit', handleFormSubmit);
             areaSelect.addEventListener('change', toggleOtherArea);
             addToCalendarCheck.addEventListener('change', toggleCalendarOptions);
             customReminderCheck.addEventListener('change', toggleCustomReminder);
+            
+            // NUEVA LLAMADA PARA CARGAR LOS PROYECTOS
+            loadProjects();
         });
 
         function toggleOtherArea() {
@@ -472,7 +459,6 @@
 
         function toggleCalendarOptions() {
             calendarOptionsDiv.classList.toggle('hidden', !addToCalendarCheck.checked);
-            // Si se desmarca, también ocultar los campos de recordatorio personalizado
             if (!addToCalendarCheck.checked) {
                 customReminderCheck.checked = false;
                 toggleCustomReminder();
@@ -498,7 +484,6 @@
                 });
 
                 if (!response.ok) {
-                    // Si la respuesta HTTP no es 2xx, intenta leer el error
                     const errorData = await response.json().catch(() => null);
                     throw new Error(errorData?.error || `Error del servidor: ${response.statusText}`);
                 }
@@ -521,11 +506,51 @@
                 setLoadingState(false);
             }
         }
+        
+        // =================================================
+        // 4. NUEVA FUNCIÓN PARA CARGAR PROYECTOS
+        // =================================================
+        async function loadProjects() {
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: JSON.stringify({ action: 'getProjects' })
+                });
+                
+                if (!response.ok) throw new Error('No se pudo conectar con el servidor de proyectos.');
+
+                const result = await response.json();
+
+                if (result.success) {
+                    proyectoSelect.innerHTML = '<option value="none">Sin proyecto asignado</option>'; // Opción por defecto
+                    if (result.data.length === 0) {
+                         const option = document.createElement('option');
+                         option.textContent = 'No hay proyectos activos';
+                         option.disabled = true;
+                         proyectoSelect.appendChild(option);
+                    } else {
+                        result.data.forEach(project => {
+                            const option = document.createElement('option');
+                            option.value = project.id;
+                            option.textContent = `📁 ${project.name}`;
+                            proyectoSelect.appendChild(option);
+                        });
+                    }
+                } else {
+                    throw new Error(result.error);
+                }
+
+            } catch (error) {
+                console.error('Error al cargar proyectos:', error);
+                proyectoSelect.innerHTML = `<option value="none">Error al cargar proyectos</option>`;
+            }
+        }
+
 
         // =================================================
-        // 4. FUNCIONES AUXILIARES
+        // 5. FUNCIONES AUXILIARES
         // =================================================
-
         function validateForm() {
             clearMessages();
             const titulo = document.getElementById('titulo').value.trim();
@@ -566,7 +591,6 @@
             }
 
             const tiposTarea = Array.from(document.querySelectorAll('input[name="tipo_tarea"]:checked')).map(cb => cb.value);
-            const area = areaSelect.value === 'other' ? otherAreaInput.value.trim() : areaSelect.value;
             
             return {
                 action: 'createTask',
@@ -576,6 +600,7 @@
                 prioridad: document.getElementById('prioridad').value,
                 area: areaSelect.value,
                 area_other: otherAreaInput.value.trim(),
+                proyecto_id: proyectoSelect.value, // Capturamos el ID del proyecto seleccionado
                 nivel_esfuerzo: document.getElementById('nivel_esfuerzo').value,
                 tipo_tarea: tiposTarea,
                 fecha_limite: fechaLimiteCompleta,
@@ -597,7 +622,7 @@
         }
 
         function showMessage(type, text, notionUrl = null, calendarUrl = null) {
-            messageBox.innerHTML = ''; // Limpiar mensajes anteriores
+            messageBox.innerHTML = '';
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}-message`;
             
@@ -622,4 +647,3 @@
     </script>
 </body>
 </html>
-```
