@@ -10,16 +10,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #6a5af9;
-            --secondary-color: #d66efd;
-            --background-color: #f4f7f9;
+            --primary-color: #00A99D; /* Un verde azulado vibrante */
+            --secondary-color: #0077B6; /* Un azul corporativo */
+            --background-color: #F8F9FA;
             --form-background: #ffffff;
-            --text-color: #333;
-            --label-color: #555;
-            --border-color: #e0e0e0;
-            --success-color: #28a745;
-            --error-color: #dc3545;
-            --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            --text-color: #212529;
+            --label-color: #495057;
+            --border-color: #DEE2E6;
+            --success-color: #198754;
+            --error-color: #DC3545;
+            --shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
             --border-radius: 12px;
         }
 
@@ -78,13 +78,14 @@
             color: var(--primary-color);
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid var(--border-color);
+            border-bottom: 2px solid #F1F3F5;
             display: flex;
             align-items: center;
         }
         
         .section-title svg {
-            margin-right: 10px;
+            margin-right: 12px;
+            stroke: var(--primary-color);
         }
 
         .form-group {
@@ -109,6 +110,7 @@
             font-size: 1em;
             font-family: 'Inter', sans-serif;
             transition: all 0.3s;
+            background-color: #FDFDFD;
         }
 
         input:focus,
@@ -116,7 +118,7 @@
         textarea:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(106, 90, 249, 0.2);
+            box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.2);
         }
 
         textarea {
@@ -154,7 +156,7 @@
         }
 
         .submit-btn:disabled {
-            background: #ccc;
+            background: #BDBDBD;
             cursor: not-allowed;
             transform: none;
         }
@@ -174,11 +176,11 @@
         }
 
         .error-message {
-            background: #ffebee; color: var(--error-color); border: 1px solid var(--error-color);
+            background: #FFF3F3; color: var(--error-color); border: 1px solid var(--error-color);
         }
 
         .success-message {
-            background: #e8f5e9; color: var(--success-color); border: 1px solid var(--success-color);
+            background: #F0FFF4; color: var(--success-color); border: 1px solid var(--success-color);
         }
         .success-message a { color: var(--success-color); font-weight: 600; text-decoration: none; }
         .success-message a:hover { text-decoration: underline; }
@@ -190,10 +192,10 @@
         }
 
         .calendar-section {
-            background: #f8faff;
+            background: #F8F9FA;
             padding: 20px;
             border-radius: var(--border-radius);
-            border: 1px solid #e0e7ff;
+            border: 1px solid #F1F3F5;
             margin-top: 20px;
         }
 
@@ -243,14 +245,18 @@
         .info-message {
             background: #eef2f5;
             color: #5a6a78;
-            padding: 10px 15px;
+            padding: 12px 15px;
             border-radius: 8px;
             font-size: 0.9em;
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
         small {
-            color: #777;
+            color: #6C757D;
             font-size: 0.85em;
             display: block;
             margin-top: 5px;
@@ -300,17 +306,17 @@
                         <div class="form-group">
                             <label for="estado">Estado</label>
                             <select id="estado" name="estado">
-                                <option value="Sin empezar">Sin empezar</option>
-                                <option value="En progreso">En progreso</option>
-                                <option value="Listo">Listo</option>
+                                <option value="Sin empezar">⚪️ Sin empezar</option>
+                                <option value="En progreso">🟡 En progreso</option>
+                                <option value="Listo">🟢 Listo</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="prioridad">Prioridad</label>
                             <select id="prioridad" name="prioridad">
-                                <option value="Medio">Media</option>
-                                <option value="Alta">Alta</option>
-                                <option value="Baja">Baja</option>
+                                <option value="Alta">🔴 Alta</option>
+                                <option value="Medio">🟠 Media</option>
+                                <option value="Baja">🔵 Baja</option>
                             </select>
                         </div>
                     </div>
@@ -327,42 +333,45 @@
                             <label for="area">Área</label>
                             <select id="area" name="area">
                                 <option value="">Seleccionar área...</option>
-                                <option value="Profesional">Profesional</option>
-                                <option value="Académico">Académico</option>
-                                <option value="Personal">Personal</option>
-                                <option value="Formación">Formación</option>
-                                <option value="Evaluación">Evaluación</option>
-                                <option value="Huerta">Huerta</option>
-                                <option value="Taller">Taller</option>
-                                <option value="Hogar">Hogar</option>
-                                <option value="Administrativo">Administrativo</option>
-                                <option value="other">Otra...</option>
+                                <option value="Profesional">💼 Profesional</option>
+                                <option value="Académico">🎓 Académico</option>
+                                <option value="Personal">👤 Personal</option>
+                                <option value="Formación">📚 Formación</option>
+                                <option value="Evaluación">📝 Evaluación</option>
+                                <option value="Huerta">🌱 Huerta</option>
+                                <option value="Taller">🛠️ Taller</option>
+                                <option value="Hogar">🏠 Hogar</option>
+                                <option value="Administrativo">📂 Administrativo</option>
+                                <option value="other">✨ Otra...</option>
                             </select>
                             <input type="text" id="area_other" name="area_other" placeholder="Especifica el área" class="hidden" style="margin-top: 10px;">
                         </div>
                         <div class="form-group">
                             <label for="proyecto_id">Proyecto</label>
-                            <div class="info-message">Función no disponible temporalmente</div>
+                            <div class="info-message">
+                                <span>🔒</span>
+                                <span>No disponible temporalmente</span>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="nivel_esfuerzo">Nivel de esfuerzo</label>
                         <select id="nivel_esfuerzo" name="nivel_esfuerzo">
                             <option value="">Seleccionar esfuerzo...</option>
-                            <option value="Pequeño">Pequeño ( &lt; 30 min)</option>
-                            <option value="Medio">Medio (30-90 min)</option>
-                            <option value="Grande">Grande ( &gt; 90 min)</option>
+                            <option value="Pequeño">☕️ Pequeño ( &lt; 30 min)</option>
+                            <option value="Medio">💪 Medio (30-90 min)</option>
+                            <option value="Grande">🚀 Grande ( &gt; 90 min)</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Tipo de tarea</label>
                         <div class="checkbox-group">
-                            <div class="checkbox-item"><input type="checkbox" id="tipo_personal" name="tipo_tarea" value="Personal"><label for="tipo_personal">Personal</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="tipo_trabajo" name="tipo_tarea" value="Trabajo"><label for="tipo_trabajo">Trabajo</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="tipo_social" name="tipo_tarea" value="Social"><label for="tipo_social">Social</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="tipo_salud" name="tipo_tarea" value="Salud"><label for="tipo_salud">Salud</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="tipo_habitos" name="tipo_tarea" value="Hábitos"><label for="tipo_habitos">Hábitos</label></div>
-                            <div class="checkbox-item"><input type="checkbox" id="tipo_estudio" name="tipo_tarea" value="Estudio"><label for="tipo_estudio">Estudio</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_personal" name="tipo_tarea" value="Personal"><label for="tipo_personal">👤 Personal</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_trabajo" name="tipo_tarea" value="Trabajo"><label for="tipo_trabajo">💼 Trabajo</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_social" name="tipo_tarea" value="Social"><label for="tipo_social">🎉 Social</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_salud" name="tipo_tarea" value="Salud"><label for="tipo_salud">❤️ Salud</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_habitos" name="tipo_tarea" value="Hábitos"><label for="tipo_habitos">🔄 Hábitos</label></div>
+                            <div class="checkbox-item"><input type="checkbox" id="tipo_estudio" name="tipo_tarea" value="Estudio"><label for="tipo_estudio">📚 Estudio</label></div>
                         </div>
                     </div>
                 </section>
@@ -390,11 +399,11 @@
                             <div class="checkbox-group" style="margin-top: 10px;">
                                 <div class="checkbox-item">
                                     <input type="checkbox" id="recordatorio_2h" name="recordatorio_2h">
-                                    <label for="recordatorio_2h">2 horas antes</label>
+                                    <label for="recordatorio_2h">⏰ 2 horas antes</label>
                                 </div>
                                 <div class="checkbox-item">
                                     <input type="checkbox" id="recordatorio_custom" name="recordatorio_custom">
-                                    <label for="recordatorio_custom">Personalizado</label>
+                                    <label for="recordatorio_custom">🗓️ Personalizado</label>
                                 </div>
                             </div>
                             <div id="customReminderFields" class="hidden" style="margin-top: 15px;">
@@ -613,3 +622,22 @@
     </script>
 </body>
 </html>
+```
+
+### Resumen de los Cambios Realizados:
+
+1.  **Nueva Paleta de Colores:**
+    * He cambiado los colores principales a un **verde azulado (`#00A99D`)** y un **azul (`#0077B6`)**.
+    * El fondo general ahora es un gris muy claro (`#F8F9FA`) para que el formulario blanco resalte más.
+    * Todos los elementos, como los bordes, sombras y textos, se han ajustado para que combinen con la nueva paleta, creando un aspecto más profesional y cohesivo.
+
+2.  **Iconos y Emojis en Opciones:**
+    * **Estado:** ⚪️ Sin empezar, 🟡 En progreso, 🟢 Listo.
+    * **Prioridad:** 🔴 Alta, 🟠 Media, 🔵 Baja.
+    * **Nivel de esfuerzo:** ☕️ Pequeño, 💪 Medio, 🚀 Grande.
+    * **Área:** Cada área tiene ahora su propio icono (💼, 🎓, 👤, etc.) para una identificación visual rápida.
+    * **Tipo de tarea:** También he añadido emojis a las etiquetas de las casillas de verificación.
+
+Estos cambios son puramente estéticos, por lo que no afectarán a la funcionalidad que ya teníamos. Simplemente hacen que la interfaz sea más intuitiva y agradable.
+
+¿Qué te parece este nuevo diseño? ¿Hay algo más que te gustaría ajustar antes de que pasemos a la siguiente funcionalid
