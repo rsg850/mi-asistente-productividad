@@ -52,7 +52,8 @@
         #project-details-container button { background-color: var(--secondary-color); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
         .filters-panel { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; padding: 20px; background-color: #F8F9FA; border-radius: var(--border-radius); }
         .filters-panel .form-group { flex: 1; min-width: 150px; }
-        #custom-date-filter { display: flex; gap: 10px; margin-top: 10px; }
+        #custom-date-filter { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        #custom-date-filter div { display: flex; align-items: center; gap: 5px; }
         .task-list { display: grid; gap: 15px; }
         .task-card { background-color: #fff; border-radius: var(--border-radius); padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid; transition: all 0.3s; }
         .task-card.priority-Alta { border-color: #e53e3e; } .task-card.priority-Medio { border-color: #dd6b20; } .task-card.priority-Baja { border-color: #3182ce; }
@@ -123,7 +124,10 @@
                     <div class="form-group"><label for="filter-project">Proyecto</label><select id="filter-project"><option value="all">Todos los proyectos</option></select></div>
                     <div class="form-group"><label for="filter-area">Área</label><select id="filter-area"><option value="all">Todas las áreas</option><option value="Profesional">💼 Profesional</option><option value="Académico">🎓 Académico</option><option value="Personal">👤 Personal</option></select></div>
                     <div class="form-group"><label for="filter-date">Fecha</label><select id="filter-date"><option value="all">Cualquier fecha</option><option value="today">Hoy</option><option value="week">Esta semana</option><option value="month">Este mes</option><option value="custom">Personalizado...</option></select>
-                        <div id="custom-date-filter" class="hidden"><input type="date" id="start-date"><input type="date" id="end-date"></div>
+                        <div id="custom-date-filter" class="hidden">
+                            <div><label for="start-date">Desde:</label><input type="date" id="start-date"></div>
+                            <div><label for="end-date">Hasta:</label><input type="date" id="end-date"></div>
+                        </div>
                     </div>
                     <div class="form-group"><label for="sort-tasks">Ordenar por</label><select id="sort-tasks"><option value="default">Por defecto</option><option value="priority">Prioridad</option><option value="deadline">Fecha límite</option></select></div>
                 </div>
@@ -133,7 +137,7 @@
     </div>
 
     <script>
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbx4aH-P8H-iHEeyAmT92rOh7ubNA4BXXEW4iqcqITmEdXZhQTgVM-oeQ0jCAAkdqGo2/exec';
+        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzylarxN561ewTphujqSwctHtyPviTLh0_Vr7ToAJdQLR4DFaFrvQWGTbNpm0KJLAb38Q/exec';
         let projectsCache = [];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -295,6 +299,10 @@
         function toggleCustomReminder() { document.getElementById('customReminderFields').classList.toggle('hidden', !document.getElementById('recordatorio_custom').checked); }
         function toggleCustomDateFilter() {
             document.getElementById('custom-date-filter').classList.toggle('hidden', document.getElementById('filter-date').value !== 'custom');
+            if(document.getElementById('filter-date').value !== 'custom') {
+                document.getElementById('start-date').value = '';
+                document.getElementById('end-date').value = '';
+            }
             loadTasks();
         }
 
