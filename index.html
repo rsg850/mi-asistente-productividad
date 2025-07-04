@@ -544,6 +544,8 @@
             document.getElementById('area').addEventListener('change', toggleOtherArea);
             document.getElementById('add_to_calendar').addEventListener('change', toggleCalendarOptions);
             document.getElementById('recordatorio_custom').addEventListener('change', toggleCustomReminder);
+            
+            // Event listeners para los filtros
             document.getElementById('filter-project').addEventListener('change', () => {
                 loadTasks();
                 loadProjectDetails();
@@ -577,7 +579,7 @@
                 const projectSelects = [document.getElementById('proyecto_id'), document.getElementById('filter-project')];
                 projectSelects.forEach(select => {
                     select.innerHTML = select.id === 'proyecto_id' ? '<option value="none">Sin proyecto</option>' : '<option value="all">Todos los proyectos</option>';
-                    projectsCache.forEach(p => select.add(new Option(` ${p.name}`, p.id)));
+                    projectsCache.forEach(p => select.add(new Option(`📁 ${p.name}`, p.id)));
                 });
             } catch (error) {
                 console.error('Error al cargar proyectos:', error);
@@ -741,14 +743,18 @@
             document.getElementById('customReminderFields').classList.toggle('hidden', !document.getElementById('recordatorio_custom').checked);
         }
 
+        // CORREGIDO: La lógica para el filtro de fecha personalizado
         function toggleCustomDateFilter() {
             const isCustom = document.getElementById('filter-date').value === 'custom';
             document.getElementById('custom-date-filter').classList.toggle('hidden', !isCustom);
+            
+            // Si no es personalizado, limpiamos las fechas y recargamos.
+            // Si es personalizado, NO recargamos aquí, esperamos a que el usuario cambie las fechas.
             if (!isCustom) {
                 document.getElementById('start-date').value = '';
                 document.getElementById('end-date').value = '';
+                loadTasks();
             }
-            loadTasks();
         }
 
         async function handleFormSubmit(e) {
