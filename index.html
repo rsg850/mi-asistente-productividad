@@ -337,58 +337,89 @@
         .task-card {
             background-color: #fff;
             border-radius: var(--border-radius);
-            padding: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             border-left: 5px solid;
             transition: all 0.3s;
+            overflow: hidden;
         }
-
-        .task-card.priority-Alta {
-            border-color: #e53e3e;
-        }
-
-        .task-card.priority-Medio {
-            border-color: #dd6b20;
-        }
-
-        .task-card.priority-Baja {
-            border-color: #3182ce;
-        }
-
+        
         .task-card-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
+            align-items: center;
+            padding: 20px;
+            cursor: pointer;
+        }
+
+        .task-card-header-main {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .task-card-header h3 {
             font-size: 1.2em;
-            margin-right: 10px;
-        }
-
-        .task-status-select {
-            font-weight: 600;
-            border: none;
-            background: #f1f3f5;
-            border-radius: 20px;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-
-        .task-card-body {
-            margin-top: 15px;
+            margin: 0;
         }
         
+        .task-card-toggle {
+            transition: transform 0.3s;
+        }
+
+        .task-card.is-expanded .task-card-toggle {
+            transform: rotate(180deg);
+        }
+
+        .task-card-details {
+            max-height: 0;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+            padding: 0 20px;
+        }
+
+        .task-card.is-expanded .task-card-details {
+             max-height: 1000px; /* Suficientemente grande */
+             padding: 0 20px 20px 20px;
+        }
+
+
+        .task-card.priority-Alta { border-color: #e53e3e; }
+        .task-card.priority-Medio { border-color: #dd6b20; }
+        .task-card.priority-Baja { border-color: #3182ce; }
+
+        .task-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.9em;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .status-sin-empezar { background-color: #f1f3f5; color: #495057; }
+        .status-sin-empezar .status-dot { background-color: #868e96; }
+        .status-en-progreso { background-color: #dbe4ff; color: #364fc7; }
+        .status-en-progreso .status-dot { background-color: #4c6ef5; }
+        .status-listo { background-color: #d3f9d8; color: #2f9e44; }
+        .status-listo .status-dot { background-color: #51cf66; }
+
         .task-card-footer {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
             margin-top: 20px;
+            border-top: 1px solid #f1f3f5;
+            padding-top: 15px;
         }
 
         .task-card-body .form-group {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .task-card-footer button {
@@ -470,15 +501,15 @@
                         <div class="form-group"><label for="titulo">¿Qué necesitas hacer? *</label><input type="text" id="titulo" name="titulo" required></div>
                         <div class="form-group"><label for="descripcion">Descripción</label><textarea id="descripcion" name="descripcion"></textarea></div>
                         <div class="form-row">
-                            <div class="form-group"><label for="estado">Estado</label><select id="estado" name="estado"><option value="Sin empezar">Sin empezar</option><option value="En progreso">En progreso</option><option value="Listo">Listo</option></select></div>
-                            <div class="form-group"><label for="prioridad">Prioridad</label><select id="prioridad" name="prioridad"><option value="Alta">Alta</option><option value="Medio" selected>Media</option><option value="Baja">Baja</option></select></div>
+                            <div class="form-group"><label for="estado">Estado</label><select id="estado" name="estado"><option value="Sin empezar">⚪ Sin empezar</option><option value="En progreso">🔵 En progreso</option><option value="Listo">🟢 Listo</option></select></div>
+                            <div class="form-group"><label for="prioridad">Prioridad</label><select id="prioridad" name="prioridad"><option value="Alta">🔴 Alta</option><option value="Medio" selected>🟠 Media</option><option value="Baja">🔵 Baja</option></select></div>
                         </div>
                     </section>
 
                     <section class="form-section">
                         <h2 class="section-title"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>Categorización</h2>
                         <div class="form-row">
-                            <div class="form-group"><label for="area">Área</label><select id="area" name="area"><option value="">Seleccionar área...</option><option value="Profesional">Profesional</option><option value="Académico">Académico</option><option value="Personal">Personal</option><option value="other">Otra...</option></select><input type="text" id="area_other" name="area_other" class="hidden" style="margin-top: 10px;" placeholder="Escribe el área personalizada"></div>
+                            <div class="form-group"><label for="area">Área</label><select id="area" name="area"><option value="">Seleccionar área...</option><option value="Profesional">💼 Profesional</option><option value="Académico">🎓 Académico</option><option value="Personal">🏠 Personal</option><option value="other">➕ Otra...</option></select><input type="text" id="area_other" name="area_other" class="hidden" style="margin-top: 10px;" placeholder="Escribe el área personalizada"></div>
                             <div class="form-group"><label for="proyecto_id">Proyecto</label><select id="proyecto_id" name="proyecto_id"><option value="none">Cargando...</option></select></div>
                         </div>
                     </section>
@@ -489,12 +520,12 @@
                             <div class="datetime-group"><input type="date" id="fecha_limite" name="fecha_limite"><input type="time" id="hora_limite" name="hora_limite"></div>
                         </div>
                         <div class="calendar-section">
-                            <div class="main-checkbox"><input type="checkbox" id="add_to_calendar" name="add_to_calendar"><label for="add_to_calendar">Añadir a Google Calendar</label></div>
+                            <div class="main-checkbox"><input type="checkbox" id="add_to_calendar" name="add_to_calendar"><label for="add_to_calendar">🗓️ Añadir a Google Calendar</label></div>
                             <div id="calendarOptions" class="hidden" style="margin-top: 15px;">
                                 <label>Opciones de recordatorio:</label>
                                 <div class="checkbox-group" style="margin-top: 10px;">
-                                    <div class="checkbox-item"><input type="checkbox" id="recordatorio_2h" name="recordatorio_2h"><label for="recordatorio_2h">2 horas antes</label></div>
-                                    <div class="checkbox-item"><input type="checkbox" id="recordatorio_custom" name="recordatorio_custom"><label for="recordatorio_custom">Personalizado</label></div>
+                                    <div class="checkbox-item"><input type="checkbox" id="recordatorio_2h" name="recordatorio_2h"><label for="recordatorio_2h">⏰ 2 horas antes</label></div>
+                                    <div class="checkbox-item"><input type="checkbox" id="recordatorio_custom" name="recordatorio_custom"><label for="recordatorio_custom">⚙️ Personalizado</label></div>
                                 </div>
                                 <div id="customReminderFields" class="hidden" style="margin-top: 15px;"><label>Fecha y hora del recordatorio:</label>
                                     <div class="datetime-group"><input type="date" id="recordatorio_fecha" name="recordatorio_fecha"><input type="time" id="recordatorio_hora" name="recordatorio_hora"></div>
@@ -529,7 +560,7 @@
     </div>
 
     <script>
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyuEzYoPRMvjd3pR3qX2r_UBYswnGIjkWy_r3DwavqX7nSK8BwyBQXU_v-oXfGwENsbjQ/exec';
+        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwQsjObUG7SCAyhwzy73Kc7ol44sO83RD6yGmTevihe51KGYWGvzxiXBhmFUx4cz291CQ/exec';
         let projectsCache = [];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -545,7 +576,6 @@
             document.getElementById('add_to_calendar').addEventListener('change', toggleCalendarOptions);
             document.getElementById('recordatorio_custom').addEventListener('change', toggleCustomReminder);
             
-            // Event listeners para los filtros
             document.getElementById('filter-project').addEventListener('change', () => {
                 loadTasks();
                 loadProjectDetails();
@@ -556,6 +586,14 @@
             document.getElementById('end-date').addEventListener('change', loadTasks);
             document.getElementById('sort-tasks').addEventListener('change', loadTasks);
             document.getElementById('sort-direction').addEventListener('change', loadTasks);
+            
+            // Delegación de eventos para las tarjetas desplegables
+            document.getElementById('task-list-container').addEventListener('click', function(e) {
+                const header = e.target.closest('.task-card-header');
+                if (header) {
+                    header.parentElement.classList.toggle('is-expanded');
+                }
+            });
         }
 
         function setupTabNavigation() {
@@ -569,12 +607,9 @@
             });
         }
 
-        //--- LÓGICA DE CARGA DE DATOS ---
         async function loadProjects() {
             try {
-                const result = await apiCall({
-                    action: 'getProjects'
-                });
+                const result = await apiCall({ action: 'getProjects' });
                 projectsCache = result.data;
                 const projectSelects = [document.getElementById('proyecto_id'), document.getElementById('filter-project')];
                 projectSelects.forEach(select => {
@@ -591,7 +626,6 @@
             const taskContainer = document.getElementById('task-list-container');
             taskContainer.innerHTML = '';
             taskContainer.classList.add('loading');
-
             const filters = {
                 projectId: document.getElementById('filter-project').value,
                 area: document.getElementById('filter-area').value,
@@ -601,14 +635,8 @@
             };
             const sortBy = document.getElementById('sort-tasks').value;
             const sortDirection = document.getElementById('sort-direction').value;
-
             try {
-                const result = await apiCall({
-                    action: 'getTasks',
-                    filters,
-                    sortBy,
-                    sortDirection
-                });
+                const result = await apiCall({ action: 'getTasks', filters, sortBy, sortDirection });
                 renderTasks(result.data);
             } catch (error) {
                 taskContainer.innerHTML = `<div class="message error-message">Error al cargar tareas: ${error.message}</div>`;
@@ -627,20 +655,21 @@
             container.innerHTML = 'Cargando detalles del proyecto...';
             container.classList.remove('hidden');
             try {
-                const result = await apiCall({
-                    action: 'getProjectDetails',
-                    projectId
-                });
+                const result = await apiCall({ action: 'getProjectDetails', projectId });
                 renderProjectDetails(result.data);
             } catch (error) {
                 container.innerHTML = `<div class="message error-message">Error al cargar detalles: ${error.message}</div>`;
             }
         }
 
-        // --- LÓGICA DE RENDERIZADO ---
+        function getStatusBadge(status) {
+            const statusClass = `status-${status.toLowerCase().replace(' ', '-')}`;
+            return `<span class="task-status-badge ${statusClass}"><span class="status-dot"></span>${status}</span>`;
+        }
+
         function renderTasks(tasks) {
             const container = document.getElementById('task-list-container');
-            container.innerHTML = ''; // Limpiar antes de renderizar
+            container.innerHTML = '';
             if (tasks.length === 0) {
                 container.innerHTML = '<div class="message">No se encontraron tareas con los filtros seleccionados.</div>';
                 return;
@@ -652,56 +681,56 @@
                 const card = document.createElement('div');
                 card.className = `task-card priority-${task.priority || 'default'}`;
                 card.id = `task-${task.id}`;
+
+                let deadlineDisplay = 'Sin fecha';
+                if (task.deadline) {
+                    const date = new Date(task.deadline);
+                    const datePart = date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                    // Comprobar si la fecha de Notion tiene hora
+                    const timePart = task.deadline.includes('T') ? date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : '';
+                    deadlineDisplay = `${datePart} ${timePart}`.trim();
+                }
+
                 card.innerHTML = `
                     <div class="task-card-header">
-                        <h3>${task.title}</h3>
-                        <select class="task-status-select" data-task-id="${task.id}">
-                            <option value="Sin empezar" ${task.status === 'Sin empezar' ? 'selected' : ''}>Sin empezar</option>
-                            <option value="En progreso" ${task.status === 'En progreso' ? 'selected' : ''}>En progreso</option>
-                            <option value="Listo" ${task.status === 'Listo' ? 'selected' : ''}>Listo</option>
-                        </select>
-                    </div>
-                    <div class="task-card-body">
-                         <div class="form-group">
-                            <label>Descripción:</label>
-                            <textarea class="task-description-input" data-task-id="${task.id}">${task.description || ''}</textarea>
+                        <div class="task-card-header-main">
+                           ${getStatusBadge(task.status)}
+                           <h3>${task.title}</h3>
                         </div>
-                        <div class="form-group">
-                            <label>Anotaciones:</label>
-                            <textarea class="task-annotations-input" data-task-id="${task.id}">${task.annotations || ''}</textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Prioridad:</label>
-                             <select class="task-priority-select" data-task-id="${task.id}">
-                                <option value="Baja" ${task.priority === 'Baja' ? 'selected' : ''}>Baja</option>
-                                <option value="Medio" ${task.priority === 'Medio' ? 'selected' : ''}>Media</option>
-                                <option value="Alta" ${task.priority === 'Alta' ? 'selected' : ''}>Alta</option>
-                            </select>
-                        </div>
+                        <svg class="task-card-toggle" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
-                    <div class="task-meta">
-                        ${project ? `<div class="meta-item">📁 ${project.name}</div>` : ''}
-                        ${task.area ? `<div class="meta-item">🏷️ ${task.area}</div>` : ''}
-                        <div class="meta-item">🗓️ <input type="date" class="task-deadline-input" data-task-id="${task.id}" value="${task.deadline || ''}"></div>
-                    </div>
-                    <div class="task-card-footer">
-                        <button class="delete-btn" onclick="handleTaskDelete('${task.id}')">Eliminar</button>
-                        <button class="save-btn" onclick="handleTaskUpdate(this, '${task.id}')">Guardar Tarea</button>
+                    <div class="task-card-details">
+                        <div class="task-card-body">
+                            <div class="form-group">
+                                <label>Descripción:</label>
+                                <textarea class="task-description-input" data-task-id="${task.id}">${task.description || ''}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Anotaciones:</label>
+                                <textarea class="task-annotations-input" data-task-id="${task.id}">${task.annotations || ''}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Prioridad:</label>
+                                <select class="task-priority-select" data-task-id="${task.id}">
+                                    <option value="Baja" ${task.priority === 'Baja' ? 'selected' : ''}>🔵 Baja</option>
+                                    <option value="Medio" ${task.priority === 'Medio' ? 'selected' : ''}>🟠 Media</option>
+                                    <option value="Alta" ${task.priority === 'Alta' ? 'selected' : ''}>🔴 Alta</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="task-meta">
+                            ${project ? `<div class="meta-item">📁 ${project.name}</div>` : ''}
+                            ${task.area ? `<div class="meta-item">🏷️ ${task.area}</div>` : ''}
+                            <div class="meta-item">🗓️ ${deadlineDisplay}</div>
+                        </div>
+                        <div class="task-card-footer">
+                            <button class="delete-btn" onclick="handleTaskDelete('${task.id}')">Eliminar</button>
+                            <button class="save-btn" onclick="handleTaskUpdate(this, '${task.id}')">Guardar Tarea</button>
+                        </div>
                     </div>`;
                 list.appendChild(card);
             });
-
             container.appendChild(list);
-
-            document.querySelectorAll('.task-status-select, .task-deadline-input').forEach(el => {
-                el.addEventListener('change', (e) => {
-                    const taskId = e.target.dataset.taskId;
-                    const details = {};
-                    if (e.target.classList.contains('task-status-select')) details.status = e.target.value;
-                    if (e.target.classList.contains('task-deadline-input')) details.deadline = e.target.value;
-                    handleTaskUpdate(e.target, taskId, details);
-                });
-            });
         }
 
         function renderProjectDetails(details) {
@@ -730,7 +759,6 @@
                 <button onclick="handleProjectDetailsSave('${projectId}')">Guardar Cambios del Proyecto</button>`;
         }
 
-        // --- LÓGICA DE INTERACCIÓN Y FORMULARIOS ---
         function toggleOtherArea() {
             document.getElementById('area_other').classList.toggle('hidden', document.getElementById('area').value !== 'other');
         }
@@ -743,13 +771,9 @@
             document.getElementById('customReminderFields').classList.toggle('hidden', !document.getElementById('recordatorio_custom').checked);
         }
 
-        // CORREGIDO: La lógica para el filtro de fecha personalizado
         function toggleCustomDateFilter() {
             const isCustom = document.getElementById('filter-date').value === 'custom';
             document.getElementById('custom-date-filter').classList.toggle('hidden', !isCustom);
-            
-            // Si no es personalizado, limpiamos las fechas y recargamos.
-            // Si es personalizado, NO recargamos aquí, esperamos a que el usuario cambie las fechas.
             if (!isCustom) {
                 document.getElementById('start-date').value = '';
                 document.getElementById('end-date').value = '';
@@ -789,7 +813,7 @@
                 document.getElementById('taskForm').reset();
                 toggleOtherArea();
                 toggleCalendarOptions();
-                loadTasks(); // Recargar las tareas en el gestor
+                loadTasks();
             } catch (error) {
                 msgBox.innerHTML = `<div class="message error-message">Error: ${error.message}</div>`;
             } finally {
@@ -838,8 +862,9 @@
             if (confirm(`¿Estás seguro de que quieres eliminar la tarea "${taskTitle}"? Esta acción no se puede deshacer.`)) {
                 try {
                     await apiCall({ action: 'deleteTask', taskId });
-                    taskCard.style.transition = 'opacity 0.5s';
+                    taskCard.style.transition = 'opacity 0.5s, transform 0.5s';
                     taskCard.style.opacity = '0';
+                    taskCard.style.transform = 'scale(0.9)';
                     setTimeout(() => taskCard.remove(), 500);
                 } catch (error) {
                     alert(`Error al eliminar la tarea: ${error.message}`);
