@@ -567,7 +567,7 @@
     </div>
 
     <script>
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbw_kq2ZbhqhYjE-vY-zRDwTfGWrpiueTYZX__qisimdJYIiaX3ojFcVhRBFxYy-tanKzQ/exec';
+        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzqMKNe7Y7Ihe2bCkEwvo6c97q3FjxAdySYrjOB1NFHE83syk5rLvXFLZwAIE0rK7kUYw/exec';
         let projectsCache = [];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -594,12 +594,11 @@
             document.getElementById('sort-tasks').addEventListener('change', loadTasks);
             document.getElementById('sort-direction').addEventListener('change', loadTasks);
             
-            // Delegación de eventos para las tarjetas desplegables y controles internos
             document.getElementById('task-list-container').addEventListener('click', function(e) {
                 const header = e.target.closest('.task-card-header');
                 if (header) {
                     header.parentElement.classList.toggle('is-expanded');
-                    return; // Evita que otros clicks en el header se propaguen
+                    return;
                 }
             });
         }
@@ -690,9 +689,13 @@
                 card.className = `task-card priority-${task.priority || 'default'}`;
                 card.id = `task-${task.id}`;
 
-                const date = task.deadline ? new Date(task.deadline) : null;
-                const dateValue = date ? date.toISOString().split('T')[0] : '';
-                const timeValue = date && task.deadline.includes('T') ? date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
+                const deadlineDate = task.deadline ? new Date(task.deadline) : null;
+                const deadlineDateValue = deadlineDate ? deadlineDate.toISOString().split('T')[0] : '';
+                const deadlineTimeValue = deadlineDate && task.deadline.includes('T') ? deadlineDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
+
+                const customReminderDate = task.customReminderDateTime ? new Date(task.customReminderDateTime) : null;
+                const customReminderDateValue = customReminderDate ? customReminderDate.toISOString().split('T')[0] : '';
+                const customReminderTimeValue = customReminderDate ? customReminderDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
 
                 card.innerHTML = `
                     <div class="task-card-header">
@@ -731,8 +734,19 @@
                              <div class="form-group">
                                 <label>Fecha y Hora Límite:</label>
                                 <div class="datetime-group">
-                                    <input type="date" class="task-deadline-date" value="${dateValue}" data-task-id="${task.id}">
-                                    <input type="time" class="task-deadline-time" value="${timeValue}" data-task-id="${task.id}">
+                                    <input type="date" class="task-deadline-date" value="${deadlineDateValue}" data-task-id="${task.id}">
+                                    <input type="time" class="task-deadline-time" value="${deadlineTimeValue}" data-task-id="${task.id}">
+                                </div>
+                            </div>
+                            <div class="form-group reminder-group ${task.calendarEventId ? '' : 'hidden'}">
+                                <label>Recordatorios de Calendar:</label>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" class="task-reminder-2h" id="reminder-2h-${task.id}" data-task-id="${task.id}" ${task.hasTwoHourReminder ? 'checked' : ''}>
+                                    <label for="reminder-2h-${task.id}">⏰ 2 horas antes</label>
+                                </div>
+                                <div class="datetime-group" style="margin-top: 5px;">
+                                    <input type="date" class="task-reminder-date" value="${customReminderDateValue}" data-task-id="${task.id}" placeholder="Fecha personalizada">
+                                    <input type="time" class="task-reminder-time" value="${customReminderTimeValue}" data-task-id="${task.id}">
                                 </div>
                             </div>
                         </div>
@@ -749,7 +763,6 @@
             });
             container.appendChild(list);
 
-            // Añadir event listeners para los nuevos controles de edición
             container.querySelectorAll('.task-status-select, .task-deadline-date, .task-deadline-time').forEach(el => {
                 el.addEventListener('change', (e) => {
                     const taskId = e.target.dataset.taskId;
@@ -764,7 +777,6 @@
                         const dateInput = card.querySelector('.task-deadline-date');
                         const timeInput = card.querySelector('.task-deadline-time');
                         if (dateInput.value) {
-                            // Construye la fecha en formato ISO para enviar al backend
                             const time = timeInput.value || '00:00';
                             details.deadline = `${dateInput.value}T${time}:00`;
                         } else {
@@ -867,7 +879,6 @@
         }
 
         async function handleTaskUpdate(button, taskId, details = null) {
-            // Si no es un botón de guardar, no mostramos feedback visual de guardado
             const isSaveButton = button.classList.contains('save-btn');
             if (isSaveButton) {
                 button.textContent = 'Guardando...';
@@ -876,10 +887,15 @@
 
             if (!details) {
                 const card = button.closest('.task-card');
+                const reminderDate = card.querySelector('.task-reminder-date').value;
+                const reminderTime = card.querySelector('.task-reminder-time').value;
+
                 details = {
                     description: card.querySelector('.task-description-input').value,
                     annotations: card.querySelector('.task-annotations-input').value,
                     priority: card.querySelector('.task-priority-select').value,
+                    hasTwoHourReminder: card.querySelector('.task-reminder-2h').checked,
+                    customReminder: reminderDate && reminderTime ? `${reminderDate}T${reminderTime}:00` : null
                 };
             }
 
