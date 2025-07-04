@@ -117,25 +117,24 @@
             color: var(--label-color);
             font-size: 0.95em;
         }
-        /* **NUEVO**: Estilo para etiquetas con icono */
         .label-with-icon {
             display: flex;
             align-items: center;
             gap: 8px;
         }
         .label-with-icon svg {
-            width: 18px; /* Tamaño consistente para iconos */
+            width: 18px;
             height: 18px;
             stroke: var(--label-color);
             stroke-width: 2;
             fill: none;
         }
         .checkbox-item .label-with-icon {
-            font-weight: 500; /* El peso de la fuente es diferente en los checkboxes */
+            font-weight: 500;
             margin-bottom: 0;
         }
         .checkbox-item .label-with-icon svg {
-             stroke-width: 2.5; /* Un poco más grueso para iconos de línea */
+             stroke-width: 2.5;
         }
         input, select, textarea {
             width: 100%;
@@ -345,7 +344,7 @@
             padding: 0 20px;
         }
         .task-card.is-expanded .task-card-details {
-            max-height: 1000px; /* Suficientemente grande */
+            max-height: 1000px;
             padding: 0 20px 20px 20px;
         }
         .task-card.priority-Alta { border-color: #e53e3e; }
@@ -467,7 +466,7 @@
             padding: 30px;
             border-radius: var(--border-radius);
             width: 90%;
-            max-width: 500px;
+            max-width: 600px; /* Aumentado para acomodar el formulario */
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             transform: scale(0.9);
             transition: transform 0.3s;
@@ -496,29 +495,39 @@
             color: var(--label-color);
             line-height: 1;
         }
-        .modal-body p {
+        .modal-body .form-group {
             margin-bottom: 15px;
-        }
-        .modal-body strong {
-            color: var(--text-color);
         }
         .modal-footer {
             margin-top: 25px;
-            text-align: right;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
         }
-        .modal-footer a {
-            background-color: var(--secondary-color);
-            color: white;
+        .modal-footer a, .modal-footer button {
             padding: 10px 20px;
             border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
             transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .modal-footer a {
+            background-color: var(--secondary-color);
+            color: white;
         }
         .modal-footer a:hover {
             background-color: #005f8d;
         }
-
+        .modal-footer button {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .modal-footer button:disabled {
+            background-color: #BDBDBD;
+        }
         @media (max-width: 768px) {
             .form-row, .datetime-group {
                 grid-template-columns: 1fr;
@@ -679,9 +688,12 @@
                 <h3 id="modal-title"></h3>
                 <button id="modal-close" class="modal-close">&times;</button>
             </div>
-            <div id="modal-body" class="modal-body"></div>
+            <div id="modal-body" class="modal-body">
+                <!-- El contenido del formulario se inyectará aquí -->
+            </div>
             <div class="modal-footer">
                 <a id="modal-notion-link" href="#" target="_blank" rel="noopener noreferrer">Ver en Notion</a>
+                <button id="modal-save-btn">Guardar Cambios</button>
             </div>
         </div>
     </div>
@@ -703,53 +715,44 @@
         }
 
         function setupEventListeners() {
-            // Navegación por pestañas
             document.querySelectorAll('.tab-btn').forEach(button => {
                 button.addEventListener('click', () => {
                     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
                     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
                     document.getElementById(button.dataset.tab).classList.add('active');
-
                     if (button.dataset.tab === 'agenda' && calendar) {
                         setTimeout(() => calendar.render(), 10);
                     }
                 });
             });
 
-            // Formulario de creación
             document.getElementById('taskForm').addEventListener('submit', handleFormSubmit);
             document.getElementById('area').addEventListener('change', toggleOtherArea);
             document.getElementById('add_to_calendar').addEventListener('change', toggleCalendarOptions);
             document.getElementById('recordatorio_custom').addEventListener('change', toggleCustomReminder);
 
-            // Filtros del Gestor
             ['filter-project', 'filter-area', 'start-date', 'end-date', 'sort-tasks', 'sort-direction'].forEach(id => {
                 document.getElementById(id).addEventListener('change', loadTasks);
             });
             document.getElementById('filter-date').addEventListener('change', toggleCustomDateFilter);
             document.getElementById('filter-project').addEventListener('change', loadProjectDetails);
 
-            // Filtros de la Agenda
             ['filter-agenda-project', 'filter-agenda-area'].forEach(id => {
                 document.getElementById(id).addEventListener('change', () => calendar.refetchEvents());
             });
 
-            // Eventos de la lista de tareas (delegación)
             document.getElementById('task-list-container').addEventListener('click', function(e) {
-                const header = e.target.closest('.task-card-header');
-                if (header) {
-                    header.parentElement.classList.toggle('is-expanded');
+                if (e.target.closest('.task-card-header')) {
+                    e.target.closest('.task-card').classList.toggle('is-expanded');
                 }
             });
 
-            // Modal
             document.getElementById('modal-close').addEventListener('click', closeTaskModal);
             document.getElementById('task-modal').addEventListener('click', (e) => {
-                if (e.target.id === 'task-modal') {
-                    closeTaskModal();
-                }
+                if (e.target.id === 'task-modal') closeTaskModal();
             });
+            document.getElementById('modal-save-btn').addEventListener('click', handleModalSave);
         }
 
         function initializeCalendar() {
@@ -762,7 +765,7 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                events: async function(fetchInfo, successCallback, failureCallback) {
+                events: async (fetchInfo, successCallback, failureCallback) => {
                     try {
                         const filters = {
                             dateRangeType: 'custom',
@@ -771,30 +774,17 @@
                             projectId: document.getElementById('filter-agenda-project').value,
                             area: document.getElementById('filter-agenda-area').value,
                         };
-                        const result = await apiCall({
-                            action: 'getTasks',
-                            filters: filters,
-                            sortBy: 'deadline',
-                            sortDirection: 'ascending'
-                        });
-
+                        const result = await apiCall({ action: 'getTasks', filters, sortBy: 'deadline', sortDirection: 'ascending' });
                         const events = result.data.map(task => {
-                            let statusIcon = '⚪️';
-                            if (task.status === 'En progreso') statusIcon = '⏳';
-                            if (task.status === 'Listo') statusIcon = '✅';
-                            
+                            let statusIcon = {'Sin empezar': '⚪️', 'En progreso': '⏳', 'Listo': '✅'}[task.status] || '⚪️';
                             return {
                                 id: task.id,
                                 title: `${statusIcon} ${task.title}`,
                                 start: task.deadline,
                                 end: task.deadlineEnd,
                                 allDay: task.deadline ? !task.deadline.includes('T') : true,
-                                color: task.priority === 'Alta' ? '#e53e3e' : (task.priority === 'Medio' ? '#dd6b20' : '#3182ce'),
-                                extendedProps: {
-                                    ...task,
-                                    statusIcon: statusIcon,
-                                    projectName: projectsCache.find(p => p.id === task.project)?.name || 'Sin proyecto'
-                                }
+                                color: {'Alta': '#e53e3e', 'Medio': '#dd6b20', 'Baja': '#3182ce'}[task.priority] || '#3182ce',
+                                extendedProps: { ...task, statusIcon, projectName: projectsCache.find(p => p.id === task.project)?.name || 'Sin proyecto' }
                             };
                         });
                         successCallback(events);
@@ -803,8 +793,8 @@
                         failureCallback(error);
                     }
                 },
-                eventClick: function(info) {
-                    info.jsEvent.preventDefault(); // Prevenir cualquier comportamiento por defecto
+                eventClick: (info) => {
+                    info.jsEvent.preventDefault();
                     showTaskModal(info.event);
                 }
             });
@@ -814,31 +804,132 @@
         function showTaskModal(event) {
             const modal = document.getElementById('task-modal');
             const props = event.extendedProps;
-
-            document.getElementById('modal-title').textContent = event.title;
             
+            document.getElementById('modal-title').textContent = props.title;
             const body = document.getElementById('modal-body');
+
+            const deadlineDate = props.deadline ? new Date(props.deadline) : null;
+            const deadlineDateValue = deadlineDate ? deadlineDate.toISOString().split('T')[0] : '';
+            const deadlineTimeValue = deadlineDate && props.deadline.includes('T') ? deadlineDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
+            const deadlineEndDate = props.deadlineEnd ? new Date(props.deadlineEnd) : null;
+            const deadlineEndTimeValue = deadlineEndDate ? deadlineEndDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
+            const customReminderDate = props.customReminderDateTime ? new Date(props.customReminderDateTime) : null;
+            const customReminderDateValue = customReminderDate ? customReminderDate.toISOString().split('T')[0] : '';
+            const customReminderTimeValue = customReminderDate ? customReminderDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
+
             body.innerHTML = `
-                <p><strong>Estado:</strong> ${props.status}</p>
-                <p><strong>Proyecto:</strong> ${props.projectName}</p>
-                <p><strong>Área:</strong> ${props.area || 'No especificada'}</p>
-                <p><strong>Descripción:</strong></p>
-                <p>${props.description || 'No hay descripción.'}</p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select id="modal-status" class="task-status-select">
+                            <option value="Sin empezar" ${props.status === 'Sin empezar' ? 'selected' : ""}>Sin empezar</option>
+                            <option value="En progreso" ${props.status === 'En progreso' ? 'selected' : ""}>En progreso</option>
+                            <option value="Listo" ${props.status === 'Listo' ? 'selected' : ''}>Listo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Prioridad</label>
+                        <select id="modal-priority" class="task-priority-select">
+                            <option value="Baja" ${props.priority === 'Baja' ? 'selected' : ""}>Baja</option>
+                            <option value="Medio" ${props.priority === 'Medio' ? 'selected' : ""}>Media</option>
+                            <option value="Alta" ${props.priority === 'Alta' ? 'selected' : ""}>Alta</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="modal-description">${props.description || ""}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Anotaciones / Observaciones</label>
+                    <textarea id="modal-annotations">${props.annotations || ""}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Fecha y Horas (Inicio y Fin)</label>
+                    <div class="datetime-group">
+                        <input type="date" id="modal-deadline-date" value="${deadlineDateValue}">
+                        <input type="time" id="modal-deadline-time" value="${deadlineTimeValue}">
+                        <input type="time" id="modal-deadline-end-time" value="${deadlineEndTimeValue}">
+                    </div>
+                </div>
+                <div class="form-group reminder-group ${props.calendarEventId ? "" : 'hidden'}">
+                    <label>Recordatorios de Calendar</label>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="modal-reminder-2h" ${props.hasTwoHourReminder ? 'checked' : ''}>
+                        <label for="modal-reminder-2h"> 2 horas antes</label>
+                    </div>
+                    <div class="datetime-group-reminder" style="margin-top: 5px;">
+                        <input type="date" id="modal-reminder-date" value="${customReminderDateValue}">
+                        <input type="time" id="modal-reminder-time" value="${customReminderTimeValue}">
+                    </div>
+                </div>
             `;
 
             const notionLink = document.getElementById('modal-notion-link');
-            if (props.notionUrl) {
-                notionLink.href = props.notionUrl;
-                notionLink.style.display = 'inline-block';
-            } else {
-                notionLink.style.display = 'none';
-            }
+            notionLink.href = props.notionUrl || '#';
+            notionLink.style.display = props.notionUrl ? 'inline-block' : 'none';
             
+            document.getElementById('modal-save-btn').dataset.taskId = props.id;
             modal.classList.add('visible');
         }
 
         function closeTaskModal() {
             document.getElementById('task-modal').classList.remove('visible');
+        }
+        
+        async function handleModalSave() {
+            const btn = document.getElementById('modal-save-btn');
+            const taskId = btn.dataset.taskId;
+            if (!taskId) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Guardando...';
+
+            const dateInput = document.getElementById('modal-deadline-date');
+            const timeInput = document.getElementById('modal-deadline-time');
+            const endTimeInput = document.getElementById('modal-deadline-end-time');
+            let deadline = null, deadlineEnd = null;
+            if (dateInput.value) {
+                const time = timeInput.value || '00:00';
+                deadline = `${dateInput.value}T${time}:00`;
+                if (endTimeInput.value) {
+                    deadlineEnd = `${dateInput.value}T${endTimeInput.value}:00`;
+                }
+            }
+
+            const reminderDate = document.getElementById('modal-reminder-date').value;
+            const reminderTime = document.getElementById('modal-reminder-time').value;
+
+            const details = {
+                status: document.getElementById('modal-status').value,
+                priority: document.getElementById('modal-priority').value,
+                description: document.getElementById('modal-description').value,
+                annotations: document.getElementById('modal-annotations').value,
+                deadline: deadline,
+                deadlineEnd: deadlineEnd,
+                hasTwoHourReminder: document.getElementById('modal-reminder-2h').checked,
+                customReminder: reminderDate && reminderTime ? `${reminderDate}T${reminderTime}:00` : null
+            };
+
+            try {
+                await apiCall({ action: 'updateTask', taskId, details });
+                btn.textContent = 'Guardado';
+                setTimeout(() => {
+                    closeTaskModal();
+                    btn.textContent = 'Guardar Cambios';
+                }, 1000);
+                calendar.refetchEvents();
+                loadTasks();
+            } catch (error) {
+                console.error('Error al guardar desde el modal:', error);
+                alert('Error al guardar los cambios: ' + error.message);
+                btn.textContent = 'Error';
+            } finally {
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = 'Guardar Cambios';
+                }, 2000);
+            }
         }
 
         async function loadProjects() {
@@ -1102,7 +1193,7 @@
                 toggleOtherArea();
                 toggleCalendarOptions();
                 loadTasks();
-                calendar.refetchEvents(); // Recargar eventos en la agenda
+                calendar.refetchEvents();
             } catch (error) {
                 msgBox.innerHTML = `<div class="message error-message">Error: ${error.message}</div>`;
             } finally {
@@ -1137,7 +1228,7 @@
                     button.textContent = 'Guardado';
                     setTimeout(() => button.textContent = 'Guardar Tarea', 2000);
                 }
-                calendar.refetchEvents(); // Recargar eventos en la agenda
+                calendar.refetchEvents();
             } catch (error) {
                 console.error('Error al actualizar tarea:', error);
                 if (isSaveButton) button.textContent = 'Error';
@@ -1156,7 +1247,7 @@
                     taskCard.style.opacity = '0';
                     taskCard.style.transform = 'scale(0.9)';
                     setTimeout(() => taskCard.remove(), 500);
-                    calendar.refetchEvents(); // Recargar eventos en la agenda
+                    calendar.refetchEvents();
                 } catch (error) {
                     alert(`Error al eliminar la tarea: ${error.message}`);
                 }
