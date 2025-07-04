@@ -58,13 +58,11 @@
         .task-card { background-color: #fff; border-radius: var(--border-radius); padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid; transition: all 0.3s; }
         .task-card.priority-Alta { border-color: #e53e3e; } .task-card.priority-Medio { border-color: #dd6b20; } .task-card.priority-Baja { border-color: #3182ce; }
         .task-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .task-card-header h3 { font-size: 1.2em; margin-right: 10px; cursor: pointer; }
+        .task-card-header h3 { font-size: 1.2em; margin-right: 10px; }
         .task-status-select { font-weight: 600; border: none; background: #f1f3f5; border-radius: 20px; padding: 5px 10px; cursor: pointer; }
         .task-card-body { margin-top: 15px; }
-        .task-description { color: #555; margin-bottom: 15px; max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
-        .task-description.expanded { max-height: 200px; }
-        .task-annotations textarea { min-height: 60px; margin-bottom: 10px; }
-        .task-annotations button { background-color: var(--primary-color); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; float: right; }
+        .task-card-body .form-group { margin-bottom: 10px; }
+        .task-card-body button { background-color: var(--primary-color); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; float: right; }
         .task-meta { display: flex; flex-wrap: wrap; gap: 15px; font-size: 0.9em; color: var(--label-color); margin-top: 15px; clear: both; }
         .meta-item { display: flex; align-items: center; gap: 5px; background-color: #F8F9FA; padding: 5px 10px; border-radius: 20px; }
         #task-list-container.loading::after { content: 'Cargando tareas...'; display: block; text-align: center; padding: 40px; font-size: 1.2em; color: var(--label-color); }
@@ -130,6 +128,7 @@
                         </div>
                     </div>
                     <div class="form-group"><label for="sort-tasks">Ordenar por</label><select id="sort-tasks"><option value="default">Por defecto</option><option value="priority">Prioridad</option><option value="deadline">Fecha límite</option></select></div>
+                    <div class="form-group"><label for="sort-direction">Dirección</label><select id="sort-direction"><option value="ascending">Ascendente</option><option value="descending">Descendente</option></select></div>
                 </div>
                 <div id="task-list-container"></div>
             </div>
@@ -137,7 +136,7 @@
     </div>
 
     <script>
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzUFb-rYs6ifXxHvtrBXQtAwX2Zy05QgXV7jiQa39deS75WuSQ12TWvB9TUP1AUlMq2lg/exec';
+        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbw5II8ptVSyQLLWhoxlrkjs1ZviWWsffaxq5TgXQtmFD1h5qY-Id_0hz4u84DCWqrhH/exec';
         let projectsCache = [];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -158,6 +157,7 @@
             document.getElementById('start-date').addEventListener('change', loadTasks);
             document.getElementById('end-date').addEventListener('change', loadTasks);
             document.getElementById('sort-tasks').addEventListener('change', loadTasks);
+            document.getElementById('sort-direction').addEventListener('change', loadTasks);
         }
 
         function setupTabNavigation() {
@@ -199,8 +199,9 @@
                 endDate: document.getElementById('end-date').value,
             };
             const sortBy = document.getElementById('sort-tasks').value;
+            const sortDirection = document.getElementById('sort-direction').value;
             try {
-                const result = await apiCall({ action: 'getTasks', filters, sortBy });
+                const result = await apiCall({ action: 'getTasks', filters, sortBy, sortDirection });
                 renderTasks(result.data);
             } catch (error) {
                 taskContainer.innerHTML = `<div class="message error-message">Error al cargar tareas: ${error.message}</div>`;
@@ -241,20 +242,31 @@
                 card.className = `task-card priority-${task.priority || 'default'}`;
                 card.innerHTML = `
                     <div class="task-card-header">
-                        <h3 onclick="this.nextElementSibling.classList.toggle('expanded')">${task.title}</h3>
+                        <h3>${task.title}</h3>
                         <select class="task-status-select" data-task-id="${task.id}">
                             <option value="Sin empezar" ${task.status === 'Sin empezar' ? 'selected' : ''}>⚪️ Sin empezar</option>
                             <option value="En progreso" ${task.status === 'En progreso' ? 'selected' : ''}>🟡 En progreso</option>
                             <option value="Listo" ${task.status === 'Listo' ? 'selected' : ''}>🟢 Listo</option>
                         </select>
                     </div>
-                    <div class="task-description">${task.description || '<em>Sin descripción.</em>'}</div>
                     <div class="task-card-body">
-                        <div class="task-annotations">
-                            <label>Anotaciones:</label>
-                            <textarea data-task-id="${task.id}">${task.annotations}</textarea>
-                            <button onclick="handleAnnotationSave(this)">Guardar</button>
+                        <div class="form-group">
+                            <label>Descripción:</label>
+                            <textarea class="task-description-input" data-task-id="${task.id}">${task.description}</textarea>
                         </div>
+                        <div class="form-group">
+                            <label>Anotaciones:</label>
+                            <textarea class="task-annotations-input" data-task-id="${task.id}">${task.annotations}</textarea>
+                        </div>
+                         <div class="form-group">
+                            <label>Prioridad:</label>
+                            <select class="task-priority-select" data-task-id="${task.id}">
+                                <option value="Baja" ${task.priority === 'Baja' ? 'selected' : ''}>🔵 Baja</option>
+                                <option value="Medio" ${task.priority === 'Medio' ? 'selected' : ''}>🟠 Media</option>
+                                <option value="Alta" ${task.priority === 'Alta' ? 'selected' : ''}>🔴 Alta</option>
+                            </select>
+                        </div>
+                        <button onclick="handleTaskUpdate(this, '${task.id}')">Guardar Tarea</button>
                     </div>
                     <div class="task-meta">
                         ${project ? `<div class="meta-item">📁 ${project.name}</div>` : ''}
@@ -265,8 +277,15 @@
                 list.appendChild(card);
             });
             container.appendChild(list);
-            document.querySelectorAll('.task-status-select').forEach(s => s.addEventListener('change', handleStatusUpdate));
-            document.querySelectorAll('.task-deadline-input').forEach(i => i.addEventListener('change', handleDeadlineUpdate));
+            document.querySelectorAll('.task-status-select, .task-deadline-input').forEach(el => {
+                el.addEventListener('change', (e) => {
+                    const taskId = e.target.dataset.taskId;
+                    const details = {};
+                    if(e.target.classList.contains('task-status-select')) details.status = e.target.value;
+                    if(e.target.classList.contains('task-deadline-input')) details.deadline = e.target.value;
+                    handleTaskUpdate(e.target, taskId, details);
+                });
+            });
         }
         
         function renderProjectDetails(details) {
@@ -341,31 +360,29 @@
                 btn.innerHTML = '<span>Crear Tarea</span>';
             }
         }
-
-        async function handleStatusUpdate(e) {
-            const select = e.target;
-            select.disabled = true;
-            try {
-                await apiCall({ action: 'updateTaskStatus', taskId: select.dataset.taskId, newStatus: select.value });
-            } catch (error) {
-                console.error('Error al actualizar estado:', error);
-                loadTasks(); 
-            } finally {
-                select.disabled = false;
-            }
-        }
         
-        async function handleAnnotationSave(button) {
-            const textarea = button.closest('.task-annotations').querySelector('textarea');
+        async function handleTaskUpdate(button, taskId, details = null) {
             button.textContent = 'Guardando...';
             button.disabled = true;
+
+            if (!details) {
+                 const card = button.closest('.task-card-body');
+                 details = {
+                    description: card.querySelector('.task-description-input').value,
+                    annotations: card.querySelector('.task-annotations-input').value,
+                    priority: card.querySelector('.task-priority-select').value,
+                 };
+            }
+            
             try {
-                await apiCall({ action: 'updateTaskAnnotation', taskId: textarea.dataset.taskId, annotation: textarea.value });
-                button.textContent = 'Guardado';
-                setTimeout(() => button.textContent = 'Guardar', 2000);
+                await apiCall({ action: 'updateTask', taskId, details });
+                if(button.tagName === 'BUTTON') {
+                    button.textContent = 'Guardado';
+                    setTimeout(() => button.textContent = 'Guardar Tarea', 2000);
+                }
             } catch (error) {
-                console.error('Error al guardar anotación:', error);
-                button.textContent = 'Error';
+                console.error('Error al actualizar tarea:', error);
+                if(button.tagName === 'BUTTON') button.textContent = 'Error';
             } finally {
                 button.disabled = false;
             }
@@ -390,18 +407,21 @@
                 button.disabled = false;
             }
         }
-
+        
         async function handleDeadlineUpdate(e) {
             const input = e.target;
-            input.disabled = true;
-            try {
-                 await apiCall({ action: 'updateTaskDeadline', taskId: input.dataset.taskId, newDeadline: input.value });
-            } catch (error) {
-                console.error('Error al actualizar fecha límite:', error);
-                loadTasks();
-            } finally {
-                input.disabled = false;
-            }
+            const taskId = input.dataset.taskId;
+            const newDeadline = input.value;
+            
+            const card = input.closest('.task-card');
+            const statusSelect = card.querySelector('.task-status-select');
+            
+            const details = {
+                deadline: newDeadline,
+                status: statusSelect.value 
+            };
+            
+            await handleTaskUpdate(input, taskId, details);
         }
 
         async function apiCall(payload) {
