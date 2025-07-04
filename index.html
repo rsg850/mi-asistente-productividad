@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +7,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Scripts de FullCalendar -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core/locales/es.js'></script>
+
     <style>
         :root {
             --primary-color: #00A99D;
@@ -23,13 +27,11 @@
             --shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
             --border-radius: 12px;
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--background-color);
@@ -37,7 +39,6 @@
             line-height: 1.6;
             padding: 20px;
         }
-
         .container {
             max-width: 900px;
             margin: 20px auto;
@@ -46,30 +47,23 @@
             box-shadow: var(--shadow);
             overflow: hidden;
         }
-
         .header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             padding: 30px;
             text-align: center;
         }
-
-        h1,
-        h2,
-        h3 {
+        h1, h2, h3 {
             font-weight: 700;
         }
-
         .main-content {
             padding: 30px 40px;
         }
-
         .tab-navigation {
             display: flex;
             border-bottom: 2px solid var(--border-color);
             margin-bottom: 30px;
         }
-
         .tab-btn {
             padding: 15px 25px;
             cursor: pointer;
@@ -81,35 +75,25 @@
             transition: all 0.3s;
             border-bottom: 3px solid transparent;
         }
-
         .tab-btn.active {
             color: var(--primary-color);
             border-bottom-color: var(--primary-color);
         }
-
         .tab-content {
             display: none;
         }
-
         .tab-content.active {
             display: block;
             animation: fadeIn 0.5s;
         }
-
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-
         /* Estilos del formulario */
         .form-section {
             margin-bottom: 30px;
         }
-
         .section-title {
             font-size: 1.4em;
             color: var(--primary-color);
@@ -119,16 +103,13 @@
             display: flex;
             align-items: center;
         }
-
         .section-title svg {
             margin-right: 12px;
             stroke: var(--primary-color);
         }
-
         .form-group {
             margin-bottom: 20px;
         }
-
         label {
             display: block;
             margin-bottom: 8px;
@@ -136,10 +117,27 @@
             color: var(--label-color);
             font-size: 0.95em;
         }
-
-        input,
-        select,
-        textarea {
+        /* **NUEVO**: Estilo para etiquetas con icono */
+        .label-with-icon {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .label-with-icon svg {
+            width: 18px; /* Tamaño consistente para iconos */
+            height: 18px;
+            stroke: var(--label-color);
+            stroke-width: 2;
+            fill: none;
+        }
+        .checkbox-item .label-with-icon {
+            font-weight: 500; /* El peso de la fuente es diferente en los checkboxes */
+            margin-bottom: 0;
+        }
+        .checkbox-item .label-with-icon svg {
+             stroke-width: 2.5; /* Un poco más grueso para iconos de línea */
+        }
+        input, select, textarea {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid var(--border-color);
@@ -149,21 +147,16 @@
             transition: all 0.3s;
             background-color: #FDFDFD;
         }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.2);
         }
-
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-
         .submit-btn {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
@@ -181,42 +174,35 @@
             justify-content: center;
             gap: 10px;
         }
-
         .submit-btn:disabled {
             background: #BDBDBD;
         }
-
         .message {
             padding: 15px;
             border-radius: 8px;
             margin-top: 20px;
             text-align: center;
         }
-
         .error-message {
             background: #FFF3F3;
             color: var(--error-color);
             border: 1px solid var(--error-color);
         }
-
         .success-message {
             background: #F0FFF4;
             color: var(--success-color);
             border: 1px solid var(--success-color);
         }
-
         .datetime-group {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 10px;
         }
-        
         .datetime-group-reminder {
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 10px;
         }
-
         .calendar-section {
             background: #F8F9FA;
             padding: 20px;
@@ -224,41 +210,31 @@
             border: 1px solid #F1F3F5;
             margin-top: 20px;
         }
-
-        .checkbox-group,
-        .main-checkbox {
+        .checkbox-group, .main-checkbox {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
             align-items: center;
         }
-
-        .checkbox-item,
-        .main-checkbox {
+        .checkbox-item, .main-checkbox {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-
-        .checkbox-item input[type="checkbox"],
-        .main-checkbox input[type="checkbox"] {
+        .checkbox-item input[type="checkbox"], .main-checkbox input[type="checkbox"] {
             width: auto;
             margin: 0;
             accent-color: var(--primary-color);
             height: 1.2em;
             width: 1.2em;
         }
-
-        .checkbox-item label,
-        .main-checkbox label {
+        .checkbox-item label, .main-checkbox label {
             margin: 0;
             font-weight: 500;
         }
-
         .main-checkbox label {
             font-weight: 600;
         }
-
         .loading-spinner {
             width: 20px;
             height: 20px;
@@ -267,17 +243,12 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            to { transform: rotate(360deg); }
         }
-
         .hidden {
             display: none;
         }
-
         /* Estilos del Gestor de Tareas */
         #project-details-container {
             background-color: #e6f7ff;
@@ -286,17 +257,14 @@
             padding: 20px;
             margin-bottom: 30px;
         }
-
         .project-details-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-
         .project-details-grid .form-group {
             margin-bottom: 0;
         }
-
         #project-details-container button {
             background-color: var(--secondary-color);
             color: white;
@@ -306,7 +274,6 @@
             cursor: pointer;
             margin-top: 10px;
         }
-
         .filters-panel {
             display: flex;
             flex-wrap: wrap;
@@ -316,30 +283,26 @@
             background-color: #F8F9FA;
             border-radius: var(--border-radius);
         }
-
         .filters-panel .form-group {
             flex: 1;
             min-width: 150px;
+            margin-bottom: 0;
         }
-
         #custom-date-filter {
             display: flex;
             flex-direction: column;
             gap: 10px;
             margin-top: 10px;
         }
-
         #custom-date-filter div {
             display: flex;
             align-items: center;
             gap: 5px;
         }
-
         .task-list {
             display: grid;
             gap: 15px;
         }
-
         .task-card {
             background-color: #fff;
             border-radius: var(--border-radius);
@@ -348,7 +311,6 @@
             transition: all 0.3s;
             overflow: hidden;
         }
-        
         .task-card-header {
             display: flex;
             justify-content: space-between;
@@ -356,7 +318,6 @@
             padding: 20px;
             cursor: pointer;
         }
-
         .task-card-header-main {
             display: flex;
             align-items: center;
@@ -364,7 +325,6 @@
             flex-grow: 1;
             min-width: 0;
         }
-
         .task-card-header h3 {
             font-size: 1.2em;
             margin: 0;
@@ -372,32 +332,25 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
         .task-card-toggle {
             transition: transform 0.3s;
             flex-shrink: 0;
         }
-
         .task-card.is-expanded .task-card-toggle {
             transform: rotate(180deg);
         }
-
         .task-card-details {
             max-height: 0;
             transition: max-height 0.5s ease-out, padding 0.5s ease-out;
             padding: 0 20px;
         }
-
         .task-card.is-expanded .task-card-details {
-             max-height: 1000px; /* Suficientemente grande */
-             padding: 0 20px 20px 20px;
+            max-height: 1000px; /* Suficientemente grande */
+            padding: 0 20px 20px 20px;
         }
-
-
         .task-card.priority-Alta { border-color: #e53e3e; }
         .task-card.priority-Medio { border-color: #dd6b20; }
         .task-card.priority-Baja { border-color: #3182ce; }
-
         .task-status-badge {
             display: inline-flex;
             align-items: center;
@@ -408,20 +361,12 @@
             font-size: 0.9em;
             flex-shrink: 0;
         }
-
         .status-dot {
             width: 10px;
             height: 10px;
             border-radius: 50%;
         }
-
-        .status-sin-empezar { background-color: #f1f3f5; color: #495057; }
-        .status-sin-empezar .status-dot { background-color: #868e96; }
-        .status-en-progreso { background-color: #dbe4ff; color: #364fc7; }
-        .status-en-progreso .status-dot { background-color: #4c6ef5; }
-        .status-listo { background-color: #d3f9d8; color: #2f9e44; }
-        .status-listo .status-dot { background-color: #51cf66; }
-
+        .status-sin-empezar { background-color: #f1f3f5; color: #495057; } .status-sin-empezar .status-dot {background-color: #868e96; } .status-en-progreso { background-color: #dbe4ff; color: #364fc7; } .status-en-progreso .status-dot { background-color: #4c6ef5; } .status-listo { background-color: #d3f9d8; color: #2f9e44; } .status-listo .status-dot { background-color: #51cf66; }
         .task-card-footer {
             display: flex;
             justify-content: flex-end;
@@ -430,11 +375,9 @@
             border-top: 1px solid #f1f3f5;
             padding-top: 15px;
         }
-
         .task-card-body .form-group {
             margin-bottom: 15px;
         }
-
         .task-card-footer button {
             border: none;
             padding: 8px 15px;
@@ -443,7 +386,6 @@
             font-weight: 600;
             transition: background-color 0.3s;
         }
-
         .save-btn {
             background-color: var(--primary-color);
             color: white;
@@ -452,7 +394,6 @@
             background-color: var(--delete-color);
             color: white;
         }
-
         .task-meta {
             display: flex;
             flex-wrap: wrap;
@@ -462,7 +403,6 @@
             margin-top: 15px;
             clear: both;
         }
-
         .meta-item {
             display: flex;
             align-items: center;
@@ -471,7 +411,6 @@
             padding: 5px 10px;
             border-radius: 20px;
         }
-
         #task-list-container.loading::after {
             content: 'Cargando tareas...';
             display: block;
@@ -480,21 +419,121 @@
             font-size: 1.2em;
             color: var(--label-color);
         }
+        
+        /* Estilos para FullCalendar y Modal */
+        #calendar-container {
+            margin-top: 20px;
+        }
+        .fc { 
+            font-family: 'Inter', sans-serif;
+        }
+        .fc .fc-button-primary { 
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .fc .fc-button-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        .fc .fc-daygrid-day.fc-day-today { 
+            background-color: rgba(0, 169, 157, 0.1);
+        }
+        .fc-event { 
+            cursor: pointer;
+            border-width: 2px !important;
+            font-weight: 500;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.5em;
+            color: var(--primary-color);
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: var(--label-color);
+            line-height: 1;
+        }
+        .modal-body p {
+            margin-bottom: 15px;
+        }
+        .modal-body strong {
+            color: var(--text-color);
+        }
+        .modal-footer {
+            margin-top: 25px;
+            text-align: right;
+        }
+        .modal-footer a {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        .modal-footer a:hover {
+            background-color: #005f8d;
+        }
 
         @media (max-width: 768px) {
-            .form-row,
-            .datetime-group {
+            .form-row, .datetime-group {
                 grid-template-columns: 1fr;
             }
             .main-content {
                 padding: 20px;
             }
+            .tab-btn {
+                padding: 12px 15px;
+                font-size: 1em;
+            }
         }
     </style>
 </head>
-
 <body>
-
     <div class="container">
         <header class="header">
             <h1>Centro de Productividad</h1>
@@ -503,6 +542,7 @@
         <nav class="tab-navigation">
             <button class="tab-btn active" data-tab="asistente">➕ Asistente de Tareas</button>
             <button class="tab-btn" data-tab="gestor">📋 Gestor de Tareas</button>
+            <button class="tab-btn" data-tab="agenda">🗓️ Agenda</button>
         </nav>
 
         <main class="main-content">
@@ -511,22 +551,56 @@
                 <form id="taskForm" novalidate>
                     <section class="form-section">
                         <h2 class="section-title"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>Información de la Tarea</h2>
-                        <div class="form-group"><label for="titulo">¿Qué necesitas hacer? *</label><input type="text" id="titulo" name="titulo" required></div>
-                        <div class="form-group"><label for="descripcion">Descripción</label><textarea id="descripcion" name="descripcion"></textarea></div>
+                        <div class="form-group">
+                            <label for="titulo" class="label-with-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                                <span>¿Qué necesitas hacer? *</span>
+                            </label>
+                            <input type="text" id="titulo" name="titulo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="descripcion" class="label-with-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                                <span>Descripción</span>
+                            </label>
+                            <textarea id="descripcion" name="descripcion"></textarea>
+                        </div>
                         <div class="form-row">
-                            <div class="form-group"><label for="estado">Estado</label><select id="estado" name="estado"><option value="Sin empezar">⚪ Sin empezar</option><option value="En progreso">🔵 En progreso</option><option value="Listo">🟢 Listo</option></select></div>
-                            <div class="form-group"><label for="prioridad">Prioridad</label><select id="prioridad" name="prioridad"><option value="Alta">🔴 Alta</option><option value="Medio" selected>🟠 Media</option><option value="Baja">🔵 Baja</option></select></div>
+                            <div class="form-group">
+                                <label for="estado" class="label-with-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                    <span>Estado</span>
+                                </label>
+                                <select id="estado" name="estado"><option value="Sin empezar">⚪️ Sin empezar</option><option value="En progreso">⏳ En progreso</option><option value="Listo">✅ Listo</option></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="prioridad" class="label-with-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 2v6h6L2.5 2zM2.5 22v-6h6L2.5 22zM21.5 2l-6 6h6V2zm-6 14h6v6l-6-6z"/></svg>
+                                    <span>Prioridad</span>
+                                </label>
+                                <select id="prioridad" name="prioridad"><option value="Alta">🔴 Alta</option><option value="Medio" selected>🟠 Media</option><option value="Baja">🔵 Baja</option></select>
+                            </div>
                         </div>
                     </section>
-
                     <section class="form-section">
                         <h2 class="section-title"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>Categorización</h2>
                         <div class="form-row">
-                            <div class="form-group"><label for="area">Área</label><select id="area" name="area"><option value="">Seleccionar área...</option><option value="Profesional">💼 Profesional</option><option value="Académico">🎓 Académico</option><option value="Personal">🏠 Personal</option><option value="other">➕ Otra...</option></select><input type="text" id="area_other" name="area_other" class="hidden" style="margin-top: 10px;" placeholder="Escribe el área personalizada"></div>
-                            <div class="form-group"><label for="proyecto_id">Proyecto</label><select id="proyecto_id" name="proyecto_id"><option value="none">Cargando...</option></select></div>
+                            <div class="form-group">
+                                <label for="area" class="label-with-icon">
+                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                                    <span>Área</span>
+                                </label>
+                                <select id="area" name="area"><option value="">Seleccionar área...</option><option value="Profesional">💼 Profesional</option><option value="Académico">📚 Académico</option><option value="Personal">👤 Personal</option><option value="other">➕ Otra...</option></select><input type="text" id="area_other" name="area_other" class="hidden" style="margin-top: 10px;" placeholder="Escribe el área personalizada">
+                            </div>
+                            <div class="form-group">
+                                <label for="proyecto_id" class="label-with-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                                    <span>Proyecto</span>
+                                </label>
+                                <select id="proyecto_id" name="proyecto_id"><option value="none">Cargando...</option></select>
+                            </div>
                         </div>
                     </section>
-
                     <section class="form-section">
                         <h2 class="section-title"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>Fechas y Recordatorios</h2>
                         <div class="form-group"><label for="fecha_limite">Fecha y Horas (Inicio y Fin)</label>
@@ -537,12 +611,24 @@
                             </div>
                         </div>
                         <div class="calendar-section">
-                            <div class="main-checkbox"><input type="checkbox" id="add_to_calendar" name="add_to_calendar"><label for="add_to_calendar">🗓️ Añadir a Google Calendar</label></div>
+                            <div class="main-checkbox"><input type="checkbox" id="add_to_calendar" name="add_to_calendar"><label for="add_to_calendar" class="label-with-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span>Añadir a Google Calendar</span></label></div>
                             <div id="calendarOptions" class="hidden" style="margin-top: 15px;">
                                 <label>Opciones de recordatorio:</label>
                                 <div class="checkbox-group" style="margin-top: 10px;">
-                                    <div class="checkbox-item"><input type="checkbox" id="recordatorio_2h" name="recordatorio_2h"><label for="recordatorio_2h">⏰ 2 horas antes</label></div>
-                                    <div class="checkbox-item"><input type="checkbox" id="recordatorio_custom" name="recordatorio_custom"><label for="recordatorio_custom">⚙️ Personalizado</label></div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="recordatorio_2h" name="recordatorio_2h">
+                                        <label for="recordatorio_2h" class="label-with-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                            <span>2 horas antes</span>
+                                        </label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="recordatorio_custom" name="recordatorio_custom">
+                                        <label for="recordatorio_custom" class="label-with-icon">
+                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                            <span>Personalizado</span>
+                                        </label>
+                                    </div>
                                 </div>
                                 <div id="customReminderFields" class="hidden" style="margin-top: 15px;"><label>Fecha y hora del recordatorio:</label>
                                     <div class="datetime-group-reminder"><input type="date" id="recordatorio_fecha" name="recordatorio_fecha"><input type="time" id="recordatorio_hora" name="recordatorio_hora"></div>
@@ -550,7 +636,6 @@
                             </div>
                         </div>
                     </section>
-
                     <div id="messageBoxForm"></div>
                     <button type="submit" class="submit-btn" id="submitBtn"><span>Crear Tarea</span></button>
                 </form>
@@ -573,75 +658,216 @@
                 </div>
                 <div id="task-list-container"></div>
             </div>
+
+            <!-- PESTAÑA 3: AGENDA -->
+            <div id="agenda" class="tab-content">
+                <div class="filters-panel">
+                    <div class="form-group"><label for="filter-agenda-project">Filtrar por Proyecto</label><select id="filter-agenda-project"><option value="all">Todos los proyectos</option></select></div>
+                    <div class="form-group"><label for="filter-agenda-area">Filtrar por Área</label><select id="filter-agenda-area"><option value="all">Todas las áreas</option><option value="Profesional">Profesional</option><option value="Académico">Académico</option><option value="Personal">Personal</option></select></div>
+                </div>
+                <div id="calendar-container">
+                    <div id="calendar"></div>
+                </div>
+            </div>
         </main>
+    </div>
+
+    <!-- Modal para detalles de la tarea -->
+    <div id="task-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title"></h3>
+                <button id="modal-close" class="modal-close">&times;</button>
+            </div>
+            <div id="modal-body" class="modal-body"></div>
+            <div class="modal-footer">
+                <a id="modal-notion-link" href="#" target="_blank" rel="noopener noreferrer">Ver en Notion</a>
+            </div>
+        </div>
     </div>
 
     <script>
         const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwKkg3eMkbgi3p9JpM0Y03CwawjbDtCywB5Gk1htbFkdrPxIEk9vVMS1wNXLIx63xLXhw/exec';
         let projectsCache = [];
+        let calendar;
 
         document.addEventListener('DOMContentLoaded', () => {
             initializeApp();
-            setupTabNavigation();
         });
 
         function initializeApp() {
+            setupEventListeners();
             loadProjects();
             loadTasks();
-            document.getElementById('taskForm').addEventListener('submit', handleFormSubmit);
-            document.getElementById('area').addEventListener('change', toggleOtherArea);
-            document.getElementById('add_to_calendar').addEventListener('change', toggleCalendarOptions);
-            document.getElementById('recordatorio_custom').addEventListener('change', toggleCustomReminder);
-            
-            document.getElementById('filter-project').addEventListener('change', () => {
-                loadTasks();
-                loadProjectDetails();
-            });
-            document.getElementById('filter-area').addEventListener('change', loadTasks);
-            document.getElementById('filter-date').addEventListener('change', toggleCustomDateFilter);
-            document.getElementById('start-date').addEventListener('change', loadTasks);
-            document.getElementById('end-date').addEventListener('change', loadTasks);
-            document.getElementById('sort-tasks').addEventListener('change', loadTasks);
-            document.getElementById('sort-direction').addEventListener('change', loadTasks);
-            
-            document.getElementById('task-list-container').addEventListener('click', function(e) {
-                const header = e.target.closest('.task-card-header');
-                if (header) {
-                    header.parentElement.classList.toggle('is-expanded');
-                    return;
-                }
-            });
+            initializeCalendar();
         }
 
-        function setupTabNavigation() {
+        function setupEventListeners() {
+            // Navegación por pestañas
             document.querySelectorAll('.tab-btn').forEach(button => {
                 button.addEventListener('click', () => {
                     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
                     button.classList.add('active');
                     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
                     document.getElementById(button.dataset.tab).classList.add('active');
+
+                    if (button.dataset.tab === 'agenda' && calendar) {
+                        setTimeout(() => calendar.render(), 10);
+                    }
                 });
             });
+
+            // Formulario de creación
+            document.getElementById('taskForm').addEventListener('submit', handleFormSubmit);
+            document.getElementById('area').addEventListener('change', toggleOtherArea);
+            document.getElementById('add_to_calendar').addEventListener('change', toggleCalendarOptions);
+            document.getElementById('recordatorio_custom').addEventListener('change', toggleCustomReminder);
+
+            // Filtros del Gestor
+            ['filter-project', 'filter-area', 'start-date', 'end-date', 'sort-tasks', 'sort-direction'].forEach(id => {
+                document.getElementById(id).addEventListener('change', loadTasks);
+            });
+            document.getElementById('filter-date').addEventListener('change', toggleCustomDateFilter);
+            document.getElementById('filter-project').addEventListener('change', loadProjectDetails);
+
+            // Filtros de la Agenda
+            ['filter-agenda-project', 'filter-agenda-area'].forEach(id => {
+                document.getElementById(id).addEventListener('change', () => calendar.refetchEvents());
+            });
+
+            // Eventos de la lista de tareas (delegación)
+            document.getElementById('task-list-container').addEventListener('click', function(e) {
+                const header = e.target.closest('.task-card-header');
+                if (header) {
+                    header.parentElement.classList.toggle('is-expanded');
+                }
+            });
+
+            // Modal
+            document.getElementById('modal-close').addEventListener('click', closeTaskModal);
+            document.getElementById('task-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'task-modal') {
+                    closeTaskModal();
+                }
+            });
+        }
+
+        function initializeCalendar() {
+            const calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                locale: 'es',
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: async function(fetchInfo, successCallback, failureCallback) {
+                    try {
+                        const filters = {
+                            dateRangeType: 'custom',
+                            startDate: fetchInfo.startStr.split('T')[0],
+                            endDate: fetchInfo.endStr.split('T')[0],
+                            projectId: document.getElementById('filter-agenda-project').value,
+                            area: document.getElementById('filter-agenda-area').value,
+                        };
+                        const result = await apiCall({
+                            action: 'getTasks',
+                            filters: filters,
+                            sortBy: 'deadline',
+                            sortDirection: 'ascending'
+                        });
+
+                        const events = result.data.map(task => {
+                            let statusIcon = '⚪️';
+                            if (task.status === 'En progreso') statusIcon = '⏳';
+                            if (task.status === 'Listo') statusIcon = '✅';
+                            
+                            return {
+                                id: task.id,
+                                title: `${statusIcon} ${task.title}`,
+                                start: task.deadline,
+                                end: task.deadlineEnd,
+                                allDay: task.deadline ? !task.deadline.includes('T') : true,
+                                color: task.priority === 'Alta' ? '#e53e3e' : (task.priority === 'Medio' ? '#dd6b20' : '#3182ce'),
+                                extendedProps: {
+                                    ...task,
+                                    statusIcon: statusIcon,
+                                    projectName: projectsCache.find(p => p.id === task.project)?.name || 'Sin proyecto'
+                                }
+                            };
+                        });
+                        successCallback(events);
+                    } catch (error) {
+                        console.error('Error al cargar tareas en el calendario:', error);
+                        failureCallback(error);
+                    }
+                },
+                eventClick: function(info) {
+                    info.jsEvent.preventDefault(); // Prevenir cualquier comportamiento por defecto
+                    showTaskModal(info.event);
+                }
+            });
+            calendar.render();
+        }
+        
+        function showTaskModal(event) {
+            const modal = document.getElementById('task-modal');
+            const props = event.extendedProps;
+
+            document.getElementById('modal-title').textContent = event.title;
+            
+            const body = document.getElementById('modal-body');
+            body.innerHTML = `
+                <p><strong>Estado:</strong> ${props.status}</p>
+                <p><strong>Proyecto:</strong> ${props.projectName}</p>
+                <p><strong>Área:</strong> ${props.area || 'No especificada'}</p>
+                <p><strong>Descripción:</strong></p>
+                <p>${props.description || 'No hay descripción.'}</p>
+            `;
+
+            const notionLink = document.getElementById('modal-notion-link');
+            if (props.notionUrl) {
+                notionLink.href = props.notionUrl;
+                notionLink.style.display = 'inline-block';
+            } else {
+                notionLink.style.display = 'none';
+            }
+            
+            modal.classList.add('visible');
+        }
+
+        function closeTaskModal() {
+            document.getElementById('task-modal').classList.remove('visible');
         }
 
         async function loadProjects() {
             try {
                 const result = await apiCall({ action: 'getProjects' });
                 projectsCache = result.data;
-                const projectSelects = [document.getElementById('proyecto_id'), document.getElementById('filter-project')];
-                projectSelects.forEach(select => {
-                    select.innerHTML = select.id === 'proyecto_id' ? '<option value="none">Sin proyecto</option>' : '<option value="all">Todos los proyectos</option>';
-                    projectsCache.forEach(p => select.add(new Option(`📁 ${p.name}`, p.id)));
-                });
+                populateProjectFilters();
             } catch (error) {
                 console.error('Error al cargar proyectos:', error);
-                document.querySelectorAll('#proyecto_id, #filter-project').forEach(s => s.innerHTML = `<option>Error</option>`);
+                document.querySelectorAll('#proyecto_id, #filter-project, #filter-agenda-project').forEach(s => s.innerHTML = `<option>Error</option>`);
             }
+        }
+
+        function populateProjectFilters() {
+            const selects = [
+                document.getElementById('proyecto_id'), 
+                document.getElementById('filter-project'),
+                document.getElementById('filter-agenda-project')
+            ];
+            
+            selects.forEach(select => {
+                select.innerHTML = select.id === 'proyecto_id' ? '<option value="none">Sin proyecto</option>' : '<option value="all">Todos los proyectos</option>';
+                projectsCache.forEach(p => select.add(new Option(p.name, p.id)));
+            });
         }
 
         async function loadTasks() {
             const taskContainer = document.getElementById('task-list-container');
-            taskContainer.innerHTML = '';
+            taskContainer.innerHTML = "";
             taskContainer.classList.add('loading');
             const filters = {
                 projectId: document.getElementById('filter-project').value,
@@ -686,7 +912,7 @@
 
         function renderTasks(tasks) {
             const container = document.getElementById('task-list-container');
-            container.innerHTML = '';
+            container.innerHTML = "";
             if (tasks.length === 0) {
                 container.innerHTML = '<div class="message">No se encontraron tareas con los filtros seleccionados.</div>';
                 return;
@@ -698,96 +924,89 @@
                 const card = document.createElement('div');
                 card.className = `task-card priority-${task.priority || 'default'}`;
                 card.id = `task-${task.id}`;
-
                 const deadlineDate = task.deadline ? new Date(task.deadline) : null;
                 const deadlineDateValue = deadlineDate ? deadlineDate.toISOString().split('T')[0] : '';
-                const deadlineTimeValue = deadlineDate && task.deadline.includes('T') ? deadlineDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
-
+                const deadlineTimeValue = deadlineDate && task.deadline.includes('T') ? deadlineDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
                 const deadlineEndDate = task.deadlineEnd ? new Date(task.deadlineEnd) : null;
                 const deadlineEndTimeValue = deadlineEndDate ? deadlineEndDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
-
-
                 const customReminderDate = task.customReminderDateTime ? new Date(task.customReminderDateTime) : null;
                 const customReminderDateValue = customReminderDate ? customReminderDate.toISOString().split('T')[0] : '';
-                const customReminderTimeValue = customReminderDate ? customReminderDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
+                const customReminderTimeValue = customReminderDate ? customReminderDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
 
                 card.innerHTML = `
-                    <div class="task-card-header">
-                        <div class="task-card-header-main">
-                           ${getStatusBadge(task.status)}
-                           <h3>${task.title}</h3>
-                        </div>
-                        <svg class="task-card-toggle" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                <div class="task-card-header">
+                    <div class="task-card-header-main">
+                        ${getStatusBadge(task.status)}
+                        <h3>${task.title}</h3>
                     </div>
-                    <div class="task-card-details">
-                        <div class="task-card-body">
-                            <div class="form-group">
-                                <label>Estado:</label>
-                                <select class="task-status-select" data-task-id="${task.id}">
-                                    <option value="Sin empezar" ${task.status === 'Sin empezar' ? 'selected' : ''}>⚪ Sin empezar</option>
-                                    <option value="En progreso" ${task.status === 'En progreso' ? 'selected' : ''}>🔵 En progreso</option>
-                                    <option value="Listo" ${task.status === 'Listo' ? 'selected' : ''}>🟢 Listo</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Descripción:</label>
-                                <textarea class="task-description-input" data-task-id="${task.id}">${task.description || ''}</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Anotaciones:</label>
-                                <textarea class="task-annotations-input" data-task-id="${task.id}">${task.annotations || ''}</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Prioridad:</label>
-                                <select class="task-priority-select" data-task-id="${task.id}">
-                                    <option value="Baja" ${task.priority === 'Baja' ? 'selected' : ''}>🔵 Baja</option>
-                                    <option value="Medio" ${task.priority === 'Medio' ? 'selected' : ''}>🟠 Media</option>
-                                    <option value="Alta" ${task.priority === 'Alta' ? 'selected' : ''}>🔴 Alta</option>
-                                </select>
-                            </div>
-                             <div class="form-group">
-                                <label>Fecha y Horas (Inicio y Fin):</label>
-                                <div class="datetime-group">
-                                    <input type="date" class="task-deadline-date" value="${deadlineDateValue}" data-task-id="${task.id}">
-                                    <input type="time" class="task-deadline-time" value="${deadlineTimeValue}" data-task-id="${task.id}">
-                                    <input type="time" class="task-deadline-end-time" value="${deadlineEndTimeValue}" data-task-id="${task.id}">
-                                </div>
-                            </div>
-                            <div class="form-group reminder-group ${task.calendarEventId ? '' : 'hidden'}">
-                                <label>Recordatorios de Calendar:</label>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" class="task-reminder-2h" id="reminder-2h-${task.id}" data-task-id="${task.id}" ${task.hasTwoHourReminder ? 'checked' : ''}>
-                                    <label for="reminder-2h-${task.id}">⏰ 2 horas antes</label>
-                                </div>
-                                <div class="datetime-group-reminder" style="margin-top: 5px;">
-                                    <input type="date" class="task-reminder-date" value="${customReminderDateValue}" data-task-id="${task.id}" placeholder="Fecha personalizada">
-                                    <input type="time" class="task-reminder-time" value="${customReminderTimeValue}" data-task-id="${task.id}">
-                                </div>
+                    <svg class="task-card-toggle" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div class="task-card-details">
+                    <div class="task-card-body">
+                        <div class="form-group">
+                            <label>Estado:</label>
+                            <select class="task-status-select" data-task-id="${task.id}">
+                                <option value="Sin empezar" ${task.status === 'Sin empezar' ? 'selected' : ""}>Sin empezar</option>
+                                <option value="En progreso" ${task.status === 'En progreso' ? 'selected' : ""}>En progreso</option>
+                                <option value="Listo" ${task.status === 'Listo' ? 'selected' : ''}>Listo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Descripción:</label>
+                            <textarea class="task-description-input" data-task-id="${task.id}">${task.description || ""}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Anotaciones:</label>
+                            <textarea class="task-annotations-input" data-task-id="${task.id}">${task.annotations || ""}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Prioridad:</label>
+                            <select class="task-priority-select" data-task-id="${task.id}">
+                                <option value="Baja" ${task.priority === 'Baja' ? 'selected' : ""}>Baja</option>
+                                <option value="Medio" ${task.priority === 'Medio' ? 'selected' : ""}> Media</option>
+                                <option value="Alta" ${task.priority === 'Alta' ? 'selected' : ""}>Alta</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha y Horas (Inicio y Fin):</label>
+                            <div class="datetime-group">
+                                <input type="date" class="task-deadline-date" value="${deadlineDateValue}" data-task-id="${task.id}">
+                                <input type="time" class="task-deadline-time" value="${deadlineTimeValue}" data-task-id="${task.id}">
+                                <input type="time" class="task-deadline-end-time" value="${deadlineEndTimeValue}" data-task-id="${task.id}">
                             </div>
                         </div>
-                        <div class="task-meta">
-                            ${project ? `<div class="meta-item">📁 ${project.name}</div>` : ''}
-                            ${task.area ? `<div class="meta-item">🏷️ ${task.area}</div>` : ''}
+                        <div class="form-group reminder-group ${task.calendarEventId ? "" : 'hidden'}">
+                            <label>Recordatorios de Calendar:</label>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="task-reminder-2h" id="reminder-2h-${task.id}" data-task-id="${task.id}" ${task.hasTwoHourReminder ? 'checked' : ''}>
+                                <label for="reminder-2h-${task.id}"> 2 horas antes</label>
+                            </div>
+                            <div class="datetime-group-reminder" style="margin-top: 5px;">
+                                <input type="date" class="task-reminder-date" value="${customReminderDateValue}" data-task-id="${task.id}" placeholder="Fecha personalizada">
+                                <input type="time" class="task-reminder-time" value="${customReminderTimeValue}" data-task-id="${task.id}">
+                            </div>
                         </div>
-                        <div class="task-card-footer">
-                            <button class="delete-btn" onclick="handleTaskDelete('${task.id}')">Eliminar</button>
-                            <button class="save-btn" onclick="handleTaskUpdate(this, '${task.id}')">Guardar Tarea</button>
-                        </div>
-                    </div>`;
+                    </div>
+                    <div class="task-meta">
+                        ${project ? `<div class="meta-item">${project.name}</div>` : ""}
+                        ${task.area ? `<div class="meta-item">${task.area}</div>` : ''}
+                    </div>
+                    <div class="task-card-footer">
+                        <button class="delete-btn" onclick="handleTaskDelete('${task.id}')">Eliminar</button>
+                        <button class="save-btn" onclick="handleTaskUpdate(this, '${task.id}')">Guardar Tarea</button>
+                    </div>
+                </div>`;
                 list.appendChild(card);
             });
             container.appendChild(list);
-
             container.querySelectorAll('.task-status-select, .task-deadline-date, .task-deadline-time, .task-deadline-end-time').forEach(el => {
                 el.addEventListener('change', (e) => {
                     const taskId = e.target.dataset.taskId;
                     const card = document.getElementById(`task-${taskId}`);
                     const details = {};
-
                     if (e.target.classList.contains('task-status-select')) {
                         details.status = e.target.value;
                     }
-                    
                     if (e.target.classList.contains('task-deadline-date') || e.target.classList.contains('task-deadline-time') || e.target.classList.contains('task-deadline-end-time')) {
                         const dateInput = card.querySelector('.task-deadline-date');
                         const timeInput = card.querySelector('.task-deadline-time');
@@ -803,7 +1022,6 @@
                             details.deadlineEnd = null;
                         }
                     }
-                    
                     handleTaskUpdate(e.target, taskId, details);
                 });
             });
@@ -817,22 +1035,22 @@
             }
             const projectId = document.getElementById('filter-project').value;
             container.innerHTML = `
-                <h3>Detalles de: ${details.name}</h3>
-                <div class="project-details-grid">
-                    <div class="form-group">
-                        <label>Fecha final estimada</label>
-                        <input type="date" id="project-end-date" value="${details.endDate || ''}">
-                    </div>
-                    <div class="form-group">
-                        <label>Estado</label>
-                        <input type="text" value="${details.status}" disabled>
-                    </div>
+            <h3>Detalles de: ${details.name}</h3>
+            <div class="project-details-grid">
+                <div class="form-group">
+                    <label>Fecha final estimada</label>
+                    <input type="date" id="project-end-date" value="${details.endDate || ""}">
                 </div>
                 <div class="form-group">
-                    <label>Observaciones</label>
-                    <textarea id="project-observations">${details.observations || ''}</textarea>
+                    <label>Estado</label>
+                    <input type="text" value="${details.status}" disabled>
                 </div>
-                <button onclick="handleProjectDetailsSave('${projectId}')">Guardar Cambios del Proyecto</button>`;
+            </div>
+            <div class="form-group">
+                <label>Observaciones</label>
+                <textarea id="project-observations">${details.observations || ""}</textarea>
+            </div>
+            <button onclick="handleProjectDetailsSave('${projectId}')">Guardar Cambios del Proyecto</button>`;
         }
 
         function toggleOtherArea() {
@@ -851,8 +1069,8 @@
             const isCustom = document.getElementById('filter-date').value === 'custom';
             document.getElementById('custom-date-filter').classList.toggle('hidden', !isCustom);
             if (!isCustom) {
-                document.getElementById('start-date').value = '';
-                document.getElementById('end-date').value = '';
+                document.getElementById('start-date').value = "";
+                document.getElementById('end-date').value = "";
                 loadTasks();
             }
         }
@@ -861,29 +1079,22 @@
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             const msgBox = document.getElementById('messageBoxForm');
-            msgBox.innerHTML = '';
+            msgBox.innerHTML = "";
             btn.disabled = true;
             btn.innerHTML = '<div class="loading-spinner"></div><span>Creando...</span>';
-
             const formData = {
                 action: 'createTask',
                 titulo: document.getElementById('titulo').value,
                 descripcion: document.getElementById('descripcion').value,
                 estado: document.getElementById('estado').value,
                 prioridad: document.getElementById('prioridad').value,
-                area: document.getElementById('area').value,
-                area_other: document.getElementById('area_other').value,
-                proyecto_id: document.getElementById('proyecto_id').value,
-                fecha_limite: document.getElementById('fecha_limite').value,
-                hora_limite: document.getElementById('hora_limite').value,
-                hora_fin: document.getElementById('hora_fin').value,
+                area: document.getElementById('area').value, area_other: document.getElementById('area_other').value, proyecto_id: document.getElementById('proyecto_id').value, fecha_limite: document.getElementById('fecha_limite').value, hora_limite: document.getElementById('hora_limite').value, hora_fin: document.getElementById('hora_fin').value,
                 add_to_calendar: document.getElementById('add_to_calendar').checked,
                 recordatorio_2h: document.getElementById('recordatorio_2h').checked,
                 recordatorio_custom: document.getElementById('recordatorio_custom').checked,
                 recordatorio_fecha: document.getElementById('recordatorio_fecha').value,
                 recordatorio_hora: document.getElementById('recordatorio_hora').value,
             };
-
             try {
                 const result = await apiCall(formData);
                 msgBox.innerHTML = `<div class="message success-message">${result.message}</div>`;
@@ -891,6 +1102,7 @@
                 toggleOtherArea();
                 toggleCalendarOptions();
                 loadTasks();
+                calendar.refetchEvents(); // Recargar eventos en la agenda
             } catch (error) {
                 msgBox.innerHTML = `<div class="message error-message">Error: ${error.message}</div>`;
             } finally {
@@ -905,21 +1117,16 @@
                 button.textContent = 'Guardando...';
                 button.disabled = true;
             }
-
             if (!details) {
                 const card = button.closest('.task-card');
-                const reminderDate = card.querySelector('.task-reminder-date').value;
-                const reminderTime = card.querySelector('.task-reminder-time').value;
-
+                const reminderDate = card.querySelector('.task-reminder-date').value; const reminderTime = card.querySelector('.task-reminder-time').value;
                 details = {
-                    description: card.querySelector('.task-description-input').value,
-                    annotations: card.querySelector('.task-annotations-input').value,
+                    description: card.querySelector('.task-description-input').value, annotations: card.querySelector('.task-annotations-input').value,
                     priority: card.querySelector('.task-priority-select').value,
                     hasTwoHourReminder: card.querySelector('.task-reminder-2h').checked,
                     customReminder: reminderDate && reminderTime ? `${reminderDate}T${reminderTime}:00` : null
                 };
             }
-
             try {
                 await apiCall({
                     action: 'updateTask',
@@ -930,6 +1137,7 @@
                     button.textContent = 'Guardado';
                     setTimeout(() => button.textContent = 'Guardar Tarea', 2000);
                 }
+                calendar.refetchEvents(); // Recargar eventos en la agenda
             } catch (error) {
                 console.error('Error al actualizar tarea:', error);
                 if (isSaveButton) button.textContent = 'Error';
@@ -941,7 +1149,6 @@
         async function handleTaskDelete(taskId) {
             const taskCard = document.getElementById(`task-${taskId}`);
             const taskTitle = taskCard.querySelector('h3').textContent;
-
             if (confirm(`¿Estás seguro de que quieres eliminar la tarea "${taskTitle}"? Esta acción no se puede deshacer.`)) {
                 try {
                     await apiCall({ action: 'deleteTask', taskId });
@@ -949,6 +1156,7 @@
                     taskCard.style.opacity = '0';
                     taskCard.style.transform = 'scale(0.9)';
                     setTimeout(() => taskCard.remove(), 500);
+                    calendar.refetchEvents(); // Recargar eventos en la agenda
                 } catch (error) {
                     alert(`Error al eliminar la tarea: ${error.message}`);
                 }
