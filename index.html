@@ -577,7 +577,7 @@
     </div>
 
     <script>
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxV1X4RKxs_KGSxHc0ClmXAw3Q-GrmtR3UTFRLlmj3_hKo7lGQjcnoUcr5v6dyLRxgCAg/exec';
+        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwKkg3eMkbgi3p9JpM0Y03CwawjbDtCywB5Gk1htbFkdrPxIEk9vVMS1wNXLIx63xLXhw/exec';
         let projectsCache = [];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -703,6 +703,10 @@
                 const deadlineDateValue = deadlineDate ? deadlineDate.toISOString().split('T')[0] : '';
                 const deadlineTimeValue = deadlineDate && task.deadline.includes('T') ? deadlineDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
 
+                const deadlineEndDate = task.deadlineEnd ? new Date(task.deadlineEnd) : null;
+                const deadlineEndTimeValue = deadlineEndDate ? deadlineEndDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
+
+
                 const customReminderDate = task.customReminderDateTime ? new Date(task.customReminderDateTime) : null;
                 const customReminderDateValue = customReminderDate ? customReminderDate.toISOString().split('T')[0] : '';
                 const customReminderTimeValue = customReminderDate ? customReminderDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
@@ -742,10 +746,11 @@
                                 </select>
                             </div>
                              <div class="form-group">
-                                <label>Fecha y Hora Límite:</label>
+                                <label>Fecha y Horas (Inicio y Fin):</label>
                                 <div class="datetime-group">
                                     <input type="date" class="task-deadline-date" value="${deadlineDateValue}" data-task-id="${task.id}">
                                     <input type="time" class="task-deadline-time" value="${deadlineTimeValue}" data-task-id="${task.id}">
+                                    <input type="time" class="task-deadline-end-time" value="${deadlineEndTimeValue}" data-task-id="${task.id}">
                                 </div>
                             </div>
                             <div class="form-group reminder-group ${task.calendarEventId ? '' : 'hidden'}">
@@ -773,7 +778,7 @@
             });
             container.appendChild(list);
 
-            container.querySelectorAll('.task-status-select, .task-deadline-date, .task-deadline-time').forEach(el => {
+            container.querySelectorAll('.task-status-select, .task-deadline-date, .task-deadline-time, .task-deadline-end-time').forEach(el => {
                 el.addEventListener('change', (e) => {
                     const taskId = e.target.dataset.taskId;
                     const card = document.getElementById(`task-${taskId}`);
@@ -783,14 +788,19 @@
                         details.status = e.target.value;
                     }
                     
-                    if (e.target.classList.contains('task-deadline-date') || e.target.classList.contains('task-deadline-time')) {
+                    if (e.target.classList.contains('task-deadline-date') || e.target.classList.contains('task-deadline-time') || e.target.classList.contains('task-deadline-end-time')) {
                         const dateInput = card.querySelector('.task-deadline-date');
                         const timeInput = card.querySelector('.task-deadline-time');
+                        const endTimeInput = card.querySelector('.task-deadline-end-time');
                         if (dateInput.value) {
                             const time = timeInput.value || '00:00';
                             details.deadline = `${dateInput.value}T${time}:00`;
+                            if (endTimeInput.value) {
+                                details.deadlineEnd = `${dateInput.value}T${endTimeInput.value}:00`;
+                            }
                         } else {
                             details.deadline = null;
+                            details.deadlineEnd = null;
                         }
                     }
                     
