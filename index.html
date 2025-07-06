@@ -955,7 +955,7 @@
             setupEventListeners();
             loadProjects();
             loadAreas();
-            loadPublicCalendars(); // Cargar calendarios públicos
+            loadPublicCalendars();
             loadTasks();
             initializeCalendar();
         }
@@ -1335,6 +1335,77 @@
             } catch (error) {
                 console.error('Error al eliminar el área:', error);
                 alert('No se pudo eliminar el área: ' + error.message);
+            }
+        }
+        
+        async function loadPublicCalendars() {
+            try {
+                const result = await apiCall({ action: 'getPublicCalendars' });
+                publicCalendarsCache = result.data;
+                if (calendar) {
+                    calendar.refetchEvents();
+                }
+            } catch (error) {
+                console.error('Error al cargar calendarios públicos:', error);
+            }
+        }
+
+        function renderPublicCalendarsManagement() {
+            const list = document.getElementById('public-calendars-list');
+            list.innerHTML = '';
+            if (publicCalendarsCache.length === 0) {
+                list.innerHTML = '<li>No hay calendarios públicos añadidos.</li>';
+                return;
+            }
+            publicCalendarsCache.forEach((cal, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div class="cal-info">
+                        <span class="cal-color-swatch" style="background-color: ${cal.color};"></span>
+                        <span>${cal.name}</span>
+                    </div>
+                    <button class="delete-cal-btn" title="Eliminar calendario" onclick="handleDeletePublicCalendar(${index})">🗑️</button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        async function handleAddPublicCalendar(e) {
+            e.preventDefault();
+            const form = e.target;
+            const newCal = {
+                name: document.getElementById('new-cal-name').value,
+                url: document.getElementById('new-cal-url').value,
+                color: document.getElementById('new-cal-color').value
+            };
+            
+            publicCalendarsCache.push(newCal);
+            try {
+                await apiCall({ action: 'savePublicCalendars', calendars: publicCalendarsCache });
+                form.reset();
+                renderPublicCalendarsManagement();
+                calendar.refetchEvents();
+            } catch (error) {
+                console.error('Error al añadir calendario público:', error);
+                alert('No se pudo añadir el calendario: ' + error.message);
+                publicCalendarsCache.pop(); // Revertir si falla
+            }
+        }
+
+        async function handleDeletePublicCalendar(index) {
+            const calToDelete = publicCalendarsCache[index];
+            if (!confirm(`¿Estás seguro de que quieres eliminar el calendario "${calToDelete.name}"?`)) {
+                return;
+            }
+            publicCalendarsCache.splice(index, 1);
+            try {
+                await apiCall({ action: 'savePublicCalendars', calendars: publicCalendarsCache });
+                renderPublicCalendarsManagement();
+                calendar.refetchEvents();
+            } catch (error) {
+                console.error('Error al eliminar calendario público:', error);
+                alert('No se pudo eliminar el calendario: ' + error.message);
+                publicCalendarsCache.splice(index, 0, calToDelete); // Revertir si falla
             }
         }
 
