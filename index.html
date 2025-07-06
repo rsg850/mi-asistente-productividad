@@ -578,6 +578,40 @@
             padding: 5px;
         }
 
+        /* Estilos para el selector de tipo de evento */
+        .event-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background-color: #F1F3F5;
+            padding: 5px;
+            border-radius: 10px;
+        }
+        .event-type-selector label {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .event-type-selector input[type="radio"] {
+            display: none;
+        }
+        .event-type-selector input[type="radio"]:checked + label {
+            background-color: var(--form-background);
+            color: var(--primary-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .form-subtitle {
+            font-size: 0.9em;
+            color: var(--label-color);
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+
+
         @media (max-width: 768px) {
             body {
                 padding: 5px;
@@ -673,15 +707,52 @@
                             </div>
                         </div>
                     </section>
+                    
                     <section class="form-section">
                         <h2 class="section-title"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>Fechas y Recordatorios</h2>
-                        <div class="form-group"><label for="fecha_limite">Fecha y Horas (Inicio y Fin)</label>
-                            <div class="datetime-group">
-                                <input type="date" id="fecha_limite" name="fecha_limite" title="Fecha límite">
-                                <input type="time" id="hora_limite" name="hora_limite" title="Hora de inicio">
-                                <input type="time" id="hora_fin" name="hora_fin" title="Hora de fin">
+                        
+                        <div class="event-type-selector">
+                            <input type="radio" id="type-puntual" name="eventType" value="puntual" checked>
+                            <label for="type-puntual">Tarea Puntual</label>
+                            <input type="radio" id="type-rango" name="eventType" value="rango">
+                            <label for="type-rango">Evento de Varios Días</label>
+                        </div>
+                        
+                        <div id="fecha-puntual-section">
+                             <p class="form-subtitle">Para tareas en un día concreto con hora de inicio y fin.</p>
+                            <div class="form-group">
+                                <div class="datetime-group">
+                                    <input type="date" id="fecha_limite" name="fecha_limite" title="Fecha límite">
+                                    <input type="time" id="hora_limite" name="hora_limite" title="Hora de inicio">
+                                    <input type="time" id="hora_fin" name="hora_fin" title="Hora de fin">
+                                </div>
                             </div>
                         </div>
+
+                        <div id="fecha-rango-section" class="hidden">
+                             <p class="form-subtitle">Para eventos que duran varios días (vacaciones, conferencias, etc.).</p>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="fecha_inicio">Fecha de Inicio</label>
+                                    <input type="date" id="fecha_inicio" name="fecha_inicio">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fecha_fin">Fecha de Fin</label>
+                                    <input type="date" id="fecha_fin" name="fecha_fin">
+                                </div>
+                            </div>
+                             <div class="form-row">
+                                <div class="form-group">
+                                    <label for="hora_inicio">Hora de Inicio (Opcional)</label>
+                                    <input type="time" id="hora_inicio" name="hora_inicio">
+                                </div>
+                                <div class="form-group">
+                                    <label for="hora_fin">Hora de Fin (Opcional)</label>
+                                    <input type="time" id="hora_fin_rango" name="hora_fin_rango">
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="calendar-section">
                             <div class="main-checkbox"><input type="checkbox" id="add_to_calendar" name="add_to_calendar"><label for="add_to_calendar" class="label-with-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span>Añadir a Google Calendar</span></label></div>
                             <div id="calendarOptions" class="hidden" style="margin-top: 15px;">
@@ -778,7 +849,7 @@
     </div>
 
     <script>
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwhvexOTQX33Bk6qJOam0qrov6LYnem0wkxzZ0UTGy8zTRc_0eJ-NtfCwXIP9TLKaVp-w/exec';
+        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxu4_Qw1BlZbKmPuN0NcVs2laspqf0wsQcWxf33_4pKpKY_s77AAWl7_kUZk2_RJ_uV3Q/exec';
         let projectsCache = [];
         let areasCache = [];
         let calendar;
@@ -815,6 +886,10 @@
             document.getElementById('area').addEventListener('change', toggleOtherArea);
             document.getElementById('add_to_calendar').addEventListener('change', toggleCalendarOptions);
             document.getElementById('recordatorio_custom').addEventListener('change', toggleCustomReminder);
+            
+            document.querySelectorAll('input[name="eventType"]').forEach(radio => {
+                radio.addEventListener('change', toggleDateSections);
+            });
 
             ['filter-project', 'filter-area', 'start-date', 'end-date', 'sort-tasks', 'sort-direction'].forEach(id => {
                 document.getElementById(id).addEventListener('change', loadTasks);
@@ -1352,6 +1427,12 @@
             document.getElementById('customReminderFields').classList.toggle('hidden', !document.getElementById('recordatorio_custom').checked);
         }
 
+        function toggleDateSections() {
+            const eventType = document.querySelector('input[name="eventType"]:checked').value;
+            document.getElementById('fecha-puntual-section').classList.toggle('hidden', eventType !== 'puntual');
+            document.getElementById('fecha-rango-section').classList.toggle('hidden', eventType !== 'rango');
+        }
+
         function toggleCustomDateFilter() {
             const isCustom = document.getElementById('filter-date').value === 'custom';
             document.getElementById('custom-date-filter').classList.toggle('hidden', !isCustom);
@@ -1375,7 +1456,17 @@
                 descripcion: document.getElementById('descripcion').value,
                 estado: document.getElementById('estado').value,
                 prioridad: document.getElementById('prioridad').value,
-                area: document.getElementById('area').value, area_other: document.getElementById('area_other').value, proyecto_id: document.getElementById('proyecto_id').value, fecha_limite: document.getElementById('fecha_limite').value, hora_limite: document.getElementById('hora_limite').value, hora_fin: document.getElementById('hora_fin').value,
+                area: document.getElementById('area').value, 
+                area_other: document.getElementById('area_other').value, 
+                proyecto_id: document.getElementById('proyecto_id').value,
+                eventType: document.querySelector('input[name="eventType"]:checked').value,
+                fecha_limite: document.getElementById('fecha_limite').value, 
+                hora_limite: document.getElementById('hora_limite').value, 
+                hora_fin: document.getElementById('hora_fin').value,
+                fecha_inicio: document.getElementById('fecha_inicio').value,
+                fecha_fin: document.getElementById('fecha_fin').value,
+                hora_inicio: document.getElementById('hora_inicio').value,
+                hora_fin_rango: document.getElementById('hora_fin_rango').value,
                 add_to_calendar: document.getElementById('add_to_calendar').checked,
                 recordatorio_2h: document.getElementById('recordatorio_2h').checked,
                 recordatorio_custom: document.getElementById('recordatorio_custom').checked,
@@ -1436,16 +1527,17 @@
             }
         }
 
-        async function handleTaskDelete(taskId) {
-            const taskCard = document.getElementById(`task-${taskId}`);
-            const taskTitle = taskCard.querySelector('h3').textContent;
+        async function handleTaskDelete(taskId, taskTitle) {
             if (confirm(`¿Estás seguro de que quieres eliminar la tarea "${taskTitle}"? Esta acción no se puede deshacer.`)) {
                 try {
                     await apiCall({ action: 'deleteTask', taskId });
-                    taskCard.style.transition = 'opacity 0.5s, transform 0.5s';
-                    taskCard.style.opacity = '0';
-                    taskCard.style.transform = 'scale(0.9)';
-                    setTimeout(() => taskCard.remove(), 500);
+                    const taskCard = document.getElementById(`task-${taskId}`);
+                    if(taskCard) {
+                        taskCard.style.transition = 'opacity 0.5s, transform 0.5s';
+                        taskCard.style.opacity = '0';
+                        taskCard.style.transform = 'scale(0.9)';
+                        setTimeout(() => taskCard.remove(), 500);
+                    }
                     calendar.refetchEvents();
                 } catch (error) {
                     alert(`Error al eliminar la tarea: ${error.message}`);
