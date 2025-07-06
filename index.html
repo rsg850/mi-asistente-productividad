@@ -61,6 +61,7 @@
         }
         .tab-navigation {
             display: flex;
+            flex-wrap: wrap; /* Permite que los botones pasen a la siguiente línea en móvil */
             border-bottom: 2px solid var(--border-color);
             margin-bottom: 30px;
         }
@@ -74,6 +75,7 @@
             color: var(--label-color);
             transition: all 0.3s;
             border-bottom: 3px solid transparent;
+            flex-shrink: 0;
         }
         .tab-btn.active {
             color: var(--primary-color);
@@ -529,7 +531,7 @@
             background-color: #BDBDBD;
         }
 
-        /* **NUEVO**: Estilos para la gestión de áreas */
+        /* Estilos para la gestión de áreas */
         #areas-list {
             list-style: none;
             padding: 0;
@@ -554,15 +556,26 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            .container {
+                margin: 5px auto;
+            }
+            .main-content {
+                padding: 15px;
+            }
+            .tab-btn {
+                padding: 12px;
+                font-size: 0.9em;
+            }
             .form-row, .datetime-group {
                 grid-template-columns: 1fr;
             }
-            .main-content {
-                padding: 20px;
-            }
-            .tab-btn {
-                padding: 12px 15px;
-                font-size: 1em;
+            .fc .fc-toolbar.fc-header-toolbar {
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 15px;
             }
         }
     </style>
@@ -574,8 +587,8 @@
         </header>
 
         <nav class="tab-navigation">
-            <button class="tab-btn active" data-tab="asistente">➕ Asistente de Tareas</button>
-            <button class="tab-btn" data-tab="gestor">📋 Gestor de Tareas</button>
+            <button class="tab-btn active" data-tab="asistente">➕ Asistente</button>
+            <button class="tab-btn" data-tab="gestor">📋 Gestor</button>
             <button class="tab-btn" data-tab="agenda">🗓️ Agenda</button>
             <button class="tab-btn" data-tab="ajustes">⚙️ Ajustes</button>
         </nav>
@@ -700,6 +713,15 @@
                 <div class="filters-panel">
                     <div class="form-group"><label for="filter-agenda-project">Filtrar por Proyecto</label><select id="filter-agenda-project"><option value="all">Todos los proyectos</option></select></div>
                     <div class="form-group"><label for="filter-agenda-area">Filtrar por Área</label><select id="filter-agenda-area"><option value="all">Todas las áreas</option></select></div>
+                    <div class="form-group">
+                        <label for="calendar-height-selector">Altura del Calendario</label>
+                        <select id="calendar-height-selector">
+                            <option value="650">Mediano</option>
+                            <option value="auto">Automático</option>
+                            <option value="800">Grande</option>
+                            <option value="500">Pequeño</option>
+                        </select>
+                    </div>
                 </div>
                 <div id="calendar-container">
                     <div id="calendar"></div>
@@ -742,6 +764,15 @@
         let areasCache = [];
         let calendar;
 
+        // Función Debounce para optimizar el redimensionamiento
+        function debounce(func, timeout = 250){
+            let timer;
+            return (...args) => {
+                clearTimeout(timer);
+                timer = setTimeout(() => { func.apply(this, args); }, timeout);
+            };
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             initializeApp();
         });
@@ -749,7 +780,7 @@
         function initializeApp() {
             setupEventListeners();
             loadProjects();
-            loadAreas(); // Cargar áreas dinámicamente
+            loadAreas();
             loadTasks();
             initializeCalendar();
         }
@@ -785,6 +816,10 @@
                 document.getElementById(id).addEventListener('change', () => calendar.refetchEvents());
             });
 
+            document.getElementById('calendar-height-selector').addEventListener('change', (e) => {
+                if(calendar) calendar.setOption('height', e.target.value);
+            });
+
             document.getElementById('task-list-container').addEventListener('click', function(e) {
                 if (e.target.closest('.task-card-header')) {
                     e.target.closest('.task-card').classList.toggle('is-expanded');
@@ -796,18 +831,32 @@
                 if (e.target.id === 'task-modal') closeTaskModal();
             });
             document.getElementById('modal-save-btn').addEventListener('click', handleModalSave);
+
+            window.addEventListener('resize', debounce(() => {
+                if (calendar) {
+                    calendar.destroy();
+                    initializeCalendar();
+                }
+            }));
         }
 
         function initializeCalendar() {
             const calendarEl = document.getElementById('calendar');
+            const isMobile = window.innerWidth < 768;
+
             calendar = new FullCalendar.Calendar(calendarEl, {
                 locale: 'es',
-                initialView: 'dayGridMonth',
-                headerToolbar: {
+                initialView: isMobile ? 'timeGridDay' : 'dayGridMonth',
+                headerToolbar: isMobile ? {
+                    left: 'prev,next',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridDay'
+                } : {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
+                height: document.getElementById('calendar-height-selector').value,
                 events: async (fetchInfo, successCallback, failureCallback) => {
                     try {
                         const filters = {
