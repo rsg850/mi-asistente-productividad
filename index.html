@@ -610,6 +610,32 @@
             margin-top: -10px;
             margin-bottom: 20px;
         }
+        
+        /* Estilos para el selector de días de la semana */
+        .weekdays-selector {
+            display: flex;
+            justify-content: space-between;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+        .weekdays-selector label {
+            flex: 1;
+            text-align: center;
+            padding: 10px 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .weekdays-selector input[type="checkbox"] {
+            display: none;
+        }
+        .weekdays-selector input[type="checkbox"]:checked + label {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
 
 
         @media (max-width: 768px) {
@@ -716,6 +742,8 @@
                             <label for="type-puntual">Tarea Puntual</label>
                             <input type="radio" id="type-rango" name="eventType" value="rango">
                             <label for="type-rango">Evento de Varios Días</label>
+                            <input type="radio" id="type-recurrente" name="eventType" value="recurrente">
+                            <label for="type-recurrente">Actividad Recurrente</label>
                         </div>
                         
                         <div id="fecha-puntual-section">
@@ -747,9 +775,39 @@
                                     <input type="time" id="hora_inicio" name="hora_inicio">
                                 </div>
                                 <div class="form-group">
-                                    <label for="hora_fin">Hora de Fin (Opcional)</label>
+                                    <label for="hora_fin_rango">Hora de Fin (Opcional)</label>
                                     <input type="time" id="hora_fin_rango" name="hora_fin_rango">
                                 </div>
+                            </div>
+                        </div>
+
+                        <div id="fecha-recurrente-section" class="hidden">
+                            <p class="form-subtitle">Para rutinas y hábitos que se repiten en días concretos de la semana.</p>
+                            <div class="form-group">
+                                <label>Días de la semana</label>
+                                <div class="weekdays-selector">
+                                    <input type="checkbox" id="dia-1" name="dias_semana" value="1"><label for="dia-1">L</label>
+                                    <input type="checkbox" id="dia-2" name="dias_semana" value="2"><label for="dia-2">M</label>
+                                    <input type="checkbox" id="dia-3" name="dias_semana" value="3"><label for="dia-3">X</label>
+                                    <input type="checkbox" id="dia-4" name="dias_semana" value="4"><label for="dia-4">J</label>
+                                    <input type="checkbox" id="dia-5" name="dias_semana" value="5"><label for="dia-5">V</label>
+                                    <input type="checkbox" id="dia-6" name="dias_semana" value="6"><label for="dia-6">S</label>
+                                    <input type="checkbox" id="dia-0" name="dias_semana" value="0"><label for="dia-0">D</label>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="fecha_inicio_recurrente">Desde la fecha</label>
+                                    <input type="date" id="fecha_inicio_recurrente" name="fecha_inicio_recurrente">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fecha_fin_recurrente">Hasta la fecha</label>
+                                    <input type="date" id="fecha_fin_recurrente" name="fecha_fin_recurrente">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="hora_recurrente">Hora de la actividad</label>
+                                <input type="time" id="hora_recurrente" name="hora_recurrente">
                             </div>
                         </div>
 
@@ -849,7 +907,7 @@
     </div>
 
     <script>
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxu4_Qw1BlZbKmPuN0NcVs2laspqf0wsQcWxf33_4pKpKY_s77AAWl7_kUZk2_RJ_uV3Q/exec';
+        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxpyY0Mlu61gOFFdccCIoeibWMURVN8NCl3nf7pVMp_6bq5ctnNmdHPnPbTk0iVxL8bOQ/exec';
         let projectsCache = [];
         let areasCache = [];
         let calendar;
@@ -1108,17 +1166,7 @@
             const taskId = btn.dataset.taskId;
             const taskTitle = btn.dataset.taskTitle;
             if (!taskId) return;
-
-            if (confirm(`¿Estás seguro de que quieres eliminar la tarea "${taskTitle}"? Esta acción no se puede deshacer.`)) {
-                try {
-                    await apiCall({ action: 'deleteTask', taskId });
-                    closeTaskModal();
-                    calendar.refetchEvents();
-                    loadTasks();
-                } catch (error) {
-                    alert(`Error al eliminar la tarea: ${error.message}`);
-                }
-            }
+            handleTaskDelete(taskId, taskTitle, true); // Llama a la función genérica
         }
 
         async function loadProjects() {
@@ -1354,7 +1402,7 @@
                         ${task.area ? `<div class="meta-item">${task.area}</div>` : ''}
                     </div>
                     <div class="task-card-footer">
-                        <button class="delete-btn" onclick="handleTaskDelete('${task.id}')">Eliminar</button>
+                        <button class="delete-btn" onclick="handleTaskDelete('${task.id}', '${task.title}')">Eliminar</button>
                         <button class="save-btn" onclick="handleTaskUpdate(this, '${task.id}')">Guardar Tarea</button>
                     </div>
                 </div>`;
@@ -1431,6 +1479,7 @@
             const eventType = document.querySelector('input[name="eventType"]:checked').value;
             document.getElementById('fecha-puntual-section').classList.toggle('hidden', eventType !== 'puntual');
             document.getElementById('fecha-rango-section').classList.toggle('hidden', eventType !== 'rango');
+            document.getElementById('fecha-recurrente-section').classList.toggle('hidden', eventType !== 'recurrente');
         }
 
         function toggleCustomDateFilter() {
@@ -1450,6 +1499,10 @@
             msgBox.innerHTML = "";
             btn.disabled = true;
             btn.innerHTML = '<div class="loading-spinner"></div><span>Creando...</span>';
+            
+            const dias_semana_nodes = document.querySelectorAll('input[name="dias_semana"]:checked');
+            const dias_semana = Array.from(dias_semana_nodes).map(node => node.value);
+
             const formData = {
                 action: 'createTask',
                 titulo: document.getElementById('titulo').value,
@@ -1460,13 +1513,21 @@
                 area_other: document.getElementById('area_other').value, 
                 proyecto_id: document.getElementById('proyecto_id').value,
                 eventType: document.querySelector('input[name="eventType"]:checked').value,
+                // Puntual
                 fecha_limite: document.getElementById('fecha_limite').value, 
                 hora_limite: document.getElementById('hora_limite').value, 
                 hora_fin: document.getElementById('hora_fin').value,
+                // Rango
                 fecha_inicio: document.getElementById('fecha_inicio').value,
                 fecha_fin: document.getElementById('fecha_fin').value,
                 hora_inicio: document.getElementById('hora_inicio').value,
                 hora_fin_rango: document.getElementById('hora_fin_rango').value,
+                // Recurrente
+                dias_semana: dias_semana,
+                fecha_inicio_recurrente: document.getElementById('fecha_inicio_recurrente').value,
+                fecha_fin_recurrente: document.getElementById('fecha_fin_recurrente').value,
+                hora_recurrente: document.getElementById('hora_recurrente').value,
+                // Calendar
                 add_to_calendar: document.getElementById('add_to_calendar').checked,
                 recordatorio_2h: document.getElementById('recordatorio_2h').checked,
                 recordatorio_custom: document.getElementById('recordatorio_custom').checked,
@@ -1479,6 +1540,7 @@
                 document.getElementById('taskForm').reset();
                 toggleOtherArea();
                 toggleCalendarOptions();
+                toggleDateSections();
                 if (formData.area === 'other' && formData.area_other) {
                     await loadAreas(); // Recargar áreas si se añadió una nueva
                 }
@@ -1527,18 +1589,23 @@
             }
         }
 
-        async function handleTaskDelete(taskId, taskTitle) {
+        async function handleTaskDelete(taskId, taskTitle, fromModal = false) {
             if (confirm(`¿Estás seguro de que quieres eliminar la tarea "${taskTitle}"? Esta acción no se puede deshacer.`)) {
                 try {
                     await apiCall({ action: 'deleteTask', taskId });
-                    const taskCard = document.getElementById(`task-${taskId}`);
-                    if(taskCard) {
-                        taskCard.style.transition = 'opacity 0.5s, transform 0.5s';
-                        taskCard.style.opacity = '0';
-                        taskCard.style.transform = 'scale(0.9)';
-                        setTimeout(() => taskCard.remove(), 500);
+                    if(fromModal) {
+                        closeTaskModal();
+                    } else {
+                        const taskCard = document.getElementById(`task-${taskId}`);
+                        if(taskCard) {
+                            taskCard.style.transition = 'opacity 0.5s, transform 0.5s';
+                            taskCard.style.opacity = '0';
+                            taskCard.style.transform = 'scale(0.9)';
+                            setTimeout(() => taskCard.remove(), 500);
+                        }
                     }
                     calendar.refetchEvents();
+                    loadTasks();
                 } catch (error) {
                     alert(`Error al eliminar la tarea: ${error.message}`);
                 }
