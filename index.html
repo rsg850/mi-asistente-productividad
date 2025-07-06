@@ -472,6 +472,9 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             transform: scale(0.9);
             transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh; /* Límite de altura para el modal */
         }
         .modal-overlay.visible .modal-content {
             transform: scale(1);
@@ -483,6 +486,7 @@
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
             margin-bottom: 20px;
+            flex-shrink: 0;
         }
         .modal-header h3 {
             margin: 0;
@@ -497,6 +501,11 @@
             color: var(--label-color);
             line-height: 1;
         }
+        .modal-body {
+            overflow-y: auto; /* Permite scroll si el contenido es muy largo */
+            margin-right: -15px; /* Compensa el espacio de la barra de scroll */
+            padding-right: 15px;
+        }
         .modal-body .form-group {
             margin-bottom: 15px;
         }
@@ -506,6 +515,10 @@
             justify-content: space-between;
             align-items: center;
             gap: 15px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
         }
         .modal-footer a, .modal-footer button {
             padding: 10px 20px;
@@ -515,6 +528,13 @@
             transition: background-color 0.3s;
             border: none;
             cursor: pointer;
+        }
+        .modal-footer .footer-left {
+            flex-grow: 1;
+        }
+        .modal-footer .footer-right {
+            display: flex;
+            gap: 10px;
         }
         .modal-footer a {
             background-color: var(--secondary-color);
@@ -529,6 +549,9 @@
         }
         .modal-footer button:disabled {
             background-color: #BDBDBD;
+        }
+        .modal-footer .delete-btn {
+            background-color: var(--delete-color);
         }
 
         /* Estilos para la gestión de áreas */
@@ -743,8 +766,13 @@
                 <!-- El contenido del formulario se inyectará aquí -->
             </div>
             <div class="modal-footer">
-                <a id="modal-notion-link" href="#" target="_blank" rel="noopener noreferrer">Ver en Notion</a>
-                <button id="modal-save-btn">Guardar Cambios</button>
+                <div class="footer-left">
+                    <button id="modal-delete-btn" class="delete-btn">Eliminar</button>
+                </div>
+                <div class="footer-right">
+                    <a id="modal-notion-link" href="#" target="_blank" rel="noopener noreferrer">Ver en Notion</a>
+                    <button id="modal-save-btn">Guardar Cambios</button>
+                </div>
             </div>
         </div>
     </div>
@@ -795,7 +823,9 @@
             document.getElementById('filter-project').addEventListener('change', loadProjectDetails);
 
             ['filter-agenda-project', 'filter-agenda-area'].forEach(id => {
-                document.getElementById(id).addEventListener('change', () => calendar.refetchEvents());
+                if(document.getElementById(id)) {
+                    document.getElementById(id).addEventListener('change', () => calendar.refetchEvents());
+                }
             });
 
             document.getElementById('task-list-container').addEventListener('click', function(e) {
@@ -809,30 +839,26 @@
                 if (e.target.id === 'task-modal') closeTaskModal();
             });
             document.getElementById('modal-save-btn').addEventListener('click', handleModalSave);
+            document.getElementById('modal-delete-btn').addEventListener('click', handleModalDelete);
         }
 
         function initializeCalendar() {
             const calendarEl = document.getElementById('calendar');
+            if (!calendarEl) return;
+            
             const isMobile = window.innerWidth < 768;
 
             calendar = new FullCalendar.Calendar(calendarEl, {
                 locale: 'es',
                 initialView: isMobile ? 'timeGridDay' : 'dayGridMonth',
-                headerToolbar: isMobile ? {
-                    left: 'prev,next',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridDay'
-                } : {
+                headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                height: 'auto', // Dejar que el calendario se ajuste automáticamente
+                height: 'auto',
                 windowResize: function(arg) {
                     // FullCalendar se encarga de la mayoría de los reajustes
-                    if (window.innerWidth < 768) {
-                        calendar.changeView('timeGridDay');
-                    }
                 },
                 events: async (fetchInfo, successCallback, failureCallback) => {
                     try {
@@ -939,6 +965,8 @@
             notionLink.style.display = props.notionUrl ? 'inline-block' : 'none';
             
             document.getElementById('modal-save-btn').dataset.taskId = props.id;
+            document.getElementById('modal-delete-btn').dataset.taskId = props.id;
+            document.getElementById('modal-delete-btn').dataset.taskTitle = props.title;
             modal.classList.add('visible');
         }
 
@@ -997,6 +1025,24 @@
                     btn.disabled = false;
                     btn.textContent = 'Guardar Cambios';
                 }, 2000);
+            }
+        }
+
+        async function handleModalDelete() {
+            const btn = document.getElementById('modal-delete-btn');
+            const taskId = btn.dataset.taskId;
+            const taskTitle = btn.dataset.taskTitle;
+            if (!taskId) return;
+
+            if (confirm(`¿Estás seguro de que quieres eliminar la tarea "${taskTitle}"? Esta acción no se puede deshacer.`)) {
+                try {
+                    await apiCall({ action: 'deleteTask', taskId });
+                    closeTaskModal();
+                    calendar.refetchEvents();
+                    loadTasks();
+                } catch (error) {
+                    alert(`Error al eliminar la tarea: ${error.message}`);
+                }
             }
         }
 
