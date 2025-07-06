@@ -466,7 +466,7 @@
             padding: 30px;
             border-radius: var(--border-radius);
             width: 90%;
-            max-width: 600px; /* Aumentado para acomodar el formulario */
+            max-width: 600px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             transform: scale(0.9);
             transition: transform 0.3s;
@@ -528,6 +528,31 @@
         .modal-footer button:disabled {
             background-color: #BDBDBD;
         }
+
+        /* **NUEVO**: Estilos para la gestión de áreas */
+        #areas-list {
+            list-style: none;
+            padding: 0;
+        }
+        #areas-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        #areas-list li:last-child {
+            border-bottom: none;
+        }
+        #areas-list .delete-area-btn {
+            background: none;
+            border: none;
+            color: var(--delete-color);
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 5px;
+        }
+
         @media (max-width: 768px) {
             .form-row, .datetime-group {
                 grid-template-columns: 1fr;
@@ -552,6 +577,7 @@
             <button class="tab-btn active" data-tab="asistente">➕ Asistente de Tareas</button>
             <button class="tab-btn" data-tab="gestor">📋 Gestor de Tareas</button>
             <button class="tab-btn" data-tab="agenda">🗓️ Agenda</button>
+            <button class="tab-btn" data-tab="ajustes">⚙️ Ajustes</button>
         </nav>
 
         <main class="main-content">
@@ -599,7 +625,8 @@
                                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
                                     <span>Área</span>
                                 </label>
-                                <select id="area" name="area"><option value="">Seleccionar área...</option><option value="Profesional">💼 Profesional</option><option value="Académico">📚 Académico</option><option value="Personal">👤 Personal</option><option value="other">➕ Otra...</option></select><input type="text" id="area_other" name="area_other" class="hidden" style="margin-top: 10px;" placeholder="Escribe el área personalizada">
+                                <select id="area" name="area"><option value="">Cargando áreas...</option></select>
+                                <input type="text" id="area_other" name="area_other" class="hidden" style="margin-top: 10px;" placeholder="Escribe el área personalizada">
                             </div>
                             <div class="form-group">
                                 <label for="proyecto_id" class="label-with-icon">
@@ -655,7 +682,7 @@
                 <div id="project-details-container" class="hidden"></div>
                 <div class="filters-panel">
                     <div class="form-group"><label for="filter-project">Proyecto</label><select id="filter-project"><option value="all">Todos los proyectos</option></select></div>
-                    <div class="form-group"><label for="filter-area">Área</label><select id="filter-area"><option value="all">Todas las áreas</option><option value="Profesional">Profesional</option><option value="Académico">Académico</option><option value="Personal">Personal</option></select></div>
+                    <div class="form-group"><label for="filter-area">Área</label><select id="filter-area"><option value="all">Todas las áreas</option></select></div>
                     <div class="form-group"><label for="filter-date">Fecha</label><select id="filter-date"><option value="all">Cualquier fecha</option><option value="today">Hoy</option><option value="week">Esta semana</option><option value="month">Este mes</option><option value="custom">Personalizado...</option></select>
                         <div id="custom-date-filter" class="hidden">
                             <div><label for="start-date">Desde:</label><input type="date" id="start-date"></div>
@@ -672,11 +699,22 @@
             <div id="agenda" class="tab-content">
                 <div class="filters-panel">
                     <div class="form-group"><label for="filter-agenda-project">Filtrar por Proyecto</label><select id="filter-agenda-project"><option value="all">Todos los proyectos</option></select></div>
-                    <div class="form-group"><label for="filter-agenda-area">Filtrar por Área</label><select id="filter-agenda-area"><option value="all">Todas las áreas</option><option value="Profesional">Profesional</option><option value="Académico">Académico</option><option value="Personal">Personal</option></select></div>
+                    <div class="form-group"><label for="filter-agenda-area">Filtrar por Área</label><select id="filter-agenda-area"><option value="all">Todas las áreas</option></select></div>
                 </div>
                 <div id="calendar-container">
                     <div id="calendar"></div>
                 </div>
+            </div>
+
+            <!-- PESTAÑA 4: AJUSTES -->
+            <div id="ajustes" class="tab-content">
+                <section class="form-section">
+                    <h2 class="section-title"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>Gestionar Áreas</h2>
+                    <p>Aquí puedes eliminar las áreas que ya no necesites. Para añadir una nueva, simplemente seleccióna "+ Otra..." en el formulario de creación de tareas.</p>
+                    <div id="areas-management-container" style="margin-top: 20px;">
+                        <ul id="areas-list"></ul>
+                    </div>
+                </section>
             </div>
         </main>
     </div>
@@ -699,8 +737,9 @@
     </div>
 
     <script>
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzURwwTFfLTtN1SXZsA_qXwOqwxc_kxGTJjs8D0xfXCgwd1IR1uQcuHuMtgcUgdaONHtg/exec';
+        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwhvexOTQX33Bk6qJOam0qrov6LYnem0wkxzZ0UTGy8zTRc_0eJ-NtfCwXIP9TLKaVp-w/exec';
         let projectsCache = [];
+        let areasCache = [];
         let calendar;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -710,6 +749,7 @@
         function initializeApp() {
             setupEventListeners();
             loadProjects();
+            loadAreas(); // Cargar áreas dinámicamente
             loadTasks();
             initializeCalendar();
         }
@@ -723,6 +763,9 @@
                     document.getElementById(button.dataset.tab).classList.add('active');
                     if (button.dataset.tab === 'agenda' && calendar) {
                         setTimeout(() => calendar.render(), 10);
+                    }
+                    if (button.dataset.tab === 'ajustes') {
+                        renderAreasManagement();
                     }
                 });
             });
@@ -916,7 +959,6 @@
                 btn.textContent = 'Guardado';
                 setTimeout(() => {
                     closeTaskModal();
-                    btn.textContent = 'Guardar Cambios';
                 }, 1000);
                 calendar.refetchEvents();
                 loadTasks();
@@ -954,6 +996,88 @@
                 select.innerHTML = select.id === 'proyecto_id' ? '<option value="none">Sin proyecto</option>' : '<option value="all">Todos los proyectos</option>';
                 projectsCache.forEach(p => select.add(new Option(p.name, p.id)));
             });
+        }
+
+        async function loadAreas() {
+            try {
+                const result = await apiCall({ action: 'getAreas' });
+                areasCache = result.data;
+                populateAreaFilters();
+            } catch (error) {
+                console.error('Error al cargar áreas:', error);
+            }
+        }
+
+        function populateAreaFilters() {
+            const areaIcons = {
+                'Profesional': '💼',
+                'Académico': '📚',
+                'Personal': '👤',
+                'Salud': '❤️',
+                'Hogar': '🏠'
+            };
+            const selects = [
+                document.getElementById('area'),
+                document.getElementById('filter-area'),
+                document.getElementById('filter-agenda-area')
+            ];
+
+            selects.forEach(select => {
+                const isMainForm = select.id === 'area';
+                const isFilter = select.id.startsWith('filter-');
+                
+                select.innerHTML = ''; // Limpiar opciones existentes
+
+                if (isMainForm) {
+                    select.add(new Option('Seleccionar área...', ''));
+                } else if (isFilter) {
+                    select.add(new Option('Todas las áreas', 'all'));
+                }
+
+                areasCache.forEach(area => {
+                    const icon = areaIcons[area] || '🏷️';
+                    select.add(new Option(`${icon} ${area}`, area));
+                });
+
+                if (isMainForm) {
+                    select.add(new Option('➕ Otra...', 'other'));
+                }
+            });
+        }
+
+        function renderAreasManagement() {
+            const list = document.getElementById('areas-list');
+            list.innerHTML = '';
+            if (areasCache.length === 0) {
+                list.innerHTML = '<li>No hay áreas personalizadas.</li>';
+                return;
+            }
+            areasCache.forEach(area => {
+                const li = document.createElement('li');
+                li.textContent = area;
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = '🗑️';
+                deleteBtn.className = 'delete-area-btn';
+                deleteBtn.title = `Eliminar "${area}"`;
+                deleteBtn.onclick = () => handleDeleteArea(area);
+                li.appendChild(deleteBtn);
+                list.appendChild(li);
+            });
+        }
+
+        async function handleDeleteArea(areaToDelete) {
+            if (!confirm(`¿Estás seguro de que quieres eliminar el área "${areaToDelete}"? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+            const updatedAreas = areasCache.filter(area => area !== areaToDelete);
+            try {
+                await apiCall({ action: 'saveAreas', areas: updatedAreas });
+                await loadAreas(); // Recargar y repoblar todo
+                renderAreasManagement(); // Actualizar la vista de ajustes
+            } catch (error) {
+                console.error('Error al eliminar el área:', error);
+                alert('No se pudo eliminar el área: ' + error.message);
+            }
         }
 
         async function loadTasks() {
@@ -1192,6 +1316,9 @@
                 document.getElementById('taskForm').reset();
                 toggleOtherArea();
                 toggleCalendarOptions();
+                if (formData.area === 'other' && formData.area_other) {
+                    await loadAreas(); // Recargar áreas si se añadió una nueva
+                }
                 loadTasks();
                 calendar.refetchEvents();
             } catch (error) {
