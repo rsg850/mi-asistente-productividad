@@ -2056,6 +2056,125 @@
         }
     }
 
+    // --- NUEVAS FUNCIONES PARA EL DASHBOARD ---
+    async function loadDashboard() {
+        const container = document.getElementById('dashboard-container');
+        container.innerHTML = '';
+        container.classList.add('loading');
+        const period = document.getElementById('dashboard-period').value;
+
+        try {
+            const result = await apiCall({ action: 'getDashboardData', period });
+            renderDashboard(result.data);
+        } catch (error) {
+            container.innerHTML = `<div class="message error-message">Error al cargar el dashboard: ${error.message}</div>`;
+        } finally {
+            container.classList.remove('loading');
+        }
+    }
+
+    function renderDashboard(data) {
+        const container = document.getElementById('dashboard-container');
+        container.innerHTML = `
+            <div class="dashboard-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value">${data.productivity.percentage}%</div>
+                    <div class="kpi-label">Productividad (${data.productivity.completed}/${data.productivity.total} tareas)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">${data.workload}</div>
+                    <div class="kpi-label">Tareas para los Próximos 7 Días</div>
+                </div>
+                <div class="chart-card">
+                    <h3>Distribución por Área</h3>
+                    <canvas id="area-chart"></canvas>
+                </div>
+                <div class="progress-card">
+                    <h3>Progreso de Proyectos Activos</h3>
+                    <div id="dashboard-projects-progress"></div>
+                </div>
+            </div>
+        `;
+
+        // Renderizar gráfico
+        const ctx = document.getElementById('area-chart').getContext('2d');
+        if (areaChart) {
+            areaChart.destroy();
+        }
+        areaChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(data.areas),
+                datasets: [{
+                    data: Object.values(data.areas),
+                    backgroundColor: ['#00A99D', '#0077B6', '#F4A261', '#E76F51', '#2A9D8F', '#264653', '#E9C46A'],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
+            }
+        });
+
+        // Renderizar progreso de proyectos
+        const progressContainer = document.getElementById('dashboard-projects-progress');
+        data.projects.forEach(proj => {
+            const item = document.createElement('div');
+            item.className = 'project-progress-item';
+            item.innerHTML = `
+                <div class="project-info" onclick="toggleProjectTasks(this, '${proj.id}')">
+                    <span>${proj.name}</span>
+                    <span>${proj.percentage}% (${proj.completed}/${proj.total})</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-bar-inner" style="width: ${proj.percentage}%;"></div>
+                </div>
+                <div class="project-tasks-details" id="project-tasks-${proj.id}"></div>
+            `;
+            progressContainer.appendChild(item);
+        });
+    }
+
+    async function toggleProjectTasks(element, projectId) {
+        const detailsContainer = document.getElementById(`project-tasks-${projectId}`);
+        if (detailsContainer.classList.toggle('visible')) {
+            detailsContainer.innerHTML = 'Cargando tareas...';
+            const period = document.getElementById('dashboard-period').value;
+            try {
+                const result = await apiCall({ action: 'getProjectTasksForPeriod', projectId, period });
+                const { completed, pending } = result.data;
+                
+                let tableHtml = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>✅ Tareas Completadas</th>
+                                <th>🎯 Tareas Pendientes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                const maxRows = Math.max(completed.length, pending.length);
+                for (let i = 0; i < maxRows; i++) {
+                    tableHtml += `
+                        <tr>
+                            <td>${completed[i] ? `• ${completed[i].title}` : ''}</td>
+                            <td>${pending[i] ? `• ${pending[i].title}` : ''}</td>
+                        </tr>
+                    `;
+                }
+                tableHtml += '</tbody></table>';
+                detailsContainer.innerHTML = tableHtml;
+            } catch (error) {
+                detailsContainer.innerHTML = `<div class="message error-message" style="margin:0;">${error.message}</div>`;
+            }
+        }
+    }
+
 
     function toggleOtherArea() {
         document.getElementById('area_other').classList.toggle('hidden', document.getElementById('area').value !== 'other');
