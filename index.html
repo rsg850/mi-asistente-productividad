@@ -11,6 +11,10 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar-icalendar@6.1.14/index.global.min.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cal-heatmap/dist/cal-heatmap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cal-heatmap/dist/cal-heatmap.css">
+
 
     <style>
         :root {
@@ -1208,16 +1212,6 @@
                 </div>
 
                 <div id="analisis-global" class="sub-tab-content active">
-                    <div class="filters-panel" style="justify-content: center;">
-                        <div class="form-group">
-                            <label for="dashboard-period">Seleccionar Periodo</label>
-                            <select id="dashboard-period">
-                                <option value="thisWeek">Esta Semana</option>
-                                <option value="last7days">Últimos 7 días</option>
-                                <option value="thisMonth">Este Mes</option>
-                            </select>
-                        </div>
-                    </div>
                     <div id="dashboard-container">
                         <!-- Los datos se cargarán aquí -->
                     </div>
