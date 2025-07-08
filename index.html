@@ -1177,7 +1177,7 @@
 <script>
     const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwKXGoc_55S7grdEuYo8x8cnLjLkl2toFh-85OnVW6DplcEyDdchKzxFJfsZqbukq6KWQ/exec';
     let projectsCache = [];
-    let allProjectsCache = []; // Caché para todos los proyectos
+    let allProjectsCache = [];
     let areasCache = [];
     let publicCalendarsCache = [];
     let calendar;
@@ -1236,7 +1236,7 @@
         });
         
         document.getElementById('filter-date').addEventListener('change', toggleCustomDateFilter);
-        document.getElementById('filter-project').addEventListener('change', loadProjectDetails);
+        document.getElementById('filter-project').addEventListener('change', () => loadProjectDetails(null, 'project-details-container'));
         
         ['filter-agenda-project', 'filter-agenda-area'].forEach(id => {
             if(document.getElementById(id)) {
@@ -1257,7 +1257,6 @@
         document.getElementById('modal-save-btn').addEventListener('click', handleModalSave);
         document.getElementById('modal-delete-btn').addEventListener('click', handleModalDelete);
         
-        // Listeners para la nueva pestaña de Proyectos
         document.getElementById('create-project-btn').addEventListener('click', () => {
             document.getElementById('create-project-form-container').classList.toggle('hidden');
         });
@@ -1569,7 +1568,6 @@
             const isMainForm = select.id === 'area';
             const isFilter = select.id.startsWith('filter-');
             
-            // Guardar valor seleccionado si es un filtro múltiple
             let selectedValues = [];
             if (select.multiple) {
                 selectedValues = Array.from(select.selectedOptions).map(opt => opt.value);
@@ -1710,7 +1708,7 @@
 
         const filters = {
             projectId: document.getElementById('filter-project').value,
-            area: selectedAreas.length > 0 ? selectedAreas : null, // Enviar array o null
+            area: selectedAreas.length > 0 ? selectedAreas : null,
             dateRangeType: document.getElementById('filter-date').value,
             startDate: document.getElementById('start-date').value,
             endDate: document.getElementById('end-date').value,
@@ -1728,22 +1726,10 @@
         }
     }
     
-    async function loadProjectDetails(projectId = null, containerId = 'project-details-container') {
-        const finalProjectId = projectId || document.getElementById('filter-project').value;
-        const container = document.getElementById(containerId);
-
-        if (finalProjectId === 'all' || !finalProjectId) {
-            container.classList.add('hidden');
-            return;
-        }
-        container.innerHTML = 'Cargando detalles del proyecto...';
-        container.classList.remove('hidden');
-        try {
-            const result = await apiCall({ action: 'getProjectDetails', projectId: finalProjectId });
-            renderProjectDetails(result.data, finalProjectId, containerId);
-        } catch (error) {
-            container.innerHTML = `<div class="message error-message">Error al cargar detalles: ${error.message}</div>`;
-        }
+    // --- FUNCIÓN CORREGIDA ---
+    function getStatusBadge(status) {
+        const statusClass = `status-${status.toLowerCase().replace(/ /g, '-')}`;
+        return `<span class="task-status-badge ${statusClass}"><span class="status-dot"></span>${status}</span>`;
     }
 
     function renderTasks(tasks) {
@@ -1874,7 +1860,6 @@
         `;
     }
 
-    // --- NUEVAS FUNCIONES PARA LA PESTAÑA DE PROYECTOS ---
     function renderProjectsList() {
         const container = document.getElementById('projects-list-container');
         container.innerHTML = "";
@@ -1930,7 +1915,7 @@
             document.getElementById('create-project-form-container').classList.add('hidden');
             await loadAllProjects();
             renderProjectsList();
-            await loadProjects(); // Recargar activos para los filtros
+            await loadProjects();
         } catch (error) {
             alert(`Error al crear el proyecto: ${error.message}`);
         } finally {
@@ -1943,7 +1928,7 @@
             await apiCall({ action: 'updateProjectStatus', projectId, status: newStatus });
             const projectInCache = allProjectsCache.find(p => p.id === projectId);
             if(projectInCache) projectInCache.status = newStatus;
-            await loadProjects(); // Recargar proyectos activos para los filtros
+            await loadProjects();
         } catch (error) {
             alert(`Error al cambiar el estado del proyecto: ${error.message}`);
             renderProjectsList();
