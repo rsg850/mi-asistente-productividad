@@ -863,22 +863,14 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                                     <span>Estado</span>
                                 </label>
-                                <select id="estado" name="estado">
-                                    <option value="Sin empezar">Sin empezar</option>
-                                    <option value="En progreso">En progreso</option>
-                                    <option value="Listo">Listo</option>
-                                </select>
+                                <select id="estado" name="estado"></select>
                             </div>
                             <div class="form-group">
                                 <label for="prioridad" class="label-with-icon">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 2v6h6L2.5 2zM2.5 22v-6h6L2.5 22zM21.5 2l-6 6h6V2zm-6 14h6v6l-6-6z"/></svg>
                                     <span>Prioridad</span>
                                 </label>
-                                <select id="prioridad" name="prioridad">
-                                    <option value="Alta">Alta</option>
-                                    <option value="Medio" selected>Media</option>
-                                    <option value="Baja">Baja</option>
-                                </select>
+                                <select id="prioridad" name="prioridad"></select>
                             </div>
                         </div>
                     </section>
@@ -1204,9 +1196,16 @@
 
 <script>
 // ===================================
-// SCRIPT DE LA APLICACIÓN V47.0
+// SCRIPT DE LA APLICACIÓN V48.0
 // ===================================
 const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxIbJtxkKX6ZAfNZP7ee-1j2GA5ObdRwH6z9KW6akmprYZJUOQBYf4pFLGprbxfXEqL1w/exec'; // Reemplaza con tu URL
+
+// --- DEFINICIONES Y CACHÉ ---
+const ICONS = {
+    STATUS: { 'Sin empezar': '⚪', 'En progreso': '🔵', 'Listo': '🟢' },
+    PRIORITY: { 'Alta': '🔺', 'Medio': '🔸', 'Baja': '🔹' },
+    AREA: { 'Profesional': '💼', 'Académico': '🎓', 'Personal': '👤', 'Salud': '❤️', 'Hogar': '🏠', 'Formación': '📚', 'Taller': '🛠️', 'Default': '📁' }
+};
 
 let projectsCache = [];
 let allProjectsCache = [];
@@ -1214,12 +1213,13 @@ let areasCache = [];
 let publicCalendarsCache = [];
 let calendar;
 let activeProjectCharts = {};
-let projectTasksCache = {}; // Cache para las tareas de cada proyecto en la vista global
+let projectTasksCache = {}; 
 
 document.addEventListener('DOMContentLoaded', initializeApp);
 
 async function initializeApp() {
     setupEventListeners();
+    populateStaticSelects(); // Poblar selects estáticos con iconos
     await Promise.all([
         loadProjects(),
         loadAllProjects(),
@@ -1264,7 +1264,6 @@ function setupEventListeners() {
         });
     });
     
-    // Listener delegado para los clics en las tareas de la Visión Global
     document.getElementById('global-vision-container').addEventListener('click', (e) => {
         const taskElement = e.target.closest('li[data-task-id]');
         if (taskElement) {
@@ -1273,6 +1272,7 @@ function setupEventListeners() {
             
             const task = projectTasksCache[projectId]?.find(t => t.id === taskId);
             if (task) {
+                // Simulamos un objeto 'event' para el modal
                 showTaskModal({ extendedProps: task });
             }
         }
@@ -1303,6 +1303,31 @@ function setupEventListeners() {
     document.getElementById('task-modal').addEventListener('click', e => { if (e.target.id === 'task-modal') closeTaskModal(); });
     document.getElementById('modal-save-btn').addEventListener('click', handleModalSave);
     document.getElementById('modal-delete-btn').addEventListener('click', handleModalDelete);
+}
+
+// ===================================
+// --- FUNCIONES DE UI Y POBLACIÓN ---
+// ===================================
+
+function populateStaticSelects() {
+    const statusSelect = document.getElementById('estado');
+    const prioritySelect = document.getElementById('prioridad');
+
+    statusSelect.innerHTML = Object.entries(ICONS.STATUS).map(([key, icon]) => `<option value="${key}">${icon} ${key}</option>`).join('');
+    prioritySelect.innerHTML = Object.entries(ICONS.PRIORITY).map(([key, icon]) => `<option value="${key}">${icon} ${key}</option>`).join('');
+    prioritySelect.value = 'Medio'; // Valor por defecto
+}
+
+function populateSelectWithOptions(selectElement, options, selectedValue) {
+    if (!selectElement) return;
+    selectElement.innerHTML = '';
+    for (const [value, text] of Object.entries(options)) {
+        const option = new Option(`${text} ${value}`, value);
+        selectElement.add(option);
+    }
+    if (selectedValue) {
+        selectElement.value = selectedValue;
+    }
 }
 
 // ===================================
@@ -1351,11 +1376,12 @@ async function toggleProjectTasksDetails(element, projectId) {
     const detailsContainer = document.getElementById(`project-tasks-${projectId}`);
     const isVisible = detailsContainer.classList.toggle('visible');
 
-    if (isVisible && !projectTasksCache[projectId]) { // Cargar solo si es visible y no está en caché
+    if (isVisible && !projectTasksCache[projectId]) {
         detailsContainer.innerHTML = '<p class="message">Cargando todas las tareas del proyecto...</p>';
         try {
-            const result = await apiCall({ action: 'getTasks', filters: { projectId }, sortBy: 'status' });
-            projectTasksCache[projectId] = result.data; // Guardar en caché
+            // CORRECCIÓN: Añadido sortDirection para evitar el error de la API.
+            const result = await apiCall({ action: 'getTasks', filters: { projectId }, sortBy: 'status', sortDirection: 'ascending' });
+            projectTasksCache[projectId] = result.data;
             renderProjectDetailsView(detailsContainer, projectId, result.data);
         } catch (error) {
             detailsContainer.innerHTML = `<div class="message error-message" style="margin:0;">Error: ${error.message}</div>`;
@@ -1376,9 +1402,9 @@ function renderProjectDetailsView(container, projectId, tasks) {
 
     const gridHtml = `
         <div class="tasks-by-status-grid">
-            <div class="status-column status-pending"><h4>Sin Empezar</h4>${createTaskList(tasksByStatus['Sin empezar'])}</div>
-            <div class="status-column status-progress"><h4>En Progreso</h4>${createTaskList(tasksByStatus['En progreso'])}</div>
-            <div class="status-column status-done"><h4>Listo</h4>${createTaskList(tasksByStatus['Listo'])}</div>
+            <div class="status-column status-pending"><h4>${ICONS.STATUS['Sin empezar']} Sin Empezar</h4>${createTaskList(tasksByStatus['Sin empezar'])}</div>
+            <div class="status-column status-progress"><h4>${ICONS.STATUS['En progreso']} En Progreso</h4>${createTaskList(tasksByStatus['En progreso'])}</div>
+            <div class="status-column status-done"><h4>${ICONS.STATUS['Listo']} Listo</h4>${createTaskList(tasksByStatus['Listo'])}</div>
         </div>
         <div class="project-chart-container"><canvas id="chart-${projectId}"></canvas></div>`;
     container.innerHTML = gridHtml;
@@ -1439,7 +1465,7 @@ function initializeCalendar() {
                 const result = await apiCall({ action: 'getTasks', filters, sortBy: 'deadline', sortDirection: 'ascending' });
                 const events = result.data.map(task => ({
                     id: task.id,
-                    title: `${{ 'Sin empezar': '⚪', 'En progreso': '🔵', 'Listo': '🟢' }[task.status] || ''} ${task.title}`,
+                    title: `${ICONS.STATUS[task.status] || ''} ${task.title}`,
                     start: task.deadline,
                     end: task.deadlineEnd,
                     allDay: task.deadline ? !task.deadline.includes('T') : true,
@@ -1504,15 +1530,20 @@ function showTaskModal(event) {
     const customReminderDate = props.customReminderDateTime ? new Date(props.customReminderDateTime) : null;
     const customReminderDateValue = customReminderDate ? customReminderDate.toISOString().split('T')[0] : '';
     const customReminderTimeValue = customReminderDate ? customReminderDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
+    
     body.innerHTML = `
         <div class="form-row">
-            <div class="form-group"><label>Estado</label><select id="modal-status" class="task-status-select"><option value="Sin empezar" ${props.status === 'Sin empezar' ? 'selected' : ""}>Sin empezar</option><option value="En progreso" ${props.status === 'En progreso' ? 'selected' : ""}>En progreso</option><option value="Listo" ${props.status === 'Listo' ? 'selected' : ""}>Listo</option></select></div>
-            <div class="form-group"><label>Prioridad</label><select id="modal-priority" class="task-priority-select"><option value="Baja" ${props.priority === 'Baja' ? 'selected' : ""}>Baja</option><option value="Medio" ${props.priority === 'Medio' ? 'selected' : ""}>Media</option><option value="Alta" ${props.priority === 'Alta' ? 'selected' : ""}>Alta</option></select></div>
+            <div class="form-group"><label>Estado</label><select id="modal-status"></select></div>
+            <div class="form-group"><label>Prioridad</label><select id="modal-priority"></select></div>
         </div>
         <div class="form-group"><label>Descripción</label><textarea id="modal-description">${props.description || ""}</textarea></div>
         <div class="form-group"><label>Anotaciones / Observaciones</label><textarea id="modal-annotations">${props.annotations || ""}</textarea></div>
         <div class="form-group"><label>Fecha y Horas (Inicio y Fin)</label><div class="datetime-group"><input type="date" id="modal-deadline-date" value="${deadlineDateValue}"><input type="time" id="modal-deadline-time" value="${deadlineTimeValue}"><input type="time" id="modal-deadline-end-time" value="${deadlineEndTimeValue}"></div></div>
         <div class="form-group reminder-group ${props.calendarEventId ? "" : 'hidden'}"><label>Recordatorios de Calendar</label><div class="checkbox-item"><input type="checkbox" id="modal-reminder-2h" ${props.hasTwoHourReminder ? 'checked' : ""}><label for="modal-reminder-2h"> 2 horas antes</label></div><div class="datetime-group-reminder" style="margin-top: 5px;"><input type="date" id="modal-reminder-date" value="${customReminderDateValue}"><input type="time" id="modal-reminder-time" value="${customReminderTimeValue}"></div></div>`;
+    
+    populateSelectWithOptions(document.getElementById('modal-status'), ICONS.STATUS, props.status);
+    populateSelectWithOptions(document.getElementById('modal-priority'), ICONS.PRIORITY, props.priority);
+
     const notionLink = document.getElementById('modal-notion-link');
     notionLink.href = props.notionUrl || '#';
     notionLink.style.display = props.notionUrl ? 'inline-block' : 'none';
@@ -1547,12 +1578,12 @@ async function handleModalSave() {
     try {
         await apiCall({ action: 'updateTask', taskId, details });
         btn.textContent = 'Guardado';
-        // Actualizar la vista de análisis si está visible
-        const projectId = projectTasksCache && Object.keys(projectTasksCache).find(pId => projectTasksCache[pId].some(t => t.id === taskId));
+        const projectId = Object.keys(projectTasksCache).find(pId => projectTasksCache[pId]?.some(t => t.id === taskId));
         if (projectId) {
-            delete projectTasksCache[projectId]; // Invalidar caché para recargar
+            delete projectTasksCache[projectId];
             const detailsContainer = document.getElementById(`project-tasks-${projectId}`);
             if(detailsContainer && detailsContainer.classList.contains('visible')) {
+                detailsContainer.classList.remove('visible'); // Cierra para forzar recarga
                 toggleProjectTasksDetails(null, projectId);
             }
         }
@@ -1612,7 +1643,6 @@ async function loadAreas() {
     }
 }
 function populateAreaFilters() {
-    const areaIcons = { 'Profesional': '💼', 'Académico': '🎓', 'Personal': '👤', 'Salud': '❤️', 'Hogar': '🏠', 'Formación': '📚', 'Taller': '🛠️' };
     const selects = [document.getElementById('area'), document.getElementById('filter-area'), document.getElementById('filter-agenda-area')];
     selects.forEach(select => {
         if (!select) return;
@@ -1623,7 +1653,7 @@ function populateAreaFilters() {
         if (isMainForm) select.add(new Option('Seleccionar área...', ''));
         else if (isFilter && !select.multiple) select.add(new Option('Todas las áreas', 'all'));
         areasCache.forEach(area => {
-            const option = new Option(`${areaIcons[area] || '📁'} ${area}`, area);
+            const option = new Option(`${ICONS.AREA[area] || ICONS.AREA.Default} ${area}`, area);
             if (selectedValues.includes(area)) option.selected = true;
             select.add(option);
         });
@@ -1729,7 +1759,7 @@ async function loadTasks() {
         taskContainer.innerHTML = `<div class="message error-message">Error al cargar tareas: ${error.message}</div>`;
     }
 }
-function getStatusBadge(status) { return `<span class="task-status-badge status-${status.toLowerCase().replace(/ /g, '-')}"><span class="status-dot"></span>${status}</span>`; }
+function getStatusBadge(status) { return `<span class="task-status-badge status-${status.toLowerCase().replace(/ /g, '-')}">${ICONS.STATUS[status] || ''} ${status}</span>`; }
 function renderTasks(tasks) {
     const container = document.getElementById('task-list-container');
     container.innerHTML = '';
@@ -1749,10 +1779,23 @@ function renderTasks(tasks) {
         const customReminderDate = task.customReminderDateTime ? new Date(task.customReminderDateTime) : null;
         const customReminderDateValue = customReminderDate ? customReminderDate.toISOString().split('T')[0] : '';
         const customReminderTimeValue = customReminderDate ? customReminderDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
+        
         card.innerHTML = `
             <div class="task-card-header"><div class="task-card-header-main">${getStatusBadge(task.status)}<h3>${task.title}</h3></div><svg class="task-card-toggle" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
-            <div class="task-card-details"><div class="task-card-body"><div class="form-group"><label>Descripción:</label><textarea class="task-description-input" data-task-id="${task.id}">${task.description || ""}</textarea></div><div class="form-group"><label>Anotaciones:</label><textarea class="task-annotations-input" data-task-id="${task.id}">${task.annotations || ""}</textarea></div><div class="form-row"><div class="form-group"><label>Prioridad:</label><select class="task-priority-select" data-task-id="${task.id}"><option value="Baja" ${task.priority === 'Baja' ? 'selected' : ""}>Baja</option><option value="Medio" ${task.priority === 'Medio' ? 'selected' : ""}>Media</option><option value="Alta" ${task.priority === 'Alta' ? 'selected' : ""}>Alta</option></select></div><div class="form-group"><label>Estado:</label><select class="task-status-select" data-task-id="${task.id}"><option value="Sin empezar" ${task.status === 'Sin empezar' ? 'selected' : ""}>Sin empezar</option><option value="En progreso" ${task.status === 'En progreso' ? 'selected' : ""}>En progreso</option><option value="Listo" ${task.status === 'Listo' ? 'selected' : ""}>Listo</option></select></div></div><div class="form-group"><label>Fecha y Horas (Inicio y Fin):</label><div class="datetime-group"><input type="date" class="task-deadline-date" value="${deadlineDateValue}" data-task-id="${task.id}"><input type="time" class="task-deadline-time" value="${deadlineTimeValue}" data-task-id="${task.id}"><input type="time" class="task-deadline-end-time" value="${deadlineEndTimeValue}" data-task-id="${task.id}"></div></div><div class="form-group reminder-group ${task.calendarEventId ? "" : 'hidden'}"><label>Recordatorios de Calendar:</label><div class="checkbox-item"><input type="checkbox" class="task-reminder-2h" id="reminder-2h-${task.id}" data-task-id="${task.id}" ${task.hasTwoHourReminder ? 'checked' : ''}><label for="reminder-2h-${task.id}"> 2 horas antes</label></div><div class="datetime-group-reminder" style="margin-top: 5px;"><input type="date" class="task-reminder-date" value="${customReminderDateValue}" data-task-id="${task.id}" placeholder="Fecha personalizada"><input type="time" class="task-reminder-time" value="${customReminderTimeValue}" data-task-id="${task.id}"></div></div></div><div class="task-meta">${project ? `<div class="meta-item">${project.name}</div>` : ""}${task.area ? `<div class="meta-item">${task.area}</div>` : ""}</div><div class="task-card-footer"><button class="delete-btn" onclick="handleTaskDelete('${task.id}', '${task.title.replace(/'/g, "\\'")}')">Eliminar</button><button class="save-btn" onclick="handleTaskUpdate(this, '${task.id}')">Guardar Tarea</button></div></div>`;
+            <div class="task-card-details"><div class="task-card-body">
+                <div class="form-group"><label>Descripción:</label><textarea class="task-description-input" data-task-id="${task.id}">${task.description || ""}</textarea></div>
+                <div class="form-group"><label>Anotaciones:</label><textarea class="task-annotations-input" data-task-id="${task.id}">${task.annotations || ""}</textarea></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Prioridad:</label><select class="task-priority-select" data-task-id="${task.id}"></select></div>
+                    <div class="form-group"><label>Estado:</label><select class="task-status-select" data-task-id="${task.id}"></select></div>
+                </div>
+                <div class="form-group"><label>Fecha y Horas (Inicio y Fin):</label><div class="datetime-group"><input type="date" class="task-deadline-date" value="${deadlineDateValue}" data-task-id="${task.id}"><input type="time" class="task-deadline-time" value="${deadlineTimeValue}" data-task-id="${task.id}"><input type="time" class="task-deadline-end-time" value="${deadlineEndTimeValue}" data-task-id="${task.id}"></div></div>
+                <div class="form-group reminder-group ${task.calendarEventId ? "" : 'hidden'}"><label>Recordatorios de Calendar:</label><div class="checkbox-item"><input type="checkbox" class="task-reminder-2h" id="reminder-2h-${task.id}" data-task-id="${task.id}" ${task.hasTwoHourReminder ? 'checked' : ''}><label for="reminder-2h-${task.id}"> 2 horas antes</label></div><div class="datetime-group-reminder" style="margin-top: 5px;"><input type="date" class="task-reminder-date" value="${customReminderDateValue}" data-task-id="${task.id}" placeholder="Fecha personalizada"><input type="time" class="task-reminder-time" value="${customReminderTimeValue}" data-task-id="${task.id}"></div></div>
+            </div><div class="task-meta">${project ? `<div class="meta-item">${project.name}</div>` : ""}${task.area ? `<div class="meta-item">${ICONS.AREA[task.area] || ICONS.AREA.Default} ${task.area}</div>` : ""}</div><div class="task-card-footer"><button class="delete-btn" onclick="handleTaskDelete('${task.id}', '${task.title.replace(/'/g, "\\'")}')">Eliminar</button><button class="save-btn" onclick="handleTaskUpdate(this, '${task.id}')">Guardar Tarea</button></div></div>`;
         list.appendChild(card);
+        
+        populateSelectWithOptions(card.querySelector('.task-status-select'), ICONS.STATUS, task.status);
+        populateSelectWithOptions(card.querySelector('.task-priority-select'), ICONS.PRIORITY, task.priority);
     });
     container.appendChild(list);
 }
@@ -1927,7 +1970,7 @@ async function handleTaskDelete(taskId, taskTitle, fromModal = false) {
         try {
             await apiCall({ action: 'deleteTask', taskId });
             if (fromModal) {
-                const projectId = projectTasksCache && Object.keys(projectTasksCache).find(pId => projectTasksCache[pId].some(t => t.id === taskId));
+                const projectId = Object.keys(projectTasksCache).find(pId => projectTasksCache[pId]?.some(t => t.id === taskId));
                 if (projectId) delete projectTasksCache[projectId];
                 closeTaskModal();
                 loadGlobalVision();
