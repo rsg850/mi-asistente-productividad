@@ -40,6 +40,10 @@
             line-height: 1.6;
             padding: 20px;
         }
+        
+        body.is-dragging {
+            cursor: grabbing;
+        }
 
         .container {
             max-width: 900px;
@@ -1065,7 +1069,7 @@
     </div>
 
 <script>
-    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxkL-SLbdgXC14D8TL1IKXVbi05dRwFPgqvjOp0ZroSI9twLCJ2rqgpCs57wi1yPMbu7Q/exec';
+    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbw2mjUbqWJ1BxNYarX0fTJhP-JBvfnEcyj_jbsfaD-9tSFCbIYSPGGbZiLZnOau69K7SA/exec';
     let projectsCache = [];
     let areasCache = [];
     let publicCalendarsCache = [];
@@ -1192,6 +1196,7 @@
 
         calendar = new FullCalendar.Calendar(calendarEl, {
             locale: 'es',
+            firstDay: 1, // <-- La semana empieza en Lunes
             initialView: isMobile ? 'timeGridDay' : 'dayGridMonth',
             headerToolbar: {
                 left: 'prev,next today',
@@ -1199,7 +1204,7 @@
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
             height: 'auto',
-            editable: true, // <-- Habilita el Drag & Drop
+            editable: true, 
             eventSources: allEventSources,
             eventClick: (info) => {
                 info.jsEvent.preventDefault();
@@ -1207,17 +1212,13 @@
                     showTaskModal(info.event);
                 }
             },
-            // --- NUEVA FUNCIÓN ---
-            // Se ejecuta cuando un evento se arrastra y se suelta en una nueva fecha/hora
             eventDrop: async (info) => {
+                document.body.classList.add('is-dragging');
                 const taskId = info.event.id;
                 const newStart = info.event.start;
                 const newEnd = info.event.end;
 
-                // Formatear las fechas para el backend
-                // `toISOString()` convierte a UTC. El backend lo interpretará correctamente.
                 const deadline = newStart.toISOString();
-                // El `end` puede ser nulo si el evento no tiene duración.
                 const deadlineEnd = newEnd ? newEnd.toISOString() : null;
 
                 const details = {
@@ -1226,14 +1227,15 @@
                 };
 
                 try {
-                    // Llamar a la API para actualizar la tarea
                     await apiCall({ action: 'updateTask', taskId, details });
-                    // Opcional: mostrar una notificación de éxito
+                    // Actualizar también la lista del gestor para consistencia inmediata
+                    loadTasks();
                 } catch (error) {
                     console.error('Error al actualizar la tarea por arrastre:', error);
                     alert(`No se pudo mover la tarea: ${error.message}`);
-                    // Si falla la actualización, revertir el cambio en la interfaz
                     info.revert();
+                } finally {
+                    document.body.classList.remove('is-dragging');
                 }
             }
         });
