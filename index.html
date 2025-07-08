@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Scripts de Librerías -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar-icalendar@6.1.14/index.global.min.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -31,8 +30,13 @@
             --archive-color: #6c757d;
             --shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
             --border-radius: 12px;
+            --status-pending-bg: #FEF3C7; /* Amarillo claro */
+            --status-pending-text: #92400E; /* Amarillo oscuro */
+            --status-progress-bg: #DBEAFE; /* Azul claro */
+            --status-progress-text: #1E40AF; /* Azul oscuro */
+            --status-done-bg: #D1FAE5; /* Verde claro */
+            --status-done-text: #065F46; /* Verde oscuro */
         }
-        /* ... (Todo el CSS de la v44.0 se mantiene aquí sin cambios) ... */
         * {
             margin: 0;
             padding: 0;
@@ -62,7 +66,7 @@
             padding: 30px;
             text-align: center;
         }
-        h1, h2, h3 {
+        h1, h2, h3, h4 {
             font-weight: 700;
         }
         .main-content {
@@ -709,31 +713,6 @@
         .sub-tab-content.active {
             display: block;
         }
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .kpi-card, .chart-card, .progress-card {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-        }
-        .kpi-card {
-            text-align: center;
-        }
-        .kpi-value {
-            font-size: 2.5em;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        .kpi-label {
-            font-size: 1em;
-            color: var(--label-color);
-            margin-top: 5px;
-        }
         .progress-bar {
             width: 100%;
             background-color: #e9ecef;
@@ -768,37 +747,54 @@
         .project-tasks-details {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.5s ease-out;
-            padding-left: 15px;
-            border-left: 2px solid var(--border-color);
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+            padding: 0 20px;
             margin-top: 10px;
-            margin-left: 10px;
         }
         .project-tasks-details.visible {
-            max-height: 500px;
-            padding-top: 10px;
+            max-height: 2000px; /* Aumentado para dar espacio a la tabla y gráfico */
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
         }
-        .project-tasks-details table {
-            width: 100%;
-            border-collapse: collapse;
+        .tasks-by-status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
         }
-        .project-tasks-details th, .project-tasks-details td {
-            text-align: left;
-            padding: 8px;
-            border-bottom: 1px solid var(--border-color);
+        .status-column h4 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid;
+        }
+        .status-column.status-pending h4 { border-color: var(--status-pending-text); color: var(--status-pending-text); }
+        .status-column.status-progress h4 { border-color: var(--status-progress-text); color: var(--status-progress-text); }
+        .status-column.status-done h4 { border-color: var(--status-done-text); color: var(--status-done-text); }
+        
+        .status-column ul {
+            list-style: none;
+            padding: 0;
+        }
+        .status-column li {
+            background-color: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
             font-size: 0.95em;
         }
-        .project-tasks-details th {
-            font-weight: 600;
-            color: var(--label-color);
+        .status-column li a {
+            text-decoration: none;
+            color: var(--text-color);
+            transition: color 0.2s;
         }
-        .project-tasks-details h4 {
-            margin-bottom: 10px;
+        .status-column li a:hover {
             color: var(--primary-color);
         }
-        .project-tasks-details .no-tasks {
-            color: var(--label-color);
-            padding: 10px;
+        .project-chart-container {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
         }
 
         @media (max-width: 768px) {
@@ -821,6 +817,9 @@
                 width: 100%;
                 justify-content: space-between;
             }
+            .tasks-by-status-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -842,8 +841,8 @@
         <main class="main-content">
             <!-- PESTAÑA 1: ASISTENTE (FORMULARIO) -->
             <div id="asistente" class="tab-content active">
-                <!-- El contenido del formulario se mantiene igual que en v44.0 -->
                 <form id="taskForm" novalidate>
+                    <!-- Contenido del formulario sin cambios -->
                     <section class="form-section">
                         <h2 class="section-title"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>Información de la Tarea</h2>
                         <div class="form-group">
@@ -1026,7 +1025,6 @@
 
             <!-- PESTAÑA 2: GESTOR DE TAREAS -->
             <div id="gestor" class="tab-content">
-                 <!-- El contenido del gestor se mantiene igual que en v44.0 -->
                 <div id="project-details-container" class="hidden"></div>
                 <div class="filters-panel">
                     <div class="form-group">
@@ -1073,7 +1071,6 @@
 
             <!-- PESTAÑA 3: GESTOR DE PROYECTOS -->
             <div id="proyectos" class="tab-content">
-                <!-- El contenido de proyectos se mantiene igual que en v44.0 -->
                 <h2 class="section-title"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>Gestión de Proyectos</h2>
                 <div id="project-editor-container" class="hidden"></div>
                 <button id="create-project-btn" class="action-btn" style="width: auto; margin-bottom: 20px;">+ Crear Nuevo Proyecto</button>
@@ -1111,7 +1108,6 @@
 
             <!-- PESTAÑA 4: AGENDA -->
             <div id="agenda" class="tab-content">
-                 <!-- El contenido de la agenda se mantiene igual que en v44.0 -->
                 <div class="filters-panel">
                     <div class="form-group">
                         <label for="filter-agenda-project">Filtrar por Proyecto</label>
@@ -1127,7 +1123,7 @@
                 </div>
             </div>
 
-            <!-- PESTAÑA 5: ANÁLISIS (NUEVA ESTRUCTURA) -->
+            <!-- PESTAÑA 5: ANÁLISIS -->
             <div id="analisis" class="tab-content">
                 <nav class="sub-tab-navigation">
                     <button class="sub-tab-btn active" data-subtab="analisis-global">Visión Global</button>
@@ -1135,21 +1131,16 @@
                     <button class="sub-tab-btn" data-subtab="analisis-temporal">Temporal</button>
                 </nav>
 
-                <!-- Sub-pestaña 1: Visión Global -->
                 <div id="analisis-global" class="sub-tab-content active">
                     <h2 class="section-title" style="border: none; margin-bottom: 20px;">Progreso General de Proyectos Activos</h2>
-                    <div id="global-vision-container" class="loading-container">
-                        <!-- El progreso de los proyectos se cargará aquí -->
-                    </div>
+                    <div id="global-vision-container" class="loading-container"></div>
                 </div>
 
-                <!-- Sub-pestaña 2: Análisis por Proyecto -->
                 <div id="analisis-proyecto" class="sub-tab-content">
                      <h2 class="section-title">Análisis por Proyecto</h2>
                      <p>La funcionalidad de análisis por proyecto (Heatmap) se implementará en una fase posterior.</p>
                 </div>
 
-                <!-- Sub-pestaña 3: Análisis Temporal -->
                 <div id="analisis-temporal" class="sub-tab-content">
                     <h2 class="section-title">Análisis Temporal</h2>
                     <p>La funcionalidad de análisis temporal detallado se implementará en una fase posterior.</p>
@@ -1158,7 +1149,6 @@
 
             <!-- PESTAÑA 6: AJUSTES -->
             <div id="ajustes" class="tab-content">
-                 <!-- El contenido de ajustes se mantiene igual que en v44.0 -->
                 <section class="form-section">
                     <h2 class="section-title"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>Gestionar Áreas</h2>
                     <p>Aquí puedes eliminar las áreas que ya no necesites. Para añadir una nueva, simplemente seleccióna "+ Otra..." en el formulario de creación de tareas.</p>
@@ -1201,9 +1191,7 @@
                 <h3 id="modal-title"></h3>
                 <button id="modal-close" class="modal-close">&times;</button>
             </div>
-            <div id="modal-body" class="modal-body">
-                <!-- El contenido del formulario se inyectará aquí -->
-            </div>
+            <div id="modal-body" class="modal-body"></div>
             <div class="modal-footer">
                 <div class="footer-left">
                     <button id="modal-delete-btn" class="delete-btn">Eliminar</button>
@@ -1218,61 +1206,43 @@
 
 <script>
 // ===================================
-// SCRIPT DE LA APLICACIÓN V45.0
+// SCRIPT DE LA APLICACIÓN V46.0
 // ===================================
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxIbJtxkKX6ZAfNZP7ee-1j2GA5ObdRwH6z9KW6akmprYZJUOQBYf4pFLGprbxfXEqL1w/exec'; // Reemplaza con tu URL
 
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbx92tcEmg96eedg83guU3V17VWwjugDrBV92JOBFhrCl5J99IUlWMJfpgs0JRd2ZWdOtQ/exec'; // Reemplaza con tu URL
-
-// --- CACHÉ DE DATOS ---
 let projectsCache = [];
 let allProjectsCache = [];
 let areasCache = [];
 let publicCalendarsCache = [];
 let calendar;
-let areaChart; // Para futuros gráficos
+let activeProjectCharts = {}; // Almacena instancias de gráficos
 
-// --- INICIALIZACIÓN ---
 document.addEventListener('DOMContentLoaded', initializeApp);
 
 async function initializeApp() {
     setupEventListeners();
-    
-    // Carga de datos iniciales en paralelo
     await Promise.all([
         loadProjects(),
         loadAllProjects(),
         loadAreas(),
         loadPublicCalendars()
     ]);
-
-    // Inicializar componentes que dependen de los datos
-    await loadTasks(); // Carga las tareas para el Gestor
-    initializeCalendar(); // Inicializa la Agenda
+    await loadTasks();
+    initializeCalendar();
 }
 
 function setupEventListeners() {
-    // Navegación principal de pestañas
     document.querySelectorAll('.tab-btn').forEach(button => {
         button.addEventListener('click', () => {
             const tabId = button.dataset.tab;
-            
-            // Gestionar estado activo de botones
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-
-            // Gestionar contenido visible
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
 
-            // Lógica específica por pestaña
-            if (tabId === 'agenda' && calendar) {
-                setTimeout(() => calendar.render(), 10); // Re-renderizar calendario al mostrar
-            }
-            if (tabId === 'proyectos') {
-                renderProjectsList();
-            }
+            if (tabId === 'agenda' && calendar) setTimeout(() => calendar.render(), 10);
+            if (tabId === 'proyectos') renderProjectsList();
             if (tabId === 'analisis') {
-                // Cargar la vista por defecto de análisis solo si no se ha cargado antes
                 const container = document.getElementById('global-vision-container');
                 if (container.innerHTML.trim() === '' || container.classList.contains('loading-container')) {
                     loadGlobalVision();
@@ -1285,79 +1255,51 @@ function setupEventListeners() {
         });
     });
 
-    // Navegación de sub-pestañas en Análisis
     document.querySelectorAll('.sub-tab-btn').forEach(button => {
         button.addEventListener('click', () => {
             const subtabId = button.dataset.subtab;
-            
-            // Gestionar estado activo de botones de sub-pestaña
             button.closest('.sub-tab-navigation').querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-
-            // Gestionar contenido visible de sub-pestaña
             button.closest('.tab-content').querySelectorAll('.sub-tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById(subtabId).classList.add('active');
         });
     });
 
-    // --- Listeners de Formularios y Filtros ---
     document.getElementById('taskForm').addEventListener('submit', handleFormSubmit);
     document.getElementById('add-public-calendar-form').addEventListener('submit', handleAddPublicCalendar);
     document.getElementById('create-project-form').addEventListener('submit', handleCreateProject);
-
-    // Listeners de UI dinámica
     document.getElementById('area').addEventListener('change', toggleOtherArea);
     document.getElementById('add_to_calendar').addEventListener('change', toggleCalendarOptions);
     document.getElementById('recordatorio_custom').addEventListener('change', toggleCustomReminder);
-    document.querySelectorAll('input[name="eventType"]').forEach(radio => {
-        radio.addEventListener('change', toggleDateSections);
-    });
-    document.getElementById('create-project-btn').addEventListener('click', () => {
-        document.getElementById('create-project-form-container').classList.toggle('hidden');
-    });
-
-    // Listeners de filtros del Gestor
-    ['filter-project', 'filter-area', 'start-date', 'end-date', 'sort-tasks', 'sort-direction'].forEach(id => {
-        document.getElementById(id).addEventListener('change', loadTasks);
-    });
+    document.querySelectorAll('input[name="eventType"]').forEach(radio => radio.addEventListener('change', toggleDateSections));
+    document.getElementById('create-project-btn').addEventListener('click', () => document.getElementById('create-project-form-container').classList.toggle('hidden'));
+    
+    ['filter-project', 'filter-area', 'start-date', 'end-date', 'sort-tasks', 'sort-direction'].forEach(id => document.getElementById(id).addEventListener('change', loadTasks));
     document.getElementById('filter-date').addEventListener('change', toggleCustomDateFilter);
-    document.getElementById('filter-project').addEventListener('change', () => {
-        loadProjectDetails(document.getElementById('filter-project').value, 'project-details-container');
-    });
-
-    // Listeners de filtros de la Agenda
+    document.getElementById('filter-project').addEventListener('change', () => loadProjectDetails(document.getElementById('filter-project').value, 'project-details-container'));
+    
     ['filter-agenda-project', 'filter-agenda-area'].forEach(id => {
-        if (document.getElementById(id)) {
-            document.getElementById(id).addEventListener('change', () => calendar.refetchEvents());
-        }
+        if (document.getElementById(id)) document.getElementById(id).addEventListener('change', () => calendar.refetchEvents());
     });
 
-    // Listener para expandir tarjetas de tarea
-    document.getElementById('task-list-container').addEventListener('click', function(e) {
-        if (e.target.closest('.task-card-header')) {
-            e.target.closest('.task-card').classList.toggle('is-expanded');
-        }
+    document.getElementById('task-list-container').addEventListener('click', e => {
+        if (e.target.closest('.task-card-header')) e.target.closest('.task-card').classList.toggle('is-expanded');
     });
 
-    // Listeners del Modal
     document.getElementById('modal-close').addEventListener('click', closeTaskModal);
-    document.getElementById('task-modal').addEventListener('click', (e) => {
-        if (e.target.id === 'task-modal') closeTaskModal(); // Cerrar al hacer clic fuera
-    });
+    document.getElementById('task-modal').addEventListener('click', e => { if (e.target.id === 'task-modal') closeTaskModal(); });
     document.getElementById('modal-save-btn').addEventListener('click', handleModalSave);
     document.getElementById('modal-delete-btn').addEventListener('click', handleModalDelete);
 }
 
-
 // ===================================
-// --- NUEVAS FUNCIONES DE ANÁLISIS ---
+// --- FUNCIONES DE ANÁLISIS MEJORADAS ---
 // ===================================
 
 async function loadGlobalVision() {
     const container = document.getElementById('global-vision-container');
-    container.innerHTML = ''; // Limpiar contenido anterior
+    container.innerHTML = '';
     container.classList.add('loading-container');
-
     try {
         const result = await apiCall({ action: 'getGlobalVisionData' });
         container.classList.remove('loading-container');
@@ -1371,19 +1313,17 @@ async function loadGlobalVision() {
 function renderGlobalVision(projects) {
     const container = document.getElementById('global-vision-container');
     container.innerHTML = '';
-
     if (!projects || projects.length === 0) {
         container.innerHTML = '<div class="message">No hay proyectos activos para mostrar.</div>';
         return;
     }
-
     projects.forEach(proj => {
         const item = document.createElement('div');
         item.className = 'project-progress-item';
         item.innerHTML = `
             <div class="project-info-header" onclick="toggleProjectTasksDetails(this, '${proj.id}')">
                 <span>${proj.name}</span>
-                <span>${proj.completed} / ${proj.total}</span>
+                <span style="font-weight: 500;">${proj.percentage}% (${proj.completed}/${proj.total})</span>
             </div>
             <div class="progress-bar">
                 <div class="progress-bar-inner" style="width: ${proj.percentage}%;"></div>
@@ -1398,61 +1338,116 @@ async function toggleProjectTasksDetails(element, projectId) {
     const detailsContainer = document.getElementById(`project-tasks-${projectId}`);
     const isVisible = detailsContainer.classList.toggle('visible');
 
-    // Cargar datos solo si se está abriendo y no tiene contenido
     if (isVisible && detailsContainer.innerHTML.trim() === '') {
-        detailsContainer.innerHTML = '<p class="message">Cargando tareas de la semana...</p>';
+        detailsContainer.innerHTML = '<p class="message">Cargando todas las tareas del proyecto...</p>';
         try {
-            const result = await apiCall({ action: 'getProjectTasksForPeriod', projectId });
-            const { completed, pending } = result.data;
-            
-            let tableHtml = '<h4>Tareas de esta semana</h4>';
-            if (completed.length === 0 && pending.length === 0) {
-                tableHtml += '<p class="no-tasks">No hay tareas programadas para esta semana en este proyecto.</p>';
-            } else {
-                tableHtml += `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>✅ Completadas</th>
-                                <th>⏳ Pendientes</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                const maxRows = Math.max(completed.length, pending.length);
-                for (let i = 0; i < maxRows; i++) {
-                    tableHtml += `
-                        <tr>
-                            <td>${completed[i] ? completed[i].title : ''}</td>
-                            <td>${pending[i] ? pending[i].title : ''}</td>
-                        </tr>
-                    `;
-                }
-                tableHtml += '</tbody></table>';
-            }
-            detailsContainer.innerHTML = tableHtml;
+            const result = await apiCall({ action: 'getAllProjectTasks', projectId });
+            renderProjectDetailsView(detailsContainer, projectId, result.data);
         } catch (error) {
             detailsContainer.innerHTML = `<div class="message error-message" style="margin:0;">Error: ${error.message}</div>`;
         }
     }
 }
 
+function renderProjectDetailsView(container, projectId, tasks) {
+    // 1. Agrupar tareas por estado
+    const tasksByStatus = {
+        'Sin empezar': [],
+        'En progreso': [],
+        'Listo': []
+    };
+    tasks.forEach(task => {
+        if (tasksByStatus[task.status]) {
+            tasksByStatus[task.status].push(task);
+        } else {
+            tasksByStatus['Sin empezar'].push(task); // Fallback
+        }
+    });
+
+    // 2. Construir el HTML de las columnas
+    const gridHtml = `
+        <div class="tasks-by-status-grid">
+            <div class="status-column status-pending">
+                <h4>Sin Empezar</h4>
+                <ul>${tasksByStatus['Sin empezar'].map(t => `<li><a href="${t.notionUrl}" target="_blank">${t.title}</a></li>`).join('') || '<li>-</li>'}</ul>
+            </div>
+            <div class="status-column status-progress">
+                <h4>En Progreso</h4>
+                <ul>${tasksByStatus['En progreso'].map(t => `<li><a href="${t.notionUrl}" target="_blank">${t.title}</a></li>`).join('') || '<li>-</li>'}</ul>
+            </div>
+            <div class="status-column status-done">
+                <h4>Listo</h4>
+                <ul>${tasksByStatus['Listo'].map(t => `<li><a href="${t.notionUrl}" target="_blank">${t.title}</a></li>`).join('') || '<li>-</li>'}</ul>
+            </div>
+        </div>
+        <div class="project-chart-container">
+            <canvas id="chart-${projectId}"></canvas>
+        </div>
+    `;
+    container.innerHTML = gridHtml;
+
+    // 3. Renderizar el gráfico
+    renderProjectStatusChart(projectId, tasksByStatus);
+}
+
+function renderProjectStatusChart(projectId, tasksByStatus) {
+    const ctx = document.getElementById(`chart-${projectId}`).getContext('2d');
+    
+    // Si ya existe un gráfico para este canvas, destruirlo primero
+    if (activeProjectCharts[projectId]) {
+        activeProjectCharts[projectId].destroy();
+    }
+
+    const data = {
+        labels: ['Sin empezar', 'En progreso', 'Listo'],
+        datasets: [{
+            label: 'Distribución de Tareas',
+            data: [
+                tasksByStatus['Sin empezar'].length,
+                tasksByStatus['En progreso'].length,
+                tasksByStatus['Listo'].length
+            ],
+            backgroundColor: [
+                'rgba(254, 243, 199, 0.8)', // Amarillo
+                'rgba(219, 234, 254, 0.8)', // Azul
+                'rgba(209, 250, 229, 0.8)'  // Verde
+            ],
+            borderColor: [
+                'rgba(146, 64, 14, 1)',
+                'rgba(30, 64, 175, 1)',
+                'rgba(6, 95, 70, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    activeProjectCharts[projectId] = new Chart(ctx, {
+        type: 'doughnut',
+        data: data,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Distribución de Tareas por Estado'
+                }
+            }
+        }
+    });
+}
+
+
 // ===================================
 // EL RESTO DEL JAVASCRIPT SE MANTIENE
 // ===================================
-// (Todas las demás funciones JS como initializeCalendar, loadProjects, handleFormSubmit, etc.,
-// se mantienen exactamente igual que en la v44.0)
-
-// ... (El resto del script desde la función 'initializeCalendar' en adelante se pega aquí sin cambios)
 function initializeCalendar() {
     const calendarEl = document.getElementById('calendar');
     if (!calendarEl) return;
-    if (calendar) {
-        calendar.destroy();
-    }
-
+    if (calendar) calendar.destroy();
     const isMobile = window.innerWidth < 768;
-
     const notionEventSource = {
         events: async (fetchInfo, successCallback, failureCallback) => {
             try {
@@ -1480,51 +1475,33 @@ function initializeCalendar() {
             }
         },
     }
-
     const publicCalSources = publicCalendarsCache.map(cal => ({
         url: cal.url,
         format: 'ical',
         color: cal.color,
         display: 'background'
     }));
-
     const allEventSources = [notionEventSource, ...publicCalSources];
-
     calendar = new FullCalendar.Calendar(calendarEl, {
         locale: 'es',
-        firstDay: 1, // Lunes
+        firstDay: 1,
         initialView: isMobile ? 'timeGridDay' : 'dayGridMonth',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
+        headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
         height: 'auto',
         editable: true,
         eventSources: allEventSources,
         eventClick: (info) => {
             info.jsEvent.preventDefault();
-            if (info.event.extendedProps.isEditable) {
-                showTaskModal(info.event);
-            }
+            if (info.event.extendedProps.isEditable) showTaskModal(info.event);
         },
         eventDrop: async (info) => {
             document.body.classList.add('is-dragging');
             const taskId = info.event.id;
-            const newStart = info.event.start;
-            const newEnd = info.event.end;
-
-            const deadline = newStart.toISOString();
-            const deadlineEnd = newEnd ? newEnd.toISOString() : null;
-
-            const details = {
-                deadline: deadline,
-                deadlineEnd: deadlineEnd
-            };
-
+            const deadline = info.event.start.toISOString();
+            const deadlineEnd = info.event.end ? info.event.end.toISOString() : null;
             try {
-                await apiCall({ action: 'updateTask', taskId, details });
-                loadTasks(); // Actualizar el gestor
+                await apiCall({ action: 'updateTask', taskId, details: { deadline, deadlineEnd } });
+                loadTasks();
             } catch (error) {
                 console.error('Error al actualizar la tarea por arrastre:', error);
                 alert(`No se pudo mover la tarea: ${error.message}`);
@@ -1536,129 +1513,63 @@ function initializeCalendar() {
     });
     calendar.render();
 }
-
 function showTaskModal(event) {
     const modal = document.getElementById('task-modal');
     const props = event.extendedProps;
-
     document.getElementById('modal-title').textContent = props.title;
     const body = document.getElementById('modal-body');
-
     const deadlineDate = props.deadline ? new Date(props.deadline) : null;
     const deadlineDateValue = deadlineDate ? deadlineDate.toISOString().split('T')[0] : "";
     const deadlineTimeValue = deadlineDate && props.deadline.includes('T') ? deadlineDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
-
     const deadlineEndDate = props.deadlineEnd ? new Date(props.deadlineEnd) : null;
     const deadlineEndTimeValue = deadlineEndDate ? deadlineEndDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
-
     const customReminderDate = props.customReminderDateTime ? new Date(props.customReminderDateTime) : null;
     const customReminderDateValue = customReminderDate ? customReminderDate.toISOString().split('T')[0] : '';
     const customReminderTimeValue = customReminderDate ? customReminderDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
-
     body.innerHTML = `
         <div class="form-row">
-            <div class="form-group">
-                <label>Estado</label>
-                <select id="modal-status" class="task-status-select">
-                    <option value="Sin empezar" ${props.status === 'Sin empezar' ? 'selected' : ""}>Sin empezar</option>
-                    <option value="En progreso" ${props.status === 'En progreso' ? 'selected' : ""}>En progreso</option>
-                    <option value="Listo" ${props.status === 'Listo' ? 'selected' : ""}>Listo</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Prioridad</label>
-                <select id="modal-priority" class="task-priority-select">
-                    <option value="Baja" ${props.priority === 'Baja' ? 'selected' : ""}>Baja</option>
-                    <option value="Medio" ${props.priority === 'Medio' ? 'selected' : ""}>Media</option>
-                    <option value="Alta" ${props.priority === 'Alta' ? 'selected' : ""}>Alta</option>
-                </select>
-            </div>
+            <div class="form-group"><label>Estado</label><select id="modal-status" class="task-status-select"><option value="Sin empezar" ${props.status === 'Sin empezar' ? 'selected' : ""}>Sin empezar</option><option value="En progreso" ${props.status === 'En progreso' ? 'selected' : ""}>En progreso</option><option value="Listo" ${props.status === 'Listo' ? 'selected' : ""}>Listo</option></select></div>
+            <div class="form-group"><label>Prioridad</label><select id="modal-priority" class="task-priority-select"><option value="Baja" ${props.priority === 'Baja' ? 'selected' : ""}>Baja</option><option value="Medio" ${props.priority === 'Medio' ? 'selected' : ""}>Media</option><option value="Alta" ${props.priority === 'Alta' ? 'selected' : ""}>Alta</option></select></div>
         </div>
-        <div class="form-group">
-            <label>Descripción</label>
-            <textarea id="modal-description">${props.description || ""}</textarea>
-        </div>
-        <div class="form-group">
-            <label>Anotaciones / Observaciones</label>
-            <textarea id="modal-annotations">${props.annotations || ""}</textarea>
-        </div>
-        <div class="form-group">
-            <label>Fecha y Horas (Inicio y Fin)</label>
-            <div class="datetime-group">
-                <input type="date" id="modal-deadline-date" value="${deadlineDateValue}">
-                <input type="time" id="modal-deadline-time" value="${deadlineTimeValue}">
-                <input type="time" id="modal-deadline-end-time" value="${deadlineEndTimeValue}">
-            </div>
-        </div>
-        <div class="form-group reminder-group ${props.calendarEventId ? "" : 'hidden'}">
-            <label>Recordatorios de Calendar</label>
-            <div class="checkbox-item">
-                <input type="checkbox" id="modal-reminder-2h" ${props.hasTwoHourReminder ? 'checked' : ""}>
-                <label for="modal-reminder-2h"> 2 horas antes</label>
-            </div>
-            <div class="datetime-group-reminder" style="margin-top: 5px;">
-                <input type="date" id="modal-reminder-date" value="${customReminderDateValue}">
-                <input type="time" id="modal-reminder-time" value="${customReminderTimeValue}">
-            </div>
-        </div>
-    `;
-
+        <div class="form-group"><label>Descripción</label><textarea id="modal-description">${props.description || ""}</textarea></div>
+        <div class="form-group"><label>Anotaciones / Observaciones</label><textarea id="modal-annotations">${props.annotations || ""}</textarea></div>
+        <div class="form-group"><label>Fecha y Horas (Inicio y Fin)</label><div class="datetime-group"><input type="date" id="modal-deadline-date" value="${deadlineDateValue}"><input type="time" id="modal-deadline-time" value="${deadlineTimeValue}"><input type="time" id="modal-deadline-end-time" value="${deadlineEndTimeValue}"></div></div>
+        <div class="form-group reminder-group ${props.calendarEventId ? "" : 'hidden'}"><label>Recordatorios de Calendar</label><div class="checkbox-item"><input type="checkbox" id="modal-reminder-2h" ${props.hasTwoHourReminder ? 'checked' : ""}><label for="modal-reminder-2h"> 2 horas antes</label></div><div class="datetime-group-reminder" style="margin-top: 5px;"><input type="date" id="modal-reminder-date" value="${customReminderDateValue}"><input type="time" id="modal-reminder-time" value="${customReminderTimeValue}"></div></div>`;
     const notionLink = document.getElementById('modal-notion-link');
     notionLink.href = props.notionUrl || '#';
     notionLink.style.display = props.notionUrl ? 'inline-block' : 'none';
-
     document.getElementById('modal-save-btn').dataset.taskId = props.id;
     document.getElementById('modal-delete-btn').dataset.taskId = props.id;
     document.getElementById('modal-delete-btn').dataset.taskTitle = props.title;
-
     modal.classList.add('visible');
 }
-
-function closeTaskModal() {
-    document.getElementById('task-modal').classList.remove('visible');
-}
-
+function closeTaskModal() { document.getElementById('task-modal').classList.remove('visible'); }
 async function handleModalSave() {
     const btn = document.getElementById('modal-save-btn');
     const taskId = btn.dataset.taskId;
     if (!taskId) return;
-
     btn.disabled = true;
     btn.textContent = 'Guardando...';
-
-    const dateInput = document.getElementById('modal-deadline-date');
-    const timeInput = document.getElementById('modal-deadline-time');
-    const endTimeInput = document.getElementById('modal-deadline-end-time');
-
+    const dateInput = document.getElementById('modal-deadline-date'), timeInput = document.getElementById('modal-deadline-time'), endTimeInput = document.getElementById('modal-deadline-end-time');
     let deadline = null, deadlineEnd = null;
     if (dateInput.value) {
-        const time = timeInput.value || '00:00';
-        deadline = `${dateInput.value}T${time}:00`;
-        if (endTimeInput.value) {
-            deadlineEnd = `${dateInput.value}T${endTimeInput.value}:00`;
-        }
+        deadline = `${dateInput.value}T${timeInput.value || '00:00'}:00`;
+        if (endTimeInput.value) deadlineEnd = `${dateInput.value}T${endTimeInput.value}:00`;
     }
-
-    const reminderDate = document.getElementById('modal-reminder-date').value;
-    const reminderTime = document.getElementById('modal-reminder-time').value;
-
+    const reminderDate = document.getElementById('modal-reminder-date').value, reminderTime = document.getElementById('modal-reminder-time').value;
     const details = {
         status: document.getElementById('modal-status').value,
         priority: document.getElementById('modal-priority').value,
         description: document.getElementById('modal-description').value,
         annotations: document.getElementById('modal-annotations').value,
-        deadline: deadline,
-        deadlineEnd: deadlineEnd,
+        deadline, deadlineEnd,
         hasTwoHourReminder: document.getElementById('modal-reminder-2h').checked,
         customReminder: reminderDate && reminderTime ? `${reminderDate}T${reminderTime}:00` : null
     };
-
     try {
         await apiCall({ action: 'updateTask', taskId, details });
         btn.textContent = 'Guardado';
-        setTimeout(() => {
-            closeTaskModal();
-        }, 1000);
+        setTimeout(() => closeTaskModal(), 1000);
         calendar.refetchEvents();
         loadTasks();
     } catch (error) {
@@ -1666,21 +1577,15 @@ async function handleModalSave() {
         alert('Error al guardar los cambios: ' + error.message);
         btn.textContent = 'Error';
     } finally {
-        setTimeout(() => {
-            btn.disabled = false;
-            btn.textContent = 'Guardar Cambios';
-        }, 2000);
+        setTimeout(() => { btn.disabled = false; btn.textContent = 'Guardar Cambios'; }, 2000);
     }
 }
-
 async function handleModalDelete() {
     const btn = document.getElementById('modal-delete-btn');
-    const taskId = btn.dataset.taskId;
-    const taskTitle = btn.dataset.taskTitle;
+    const taskId = btn.dataset.taskId, taskTitle = btn.dataset.taskTitle;
     if (!taskId) return;
     handleTaskDelete(taskId, taskTitle, true);
 }
-
 async function loadProjects() {
     try {
         const result = await apiCall({ action: 'getProjects' });
@@ -1691,7 +1596,6 @@ async function loadProjects() {
         document.querySelectorAll('#proyecto_id, #filter-project, #filter-agenda-project').forEach(s => s.innerHTML = `<option>Error</option>`);
     }
 }
-
 async function loadAllProjects() {
     try {
         const result = await apiCall({ action: 'getAllProjects' });
@@ -1702,20 +1606,14 @@ async function loadAllProjects() {
         if(container) container.innerHTML = `<div class="message error-message">Error al cargar proyectos: ${error.message}</div>`;
     }
 }
-
 function populateProjectFilters() {
-    const selects = [
-        document.getElementById('proyecto_id'),
-        document.getElementById('filter-project'),
-        document.getElementById('filter-agenda-project')
-    ];
+    const selects = [document.getElementById('proyecto_id'), document.getElementById('filter-project'), document.getElementById('filter-agenda-project')];
     selects.forEach(select => {
         if (!select) return;
         select.innerHTML = select.id === 'proyecto_id' ? '<option value="none">Sin proyecto</option>' : '<option value="all">Todos los proyectos</option>';
         projectsCache.forEach(p => select.add(new Option(p.name, p.id)));
     });
 }
-
 async function loadAreas() {
     try {
         const result = await apiCall({ action: 'getAreas' });
@@ -1723,57 +1621,32 @@ async function loadAreas() {
         populateAreaFilters();
     } catch (error) {
         console.error('Error al cargar áreas:', error);
-        document.querySelectorAll('#area, #filter-area, #filter-agenda-area').forEach(s => {
-            if(s) s.innerHTML = `<option>Error</option>`
-        });
+        document.querySelectorAll('#area, #filter-area, #filter-agenda-area').forEach(s => { if(s) s.innerHTML = `<option>Error</option>` });
     }
 }
-
 function populateAreaFilters() {
-    const areaIcons = {
-        'Profesional': '💼', 'Académico': '🎓', 'Personal': '👤', 'Salud': '❤️',
-        'Hogar': '🏠', 'Formación': '📚', 'Taller': '🛠️'
-    };
-    const selects = [
-        document.getElementById('area'),
-        document.getElementById('filter-area'),
-        document.getElementById('filter-agenda-area')
-    ];
+    const areaIcons = { 'Profesional': '💼', 'Académico': '🎓', 'Personal': '👤', 'Salud': '❤️', 'Hogar': '🏠', 'Formación': '📚', 'Taller': '🛠️' };
+    const selects = [document.getElementById('area'), document.getElementById('filter-area'), document.getElementById('filter-agenda-area')];
     selects.forEach(select => {
         if (!select) return;
-        const isMainForm = select.id === 'area';
-        const isFilter = select.id.startsWith('filter-');
+        const isMainForm = select.id === 'area', isFilter = select.id.startsWith('filter-');
         let selectedValues = [];
-        if (select.multiple) {
-            selectedValues = Array.from(select.selectedOptions).map(opt => opt.value);
-        }
+        if (select.multiple) selectedValues = Array.from(select.selectedOptions).map(opt => opt.value);
         select.innerHTML = '';
-        if (isMainForm) {
-            select.add(new Option('Seleccionar área...', ''));
-        } else if (isFilter && !select.multiple) {
-            select.add(new Option('Todas las áreas', 'all'));
-        }
+        if (isMainForm) select.add(new Option('Seleccionar área...', ''));
+        else if (isFilter && !select.multiple) select.add(new Option('Todas las áreas', 'all'));
         areasCache.forEach(area => {
-            const icon = areaIcons[area] || '📁';
-            const option = new Option(`${icon} ${area}`, area);
-            if (selectedValues.includes(area)) {
-                option.selected = true;
-            }
+            const option = new Option(`${areaIcons[area] || '📁'} ${area}`, area);
+            if (selectedValues.includes(area)) option.selected = true;
             select.add(option);
         });
-        if (isMainForm) {
-            select.add(new Option('+ Otra...', 'other'));
-        }
+        if (isMainForm) select.add(new Option('+ Otra...', 'other'));
     });
 }
-
 function renderAreasManagement() {
     const list = document.getElementById('areas-list');
     list.innerHTML = "";
-    if (areasCache.length === 0) {
-        list.innerHTML = '<li>No hay áreas personalizadas.</li>';
-        return;
-    }
+    if (areasCache.length === 0) { list.innerHTML = '<li>No hay áreas personalizadas.</li>'; return; }
     areasCache.forEach(area => {
         const li = document.createElement('li');
         li.textContent = area;
@@ -1786,11 +1659,8 @@ function renderAreasManagement() {
         list.appendChild(li);
     });
 }
-
 async function handleDeleteArea(areaToDelete) {
-    if (!confirm(`¿Estás seguro de que quieres eliminar el área "${areaToDelete}"? Esta acción no se puede deshacer.`)) {
-        return;
-    }
+    if (!confirm(`¿Estás seguro de que quieres eliminar el área "${areaToDelete}"? Esta acción no se puede deshacer.`)) return;
     const updatedAreas = areasCache.filter(area => area !== areaToDelete);
     try {
         await apiCall({ action: 'saveAreas', areas: updatedAreas });
@@ -1801,7 +1671,6 @@ async function handleDeleteArea(areaToDelete) {
         alert('No se pudo eliminar el área: ' + error.message);
     }
 }
-
 async function loadPublicCalendars() {
     try {
         const result = await apiCall({ action: 'getPublicCalendars' });
@@ -1811,35 +1680,20 @@ async function loadPublicCalendars() {
         publicCalendarsCache = [];
     }
 }
-
 function renderPublicCalendarsManagement() {
     const list = document.getElementById('public-calendars-list');
     list.innerHTML = '';
-    if (publicCalendarsCache.length === 0) {
-        list.innerHTML = '<li>No hay calendarios públicos añadidos.</li>';
-        return;
-    }
+    if (publicCalendarsCache.length === 0) { list.innerHTML = '<li>No hay calendarios públicos añadidos.</li>'; return; }
     publicCalendarsCache.forEach((cal, index) => {
         const li = document.createElement('li');
-        li.innerHTML = `
-            <div class="cal-info">
-                <span class="cal-color-swatch" style="background-color: ${cal.color};"></span>
-                <span>${cal.name}</span>
-            </div>
-            <button class="delete-cal-btn" title="Eliminar calendario" onclick="handleDeletePublicCalendar(${index})">&times;</button>
-        `;
+        li.innerHTML = `<div class="cal-info"><span class="cal-color-swatch" style="background-color: ${cal.color};"></span><span>${cal.name}</span></div><button class="delete-cal-btn" title="Eliminar calendario" onclick="handleDeletePublicCalendar(${index})">&times;</button>`;
         list.appendChild(li);
     });
 }
-
 async function handleAddPublicCalendar(e) {
     e.preventDefault();
     const form = e.target;
-    const newCal = {
-        name: document.getElementById('new-cal-name').value,
-        url: document.getElementById('new-cal-url').value,
-        color: document.getElementById('new-cal-color').value
-    };
+    const newCal = { name: document.getElementById('new-cal-name').value, url: document.getElementById('new-cal-url').value, color: document.getElementById('new-cal-color').value };
     publicCalendarsCache.push(newCal);
     try {
         await apiCall({ action: 'savePublicCalendars', calendars: publicCalendarsCache });
@@ -1852,12 +1706,9 @@ async function handleAddPublicCalendar(e) {
         publicCalendarsCache.pop();
     }
 }
-
 async function handleDeletePublicCalendar(index) {
     const calToDelete = publicCalendarsCache[index];
-    if (!confirm(`¿Estás seguro de que quieres eliminar el calendario "${calToDelete.name}"?`)) {
-        return;
-    }
+    if (!confirm(`¿Estás seguro de que quieres eliminar el calendario "${calToDelete.name}"?`)) return;
     publicCalendarsCache.splice(index, 1);
     try {
         await apiCall({ action: 'savePublicCalendars', calendars: publicCalendarsCache });
@@ -1869,7 +1720,6 @@ async function handleDeletePublicCalendar(index) {
         publicCalendarsCache.splice(index, 0, calToDelete);
     }
 }
-
 async function loadTasks() {
     const taskContainer = document.getElementById('task-list-container');
     taskContainer.innerHTML = '';
@@ -1882,9 +1732,7 @@ async function loadTasks() {
         startDate: document.getElementById('start-date').value,
         endDate: document.getElementById('end-date').value,
     };
-    const sortBy = document.getElementById('sort-tasks').value;
-    const sortDirection = document.getElementById('sort-direction').value;
-
+    const sortBy = document.getElementById('sort-tasks').value, sortDirection = document.getElementById('sort-direction').value;
     try {
         const result = await apiCall({ action: 'getTasks', filters, sortBy, sortDirection });
         taskContainer.classList.remove('loading-container');
@@ -1894,19 +1742,11 @@ async function loadTasks() {
         taskContainer.innerHTML = `<div class="message error-message">Error al cargar tareas: ${error.message}</div>`;
     }
 }
-
-function getStatusBadge(status) {
-    const statusClass = `status-${status.toLowerCase().replace(/ /g, '-')}`;
-    return `<span class="task-status-badge ${statusClass}"><span class="status-dot"></span>${status}</span>`;
-}
-
+function getStatusBadge(status) { return `<span class="task-status-badge status-${status.toLowerCase().replace(/ /g, '-')}"><span class="status-dot"></span>${status}</span>`; }
 function renderTasks(tasks) {
     const container = document.getElementById('task-list-container');
     container.innerHTML = '';
-    if (tasks.length === 0) {
-        container.innerHTML = '<div class="message">No se encontraron tareas con los filtros seleccionados.</div>';
-        return;
-    }
+    if (tasks.length === 0) { container.innerHTML = '<div class="message">No se encontraron tareas con los filtros seleccionados.</div>'; return; }
     const list = document.createElement('div');
     list.className = 'task-list';
     tasks.forEach(task => {
@@ -1914,7 +1754,6 @@ function renderTasks(tasks) {
         const card = document.createElement('div');
         card.className = `task-card priority-${task.priority || 'default'}`;
         card.id = `task-${task.id}`;
-
         const deadlineDate = task.deadline ? new Date(task.deadline) : null;
         const deadlineDateValue = deadlineDate ? deadlineDate.toISOString().split('T')[0] : "";
         const deadlineTimeValue = deadlineDate && task.deadline.includes('T') ? deadlineDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
@@ -1923,88 +1762,18 @@ function renderTasks(tasks) {
         const customReminderDate = task.customReminderDateTime ? new Date(task.customReminderDateTime) : null;
         const customReminderDateValue = customReminderDate ? customReminderDate.toISOString().split('T')[0] : '';
         const customReminderTimeValue = customReminderDate ? customReminderDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
-
         card.innerHTML = `
-            <div class="task-card-header">
-                <div class="task-card-header-main">
-                    ${getStatusBadge(task.status)}
-                    <h3>${task.title}</h3>
-                </div>
-                <svg class="task-card-toggle" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            <div class="task-card-details">
-                <div class="task-card-body">
-                    <div class="form-group">
-                        <label>Descripción:</label>
-                        <textarea class="task-description-input" data-task-id="${task.id}">${task.description || ""}</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Anotaciones:</label>
-                        <textarea class="task-annotations-input" data-task-id="${task.id}">${task.annotations || ""}</textarea>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Prioridad:</label>
-                            <select class="task-priority-select" data-task-id="${task.id}">
-                                <option value="Baja" ${task.priority === 'Baja' ? 'selected' : ""}>Baja</option>
-                                <option value="Medio" ${task.priority === 'Medio' ? 'selected' : ""}>Media</option>
-                                <option value="Alta" ${task.priority === 'Alta' ? 'selected' : ""}>Alta</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Estado:</label>
-                            <select class="task-status-select" data-task-id="${task.id}">
-                                <option value="Sin empezar" ${task.status === 'Sin empezar' ? 'selected' : ""}>Sin empezar</option>
-                                <option value="En progreso" ${task.status === 'En progreso' ? 'selected' : ""}>En progreso</option>
-                                <option value="Listo" ${task.status === 'Listo' ? 'selected' : ""}>Listo</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Fecha y Horas (Inicio y Fin):</label>
-                        <div class="datetime-group">
-                            <input type="date" class="task-deadline-date" value="${deadlineDateValue}" data-task-id="${task.id}">
-                            <input type="time" class="task-deadline-time" value="${deadlineTimeValue}" data-task-id="${task.id}">
-                            <input type="time" class="task-deadline-end-time" value="${deadlineEndTimeValue}" data-task-id="${task.id}">
-                        </div>
-                    </div>
-                    <div class="form-group reminder-group ${task.calendarEventId ? "" : 'hidden'}">
-                        <label>Recordatorios de Calendar:</label>
-                        <div class="checkbox-item">
-                            <input type="checkbox" class="task-reminder-2h" id="reminder-2h-${task.id}" data-task-id="${task.id}" ${task.hasTwoHourReminder ? 'checked' : ''}>
-                            <label for="reminder-2h-${task.id}"> 2 horas antes</label>
-                        </div>
-                        <div class="datetime-group-reminder" style="margin-top: 5px;">
-                            <input type="date" class="task-reminder-date" value="${customReminderDateValue}" data-task-id="${task.id}" placeholder="Fecha personalizada">
-                            <input type="time" class="task-reminder-time" value="${customReminderTimeValue}" data-task-id="${task.id}">
-                        </div>
-                    </div>
-                </div>
-                <div class="task-meta">
-                    ${project ? `<div class="meta-item">${project.name}</div>` : ""}
-                    ${task.area ? `<div class="meta-item">${task.area}</div>` : ""}
-                </div>
-                <div class="task-card-footer">
-                    <button class="delete-btn" onclick="handleTaskDelete('${task.id}', '${task.title.replace(/'/g, "\\'")}')">Eliminar</button>
-                    <button class="save-btn" onclick="handleTaskUpdate(this, '${task.id}')">Guardar Tarea</button>
-                </div>
-            </div>`;
+            <div class="task-card-header"><div class="task-card-header-main">${getStatusBadge(task.status)}<h3>${task.title}</h3></div><svg class="task-card-toggle" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+            <div class="task-card-details"><div class="task-card-body"><div class="form-group"><label>Descripción:</label><textarea class="task-description-input" data-task-id="${task.id}">${task.description || ""}</textarea></div><div class="form-group"><label>Anotaciones:</label><textarea class="task-annotations-input" data-task-id="${task.id}">${task.annotations || ""}</textarea></div><div class="form-row"><div class="form-group"><label>Prioridad:</label><select class="task-priority-select" data-task-id="${task.id}"><option value="Baja" ${task.priority === 'Baja' ? 'selected' : ""}>Baja</option><option value="Medio" ${task.priority === 'Medio' ? 'selected' : ""}>Media</option><option value="Alta" ${task.priority === 'Alta' ? 'selected' : ""}>Alta</option></select></div><div class="form-group"><label>Estado:</label><select class="task-status-select" data-task-id="${task.id}"><option value="Sin empezar" ${task.status === 'Sin empezar' ? 'selected' : ""}>Sin empezar</option><option value="En progreso" ${task.status === 'En progreso' ? 'selected' : ""}>En progreso</option><option value="Listo" ${task.status === 'Listo' ? 'selected' : ""}>Listo</option></select></div></div><div class="form-group"><label>Fecha y Horas (Inicio y Fin):</label><div class="datetime-group"><input type="date" class="task-deadline-date" value="${deadlineDateValue}" data-task-id="${task.id}"><input type="time" class="task-deadline-time" value="${deadlineTimeValue}" data-task-id="${task.id}"><input type="time" class="task-deadline-end-time" value="${deadlineEndTimeValue}" data-task-id="${task.id}"></div></div><div class="form-group reminder-group ${task.calendarEventId ? "" : 'hidden'}"><label>Recordatorios de Calendar:</label><div class="checkbox-item"><input type="checkbox" class="task-reminder-2h" id="reminder-2h-${task.id}" data-task-id="${task.id}" ${task.hasTwoHourReminder ? 'checked' : ''}><label for="reminder-2h-${task.id}"> 2 horas antes</label></div><div class="datetime-group-reminder" style="margin-top: 5px;"><input type="date" class="task-reminder-date" value="${customReminderDateValue}" data-task-id="${task.id}" placeholder="Fecha personalizada"><input type="time" class="task-reminder-time" value="${customReminderTimeValue}" data-task-id="${task.id}"></div></div></div><div class="task-meta">${project ? `<div class="meta-item">${project.name}</div>` : ""}${task.area ? `<div class="meta-item">${task.area}</div>` : ""}</div><div class="task-card-footer"><button class="delete-btn" onclick="handleTaskDelete('${task.id}', '${task.title.replace(/'/g, "\\'")}')">Eliminar</button><button class="save-btn" onclick="handleTaskUpdate(this, '${task.id}')">Guardar Tarea</button></div></div>`;
         list.appendChild(card);
     });
     container.appendChild(list);
 }
-
 async function loadProjectDetails(projectId, containerId) {
     const container = document.getElementById(containerId);
-    if (!projectId || projectId === 'all') {
-        container.innerHTML = '';
-        container.classList.add('hidden');
-        return;
-    }
-    
+    if (!projectId || projectId === 'all') { container.innerHTML = ''; container.classList.add('hidden'); return; }
     container.classList.remove('hidden');
     container.innerHTML = '<div class="message">Cargando detalles...</div>';
-    
     try {
         const result = await apiCall({ action: 'getProjectDetails', projectId });
         renderProjectDetails(result.data, projectId, containerId);
@@ -2012,41 +1781,15 @@ async function loadProjectDetails(projectId, containerId) {
         container.innerHTML = `<div class="message error-message">Error: ${error.message}</div>`;
     }
 }
-
-
 function renderProjectDetails(details, projectId, containerId) {
     const container = document.getElementById(containerId);
-    if (!details) {
-        container.innerHTML = '';
-        return;
-    }
-    container.innerHTML = `
-        <h3>Detalles de: ${details.name}</h3>
-        <div class="project-details-grid">
-            <div class="form-group">
-                <label>Fecha final estimada</label>
-                <input type="date" id="${containerId}-end-date" value="${details.endDate || ""}">
-            </div>
-            <div class="form-group">
-                <label>Estado</label>
-                <input type="text" value="${details.status}" disabled>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Observaciones</label>
-            <textarea id="${containerId}-observations">${details.observations || ""}</textarea>
-        </div>
-        <button onclick="handleProjectDetailsSave(event, '${projectId}', '${containerId}')">Guardar Cambios del Proyecto</button>
-    `;
+    if (!details) { container.innerHTML = ''; return; }
+    container.innerHTML = `<h3>Detalles de: ${details.name}</h3><div class="project-details-grid"><div class="form-group"><label>Fecha final estimada</label><input type="date" id="${containerId}-end-date" value="${details.endDate || ""}"></div><div class="form-group"><label>Estado</label><input type="text" value="${details.status}" disabled></div></div><div class="form-group"><label>Observaciones</label><textarea id="${containerId}-observations">${details.observations || ""}</textarea></div><button onclick="handleProjectDetailsSave(event, '${projectId}', '${containerId}')">Guardar Cambios del Proyecto</button>`;
 }
-
 function renderProjectsList() {
     const container = document.getElementById('projects-list-container');
     container.innerHTML = '';
-    if (allProjectsCache.length === 0) {
-        container.innerHTML = '<div class="message">No se encontraron proyectos.</div>';
-        return;
-    }
+    if (allProjectsCache.length === 0) { container.innerHTML = '<div class="message">No se encontraron proyectos.</div>'; return; }
     const list = document.createElement('div');
     list.className = 'project-list';
     const possibleStatus = ['Activo', 'En Pausa', 'Terminado', 'Planificación', 'Cancelado'];
@@ -2054,34 +1797,17 @@ function renderProjectsList() {
         const item = document.createElement('div');
         item.className = 'project-list-item';
         item.id = `project-${project.id}`;
-        let optionsHtml = possibleStatus.map(status =>
-            `<option value="${status}" ${project.status === status ? 'selected' : ""}>${status}</option>`
-        ).join("");
-        item.innerHTML = `
-            <span class="project-info">${project.name}</span>
-            <div class="project-controls">
-                <select class="project-status-select" onchange="handleProjectStatusChange('${project.id}', this.value)">
-                    ${optionsHtml}
-                </select>
-                <button class="action-btn edit-project-btn" onclick="loadProjectDetails('${project.id}', 'project-editor-container')">Ver/Editar</button>
-                <button class="delete-btn archive-btn" onclick="handleArchiveProject('${project.id}', '${project.name.replace(/'/g, "\\'")}')">Archivar</button>
-            </div>
-        `;
+        let optionsHtml = possibleStatus.map(status => `<option value="${status}" ${project.status === status ? 'selected' : ""}>${status}</option>`).join("");
+        item.innerHTML = `<span class="project-info">${project.name}</span><div class="project-controls"><select class="project-status-select" onchange="handleProjectStatusChange('${project.id}', this.value)">${optionsHtml}</select><button class="action-btn edit-project-btn" onclick="loadProjectDetails('${project.id}', 'project-editor-container')">Ver/Editar</button><button class="delete-btn archive-btn" onclick="handleArchiveProject('${project.id}', '${project.name.replace(/'/g, "\\'")}')">Archivar</button></div>`;
         list.appendChild(item);
     });
     container.appendChild(list);
 }
-
 async function handleCreateProject(e) {
     e.preventDefault();
     const btn = e.target.querySelector('button[type="submit"]');
     btn.disabled = true;
-    const projectDetails = {
-        name: document.getElementById('new-project-name').value,
-        status: document.getElementById('new-project-status').value,
-        startDate: document.getElementById('new-project-start-date').value,
-        observations: document.getElementById('new-project-observations').value,
-    };
+    const projectDetails = { name: document.getElementById('new-project-name').value, status: document.getElementById('new-project-status').value, startDate: document.getElementById('new-project-start-date').value, observations: document.getElementById('new-project-observations').value };
     try {
         await apiCall({ action: 'createProject', ...projectDetails });
         document.getElementById('create-project-form').reset();
@@ -2095,19 +1821,17 @@ async function handleCreateProject(e) {
         btn.disabled = false;
     }
 }
-
 async function handleProjectStatusChange(projectId, newStatus) {
     try {
         await apiCall({ action: 'updateProjectStatus', projectId, status: newStatus });
         const projectInCache = allProjectsCache.find(p => p.id === projectId);
         if (projectInCache) projectInCache.status = newStatus;
-        await loadProjects(); // Recargar proyectos activos para los selectores
+        await loadProjects();
     } catch (error) {
         alert(`Error al cambiar el estado del proyecto: ${error.message}`);
-        renderProjectsList(); // Re-renderizar para revertir el cambio visual
+        renderProjectsList();
     }
 }
-
 async function handleArchiveProject(projectId, projectName) {
     if (confirm(`¿Estás seguro de que quieres archivar el proyecto "${projectName}"? No se podrá deshacer desde aquí.`)) {
         try {
@@ -2128,47 +1852,27 @@ async function handleArchiveProject(projectId, projectName) {
         }
     }
 }
-
-function toggleOtherArea() {
-    document.getElementById('area_other').classList.toggle('hidden', document.getElementById('area').value !== 'other');
-}
-
-function toggleCalendarOptions() {
-    document.getElementById('calendarOptions').classList.toggle('hidden', !document.getElementById('add_to_calendar').checked);
-}
-
-function toggleCustomReminder() {
-    document.getElementById('customReminderFields').classList.toggle('hidden', !document.getElementById('recordatorio_custom').checked);
-}
-
+function toggleOtherArea() { document.getElementById('area_other').classList.toggle('hidden', document.getElementById('area').value !== 'other'); }
+function toggleCalendarOptions() { document.getElementById('calendarOptions').classList.toggle('hidden', !document.getElementById('add_to_calendar').checked); }
+function toggleCustomReminder() { document.getElementById('customReminderFields').classList.toggle('hidden', !document.getElementById('recordatorio_custom').checked); }
 function toggleDateSections() {
     const eventType = document.querySelector('input[name="eventType"]:checked').value;
     document.getElementById('fecha-puntual-section').classList.toggle('hidden', eventType !== 'puntual');
     document.getElementById('fecha-rango-section').classList.toggle('hidden', eventType !== 'rango');
     document.getElementById('fecha-recurrente-section').classList.toggle('hidden', eventType !== 'recurrente');
 }
-
 function toggleCustomDateFilter() {
     const isCustom = document.getElementById('filter-date').value === 'custom';
     document.getElementById('custom-date-filter').classList.toggle('hidden', !isCustom);
-    if (!isCustom) {
-        document.getElementById('start-date').value = '';
-        document.getElementById('end-date').value = '';
-        loadTasks();
-    }
+    if (!isCustom) { document.getElementById('start-date').value = ''; document.getElementById('end-date').value = ''; loadTasks(); }
 }
-
 async function handleFormSubmit(e) {
     e.preventDefault();
-    const btn = document.getElementById('submitBtn');
-    const msgBox = document.getElementById('messageBoxForm');
+    const btn = document.getElementById('submitBtn'), msgBox = document.getElementById('messageBoxForm');
     msgBox.innerHTML = "";
     btn.disabled = true;
     btn.innerHTML = `<div class="loading-spinner"></div><span>Creando...</span>`;
-
-    const dias_semana_nodes = document.querySelectorAll('input[name="dias_semana"]:checked');
-    const dias_semana = Array.from(dias_semana_nodes).map(node => node.value);
-
+    const dias_semana = Array.from(document.querySelectorAll('input[name="dias_semana"]:checked')).map(node => node.value);
     const formData = {
         action: 'createTask',
         titulo: document.getElementById('titulo').value,
@@ -2179,35 +1883,18 @@ async function handleFormSubmit(e) {
         area_other: document.getElementById('area_other').value,
         proyecto_id: document.getElementById('proyecto_id').value,
         eventType: document.querySelector('input[name="eventType"]:checked').value,
-        fecha_limite: document.getElementById('fecha_limite').value,
-        hora_limite: document.getElementById('hora_limite').value,
-        hora_fin: document.getElementById('hora_fin').value,
-        fecha_inicio: document.getElementById('fecha_inicio').value,
-        fecha_fin: document.getElementById('fecha_fin').value,
-        hora_inicio: document.getElementById('hora_inicio').value,
-        hora_fin_rango: document.getElementById('hora_fin_rango').value,
-        dias_semana: dias_semana,
-        fecha_inicio_recurrente: document.getElementById('fecha_inicio_recurrente').value,
-        fecha_fin_recurrente: document.getElementById('fecha_fin_recurrente').value,
-        hora_recurrente: document.getElementById('hora_recurrente').value,
-        hora_fin_recurrente: document.getElementById('hora_fin_recurrente').value,
-        add_to_calendar: document.getElementById('add_to_calendar').checked,
-        recordatorio_2h: document.getElementById('recordatorio_2h').checked,
-        recordatorio_custom: document.getElementById('recordatorio_custom').checked,
-        recordatorio_fecha: document.getElementById('recordatorio_fecha').value,
-        recordatorio_hora: document.getElementById('recordatorio_hora').value,
+        fecha_limite: document.getElementById('fecha_limite').value, hora_limite: document.getElementById('hora_limite').value, hora_fin: document.getElementById('hora_fin').value,
+        fecha_inicio: document.getElementById('fecha_inicio').value, fecha_fin: document.getElementById('fecha_fin').value, hora_inicio: document.getElementById('hora_inicio').value, hora_fin_rango: document.getElementById('hora_fin_rango').value,
+        dias_semana,
+        fecha_inicio_recurrente: document.getElementById('fecha_inicio_recurrente').value, fecha_fin_recurrente: document.getElementById('fecha_fin_recurrente').value, hora_recurrente: document.getElementById('hora_recurrente').value, hora_fin_recurrente: document.getElementById('hora_fin_recurrente').value,
+        add_to_calendar: document.getElementById('add_to_calendar').checked, recordatorio_2h: document.getElementById('recordatorio_2h').checked, recordatorio_custom: document.getElementById('recordatorio_custom').checked, recordatorio_fecha: document.getElementById('recordatorio_fecha').value, recordatorio_hora: document.getElementById('recordatorio_hora').value,
     };
-
     try {
         const result = await apiCall(formData);
         msgBox.innerHTML = `<div class="message success-message">${result.message}</div>`;
         document.getElementById('taskForm').reset();
-        toggleOtherArea();
-        toggleCalendarOptions();
-        toggleDateSections();
-        if (formData.area === 'other' && formData.area_other) {
-            await loadAreas();
-        }
+        toggleOtherArea(); toggleCalendarOptions(); toggleDateSections();
+        if (formData.area === 'other' && formData.area_other) await loadAreas();
         loadTasks();
         calendar.refetchEvents();
     } catch (error) {
@@ -2217,45 +1904,29 @@ async function handleFormSubmit(e) {
         btn.innerHTML = '<span>Crear Tarea</span>';
     }
 }
-
 async function handleTaskUpdate(button, taskId, details = null) {
     const isSaveButton = button.classList.contains('save-btn');
-    if (isSaveButton) {
-        button.textContent = 'Guardando...';
-        button.disabled = true;
-    }
-
+    if (isSaveButton) { button.textContent = 'Guardando...'; button.disabled = true; }
     if (!details) {
         const card = button.closest('.task-card');
-        const reminderDate = card.querySelector('.task-reminder-date').value;
-        const reminderTime = card.querySelector('.task-reminder-time').value;
-        const dateInput = card.querySelector('.task-deadline-date').value;
-        const timeInput = card.querySelector('.task-deadline-time').value;
-        const endTimeInput = card.querySelector('.task-deadline-end-time').value;
-
+        const reminderDate = card.querySelector('.task-reminder-date').value, reminderTime = card.querySelector('.task-reminder-time').value;
+        const dateInput = card.querySelector('.task-deadline-date').value, timeInput = card.querySelector('.task-deadline-time').value, endTimeInput = card.querySelector('.task-deadline-end-time').value;
         let deadline = null, deadlineEnd = null;
         if (dateInput) {
             deadline = `${dateInput}T${timeInput || '00:00'}:00`;
             if (endTimeInput) deadlineEnd = `${dateInput}T${endTimeInput}:00`;
         }
         details = {
-            description: card.querySelector('.task-description-input').value,
-            annotations: card.querySelector('.task-annotations-input').value,
-            priority: card.querySelector('.task-priority-select').value,
-            status: card.querySelector('.task-status-select').value,
-            deadline: deadline,
-            deadlineEnd: deadlineEnd,
+            description: card.querySelector('.task-description-input').value, annotations: card.querySelector('.task-annotations-input').value,
+            priority: card.querySelector('.task-priority-select').value, status: card.querySelector('.task-status-select').value,
+            deadline, deadlineEnd,
             hasTwoHourReminder: card.querySelector('.task-reminder-2h').checked,
             customReminder: reminderDate && reminderTime ? `${reminderDate}T${reminderTime}:00` : null
         };
     }
-
     try {
         await apiCall({ action: 'updateTask', taskId, details });
-        if (isSaveButton) {
-            button.textContent = 'Guardado';
-            setTimeout(() => button.textContent = 'Guardar Tarea', 2000);
-        }
+        if (isSaveButton) { button.textContent = 'Guardado'; setTimeout(() => button.textContent = 'Guardar Tarea', 2000); }
         calendar.refetchEvents();
     } catch (error) {
         console.error('Error al actualizar tarea:', error);
@@ -2264,7 +1935,6 @@ async function handleTaskUpdate(button, taskId, details = null) {
         if (isSaveButton) button.disabled = false;
     }
 }
-
 async function handleTaskDelete(taskId, taskTitle, fromModal = false) {
     if (confirm(`¿Estás seguro de que quieres eliminar la tarea "${taskTitle}"? Esta acción no se puede deshacer.`)) {
         try {
@@ -2286,17 +1956,11 @@ async function handleTaskDelete(taskId, taskTitle, fromModal = false) {
         }
     }
 }
-
 async function handleProjectDetailsSave(event, projectId, containerId) {
     const button = event.target;
     button.textContent = 'Guardando...';
     button.disabled = true;
-
-    const details = {
-        endDate: document.getElementById(`${containerId}-end-date`).value,
-        observations: document.getElementById(`${containerId}-observations`).value
-    };
-
+    const details = { endDate: document.getElementById(`${containerId}-end-date`).value, observations: document.getElementById(`${containerId}-observations`).value };
     try {
         await apiCall({ action: 'updateProjectDetails', projectId, details });
         button.textContent = 'Guardado';
@@ -2308,13 +1972,8 @@ async function handleProjectDetailsSave(event, projectId, containerId) {
         button.disabled = false;
     }
 }
-
 async function apiCall(payload) {
-    const response = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        mode: 'cors'
-    });
+    const response = await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'cors' });
     if (!response.ok) throw new Error(`Error del servidor: ${response.statusText}`);
     const result = await response.json();
     if (!result.success) throw new Error(result.error);
