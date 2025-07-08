@@ -518,6 +518,12 @@
             border-width: 2px !important;
             font-weight: 500;
         }
+        
+        /* Estilo para eventos que se están arrastrando */
+        .fc-event-dragging {
+            opacity: 0.7;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
 
         .modal-overlay {
             position: fixed;
@@ -1071,14 +1077,12 @@
 
     async function initializeApp() {
         setupEventListeners();
-        // Cargar datos esenciales en paralelo para acelerar el inicio
         await Promise.all([
             loadProjects(),
             loadAreas(),
             loadPublicCalendars()
         ]);
         
-        // Cargar tareas y luego inicializar el calendario una vez que todos los datos están listos
         await loadTasks();
         initializeCalendar();
     }
@@ -1143,14 +1147,12 @@
         const calendarEl = document.getElementById('calendar');
         if (!calendarEl) return;
 
-        // Si ya existe una instancia del calendario, destruirla antes de crear una nueva.
         if (calendar) {
             calendar.destroy();
         }
 
         const isMobile = window.innerWidth < 768;
 
-        // 1. Fuente de eventos principal: Tareas de Notion
         const notionEventSource = {
             events: async (fetchInfo, successCallback, failureCallback) => {
                 try {
@@ -1179,7 +1181,6 @@
             },
         };
 
-        // 2. Fuentes de eventos secundarias: Calendarios públicos .ics
         const publicCalSources = publicCalendarsCache.map(cal => ({
             url: cal.url,
             format: 'ical',
@@ -1187,7 +1188,6 @@
             display: 'background'
         }));
 
-        // 3. Combinar todas las fuentes de eventos
         const allEventSources = [notionEventSource, ...publicCalSources];
 
         calendar = new FullCalendar.Calendar(calendarEl, {
@@ -1199,11 +1199,41 @@
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
             height: 'auto',
+            editable: true, // <-- Habilita el Drag & Drop
             eventSources: allEventSources,
             eventClick: (info) => {
                 info.jsEvent.preventDefault();
                 if (info.event.extendedProps.isEditable) {
                     showTaskModal(info.event);
+                }
+            },
+            // --- NUEVA FUNCIÓN ---
+            // Se ejecuta cuando un evento se arrastra y se suelta en una nueva fecha/hora
+            eventDrop: async (info) => {
+                const taskId = info.event.id;
+                const newStart = info.event.start;
+                const newEnd = info.event.end;
+
+                // Formatear las fechas para el backend
+                // `toISOString()` convierte a UTC. El backend lo interpretará correctamente.
+                const deadline = newStart.toISOString();
+                // El `end` puede ser nulo si el evento no tiene duración.
+                const deadlineEnd = newEnd ? newEnd.toISOString() : null;
+
+                const details = {
+                    deadline: deadline,
+                    deadlineEnd: deadlineEnd
+                };
+
+                try {
+                    // Llamar a la API para actualizar la tarea
+                    await apiCall({ action: 'updateTask', taskId, details });
+                    // Opcional: mostrar una notificación de éxito
+                } catch (error) {
+                    console.error('Error al actualizar la tarea por arrastre:', error);
+                    alert(`No se pudo mover la tarea: ${error.message}`);
+                    // Si falla la actualización, revertir el cambio en la interfaz
+                    info.revert();
                 }
             }
         });
