@@ -1853,7 +1853,7 @@
             const deadlineTimeValue = deadlineDate && task.deadline.includes('T') ? deadlineDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
             
             const deadlineEndDate = task.deadlineEnd ? new Date(task.deadlineEnd) : null;
-            const deadlineEndTimeValue = deadlineEndDate ? deadlineEndDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
+            const deadlineEndTimeValue = deadlineEndDate ? deadlineEndDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
 
             const customReminderDate = task.customReminderDateTime ? new Date(task.customReminderDateTime) : null;
             const customReminderDateValue = customReminderDate ? customReminderDate.toISOString().split('T')[0] : '';
