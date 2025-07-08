@@ -23,6 +23,7 @@
             --success-color: #198754;
             --error-color: #DC3545;
             --delete-color: #e53e3e;
+            --archive-color: #6c757d;
             --shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
             --border-radius: 12px;
         }
@@ -485,8 +486,8 @@
             border-radius: 20px;
         }
 
-        #task-list-container.loading::after {
-            content: 'Cargando tareas...';
+        #task-list-container.loading::after, #projects-list-container.loading::after {
+            content: 'Cargando...';
             display: block;
             text-align: center;
             padding: 40px;
@@ -523,7 +524,6 @@
             font-weight: 500;
         }
         
-        /* Estilo para eventos que se están arrastrando */
         .fc-event-dragging {
             opacity: 0.7;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
@@ -560,7 +560,7 @@
             transition: transform 0.3s;
             display: flex;
             flex-direction: column;
-            max-height: 90vh; /* Límite de altura para el modal */
+            max-height: 90vh;
         }
         
         .modal-overlay.visible .modal-content {
@@ -593,8 +593,8 @@
         }
         
         .modal-body {
-            overflow-y: auto; /* Permite scroll si el contenido es muy largo */
-            margin-right: -15px; /* Compensa el espacio de la barra de scroll */
+            overflow-y: auto;
+            margin-right: -15px;
             padding-right: 15px;
         }
         .modal-body .form-group {
@@ -726,6 +726,49 @@
             border-color: var(--primary-color);
         }
 
+        /* --- NUEVOS ESTILOS PARA LA PESTAÑA DE PROYECTOS --- */
+        .project-list {
+            list-style: none;
+            padding: 0;
+        }
+        .project-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        .project-list-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .project-info {
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+        .project-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .project-status-select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: #fff;
+        }
+        .archive-btn {
+            background-color: var(--archive-color);
+            color: white;
+            padding: 8px 15px;
+        }
+        .archive-btn:hover {
+            background-color: #5a6268;
+        }
+
         @media (max-width: 768px) {
             body { padding: 5px; }
             .container { margin: 5px auto; }
@@ -736,6 +779,15 @@
                 flex-direction: column;
                 gap: 10px;
                 margin-bottom: 15px;
+            }
+            .project-list-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .project-controls {
+                width: 100%;
+                justify-content: space-between;
             }
         }
     </style>
@@ -750,6 +802,7 @@
         <nav class="tab-navigation">
             <button class="tab-btn active" data-tab="asistente">➕ Asistente</button>
             <button class="tab-btn" data-tab="gestor">📋 Gestor</button>
+            <button class="tab-btn" data-tab="proyectos">🗂️ Proyectos</button>
             <button class="tab-btn" data-tab="agenda">🗓️ Agenda</button>
             <button class="tab-btn" data-tab="ajustes">⚙️ Ajustes</button>
         </nav>
@@ -991,8 +1044,15 @@
                 </div>
                 <div id="task-list-container"></div>
             </div>
+            
+            <!-- PESTAÑA 3: GESTOR DE PROYECTOS -->
+            <div id="proyectos" class="tab-content">
+                 <h2 class="section-title"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>Gestión de Proyectos</h2>
+                 <p>Aquí puedes ver todos tus proyectos, cambiar su estado o archivarlos.</p>
+                 <div id="projects-list-container" style="margin-top: 20px;"></div>
+            </div>
 
-            <!-- PESTAÑA 3: AGENDA -->
+            <!-- PESTAÑA 4: AGENDA -->
             <div id="agenda" class="tab-content">
                  <div class="filters-panel">
                     <div class="form-group">
@@ -1009,7 +1069,7 @@
                 </div>
             </div>
 
-            <!-- PESTAÑA 4: AJUSTES -->
+            <!-- PESTAÑA 5: AJUSTES -->
             <div id="ajustes" class="tab-content">
                 <section class="form-section">
                      <h2 class="section-title"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>Gestionar Áreas</h2>
@@ -1069,8 +1129,9 @@
     </div>
 
 <script>
-    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbw2mjUbqWJ1BxNYarX0fTJhP-JBvfnEcyj_jbsfaD-9tSFCbIYSPGGbZiLZnOau69K7SA/exec';
+    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxDlJFa0ckb2IKxuvO3QNX8Ssy5rU9n9uU0GD9TlHQ53IDEgp1o7mz_9CbC8f4hTg4HjQ/exec';
     let projectsCache = [];
+    let allProjectsCache = []; // Caché para todos los proyectos
     let areasCache = [];
     let publicCalendarsCache = [];
     let calendar;
@@ -1082,7 +1143,8 @@
     async function initializeApp() {
         setupEventListeners();
         await Promise.all([
-            loadProjects(),
+            loadProjects(), // Carga proyectos activos para los filtros
+            loadAllProjects(), // Carga todos los proyectos para la nueva pestaña
             loadAreas(),
             loadPublicCalendars()
         ]);
@@ -1102,6 +1164,9 @@
 
                 if (button.dataset.tab === 'agenda' && calendar) {
                     setTimeout(() => calendar.render(), 10);
+                }
+                if (button.dataset.tab === 'proyectos') {
+                    renderProjectsList();
                 }
                 if (button.dataset.tab === 'ajustes') {
                     renderAreasManagement();
@@ -1196,7 +1261,7 @@
 
         calendar = new FullCalendar.Calendar(calendarEl, {
             locale: 'es',
-            firstDay: 1, // <-- La semana empieza en Lunes
+            firstDay: 1,
             initialView: isMobile ? 'timeGridDay' : 'dayGridMonth',
             headerToolbar: {
                 left: 'prev,next today',
@@ -1228,7 +1293,6 @@
 
                 try {
                     await apiCall({ action: 'updateTask', taskId, details });
-                    // Actualizar también la lista del gestor para consistencia inmediata
                     loadTasks();
                 } catch (error) {
                     console.error('Error al actualizar la tarea por arrastre:', error);
@@ -1392,8 +1456,21 @@
             projectsCache = result.data;
             populateProjectFilters();
         } catch (error) {
-            console.error('Error al cargar proyectos:', error);
+            console.error('Error al cargar proyectos activos:', error);
             document.querySelectorAll('#proyecto_id, #filter-project, #filter-agenda-project').forEach(s => s.innerHTML = `<option>Error</option>`);
+        }
+    }
+    
+    // --- NUEVA FUNCIÓN ---
+    async function loadAllProjects() {
+        try {
+            const result = await apiCall({ action: 'getAllProjects' });
+            allProjectsCache = result.data;
+            // No renderizamos aquí, se hará al cambiar de pestaña
+        } catch (error) {
+            console.error('Error al cargar todos los proyectos:', error);
+            const container = document.getElementById('projects-list-container');
+            container.innerHTML = `<div class="message error-message">Error al cargar proyectos: ${error.message}</div>`;
         }
     }
 
@@ -1737,6 +1814,84 @@
             <button onclick="handleProjectDetailsSave('${projectId}')">Guardar Cambios del Proyecto</button>
         `;
     }
+
+    // --- NUEVAS FUNCIONES PARA LA PESTAÑA DE PROYECTOS ---
+    function renderProjectsList() {
+        const container = document.getElementById('projects-list-container');
+        container.innerHTML = "";
+        if (allProjectsCache.length === 0) {
+            container.innerHTML = '<div class="message">No se encontraron proyectos.</div>';
+            return;
+        }
+        
+        const list = document.createElement('ul');
+        list.className = 'project-list';
+        
+        // Asumiendo que tienes una lista de posibles estados en Notion
+        const possibleStatus = ['Activo', 'En Pausa', 'Terminado', 'Planificación', 'Cancelado'];
+
+        allProjectsCache.forEach(project => {
+            const item = document.createElement('li');
+            item.className = 'project-list-item';
+            item.id = `project-${project.id}`;
+
+            let optionsHtml = possibleStatus.map(status => 
+                `<option value="${status}" ${project.status === status ? 'selected' : ''}>${status}</option>`
+            ).join('');
+
+            item.innerHTML = `
+                <span class="project-info">${project.name}</span>
+                <div class="project-controls">
+                    <select class="project-status-select" onchange="handleProjectStatusChange('${project.id}', this.value)">
+                        ${optionsHtml}
+                    </select>
+                    <button class="delete-btn archive-btn" onclick="handleArchiveProject('${project.id}', '${project.name.replace(/'/g, "\\'")}')">Archivar</button>
+                </div>
+            `;
+            list.appendChild(item);
+        });
+        container.appendChild(list);
+    }
+
+    async function handleProjectStatusChange(projectId, newStatus) {
+        try {
+            await apiCall({ action: 'updateProjectStatus', projectId, status: newStatus });
+            // Actualizar el caché local para reflejar el cambio
+            const projectInCache = allProjectsCache.find(p => p.id === projectId);
+            if(projectInCache) projectInCache.status = newStatus;
+            // Recargar la lista de proyectos activos para los filtros
+            loadProjects();
+        } catch (error) {
+            alert(`Error al cambiar el estado del proyecto: ${error.message}`);
+            // Revertir el cambio en el select
+            renderProjectsList();
+        }
+    }
+
+    async function handleArchiveProject(projectId, projectName) {
+        if (confirm(`¿Estás seguro de que quieres archivar el proyecto "${projectName}"? No se podrá deshacer desde aquí.`)) {
+            try {
+                await apiCall({ action: 'archiveProject', projectId });
+                // Eliminar de la vista
+                const projectItem = document.getElementById(`project-${projectId}`);
+                if (projectItem) {
+                    projectItem.style.transition = 'opacity 0.5s';
+                    projectItem.style.opacity = '0';
+                    setTimeout(() => {
+                        projectItem.remove();
+                        // Actualizar cachés
+                        allProjectsCache = allProjectsCache.filter(p => p.id !== projectId);
+                        projectsCache = projectsCache.filter(p => p.id !== projectId);
+                        // Repoblar filtros
+                        populateProjectFilters();
+                    }, 500);
+                }
+            } catch (error) {
+                alert(`Error al archivar el proyecto: ${error.message}`);
+            }
+        }
+    }
+
 
     function toggleOtherArea() {
         document.getElementById('area_other').classList.toggle('hidden', document.getElementById('area').value !== 'other');
