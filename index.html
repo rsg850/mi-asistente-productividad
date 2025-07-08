@@ -1059,7 +1059,7 @@
     </div>
 
 <script>
-    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxXVSJc4kijfZllgjwimyCCsWPAD7XGAa7I5FRNAc9yhesSXO7HAMuBAKcvdlfPu-f5/exec';
+    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxkL-SLbdgXC14D8TL1IKXVbi05dRwFPgqvjOp0ZroSI9twLCJ2rqgpCs57wi1yPMbu7Q/exec';
     let projectsCache = [];
     let areasCache = [];
     let publicCalendarsCache = [];
@@ -1069,12 +1069,17 @@
         initializeApp();
     });
 
-    function initializeApp() {
+    async function initializeApp() {
         setupEventListeners();
-        loadProjects();
-        loadAreas();
-        loadPublicCalendars();
-        loadTasks();
+        // Cargar datos esenciales en paralelo para acelerar el inicio
+        await Promise.all([
+            loadProjects(),
+            loadAreas(),
+            loadPublicCalendars()
+        ]);
+        
+        // Cargar tareas y luego inicializar el calendario una vez que todos los datos están listos
+        await loadTasks();
         initializeCalendar();
     }
 
@@ -1138,58 +1143,52 @@
         const calendarEl = document.getElementById('calendar');
         if (!calendarEl) return;
 
+        // Si ya existe una instancia del calendario, destruirla antes de crear una nueva.
+        if (calendar) {
+            calendar.destroy();
+        }
+
         const isMobile = window.innerWidth < 768;
 
-        const eventSources = [
-            // Fuente de eventos de Notion (tus tareas)
-            {
-                events: async (fetchInfo, successCallback, failureCallback) => {
-                    try {
-                        const filters = {
-                            dateRangeType: 'custom',
-                            startDate: fetchInfo.startStr.split('T')[0],
-                            endDate: fetchInfo.endStr.split('T')[0],
-                            projectId: document.getElementById('filter-agenda-project').value,
-                            area: document.getElementById('filter-agenda-area').value,
-                        };
-                        const result = await apiCall({ action: 'getTasks', filters, sortBy: 'deadline', sortDirection: 'ascending' });
-                        const events = result.data.map(task => {
-                            let statusIcon = {'Sin empezar': '⚪', 'En progreso': '🔵', 'Listo': '✅'}[task.status] || '';
-                            return {
-                                id: task.id,
-                                title: `${statusIcon} ${task.title}`,
-                                start: task.deadline,
-                                end: task.deadlineEnd,
-                                allDay: task.deadline ? !task.deadline.includes('T') : true,
-                                color: {'Alta': '#e53e3e', 'Medio': '#dd6b20', 'Baja': '#3182ce'}[task.priority] || '#3182ce',
-                                extendedProps: { ...task, isEditable: true, statusIcon, projectName: projectsCache.find(p => p.id === task.project)?.name || 'Sin proyecto' }
-                            }
-                        });
-                        successCallback(events);
-                    } catch (error) {
-                        console.error('Error al cargar tareas en el calendario:', error);
-                        failureCallback(error);
-                    }
-                },
-                
-            }
-        ];
-        
-        // Añadir los calendarios públicos como fuentes de eventos
-        publicCalendarsCache.forEach(cal => {
-            eventSources.push({
-                url: WEBHOOK_URL,
-                method: 'POST',
-                extraParams: {
-                    action: 'getPublicEvents',
-                    url: cal.url
-                },
-                color: cal.color,
-                failure: () => {
-                    alert(`Error al cargar el calendario: ${cal.name}`);
+        // 1. Fuente de eventos principal: Tareas de Notion
+        const notionEventSource = {
+            events: async (fetchInfo, successCallback, failureCallback) => {
+                try {
+                    const filters = {
+                        dateRangeType: 'custom',
+                        startDate: fetchInfo.startStr.split('T')[0],
+                        endDate: fetchInfo.endStr.split('T')[0],
+                        projectId: document.getElementById('filter-agenda-project').value,
+                        area: document.getElementById('filter-agenda-area').value,
+                    };
+                    const result = await apiCall({ action: 'getTasks', filters, sortBy: 'deadline', sortDirection: 'ascending' });
+                    const events = result.data.map(task => ({
+                        id: task.id,
+                        title: `${{'Sin empezar': '⚪', 'En progreso': '🔵', 'Listo': '✅'}[task.status] || ''} ${task.title}`,
+                        start: task.deadline,
+                        end: task.deadlineEnd,
+                        allDay: task.deadline ? !task.deadline.includes('T') : true,
+                        color: {'Alta': '#e53e3e', 'Medio': '#dd6b20', 'Baja': '#3182ce'}[task.priority] || '#3182ce',
+                        extendedProps: { ...task, isEditable: true }
+                    }));
+                    successCallback(events);
+                } catch (error) {
+                    console.error('Error al cargar tareas en el calendario:', error);
+                    failureCallback(error);
                 }
-            });
-        });
+            },
+        };
+
+        // 2. Fuentes de eventos secundarias: Calendarios públicos .ics
+        const publicCalSources = publicCalendarsCache.map(cal => ({
+            url: cal.url,
+            format: 'ical',
+            color: cal.color,
+            display: 'background'
+        }));
+
+        // 3. Combinar todas las fuentes de eventos
+        const allEventSources = [notionEventSource, ...publicCalSources];
 
         calendar = new FullCalendar.Calendar(calendarEl, {
             locale: 'es',
@@ -1200,10 +1199,7 @@
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
             height: 'auto',
-            windowResize: function(arg) {
-                // FullCalendar se encarga de la mayoría de los reajustes
-            },
-            eventSources: eventSources,
+            eventSources: allEventSources,
             eventClick: (info) => {
                 info.jsEvent.preventDefault();
                 if (info.event.extendedProps.isEditable) {
@@ -1470,12 +1466,10 @@
     async function loadPublicCalendars() {
         try {
             const result = await apiCall({ action: 'getPublicCalendars' });
-            publicCalendarsCache = result.data;
-            if (calendar) {
-               initializeCalendar();
-            }
+            publicCalendarsCache = Array.isArray(result.data) ? result.data : [];
         } catch (error) {
             console.error('Error al cargar calendarios públicos:', error);
+            publicCalendarsCache = [];
         }
     }
 
