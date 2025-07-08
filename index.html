@@ -824,13 +824,13 @@
         }
         .project-progress-item {
             margin-bottom: 15px;
-            cursor: pointer;
         }
-        .project-progress-item .project-info {
+        .project-progress-item .project-info-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 1em;
+            cursor: pointer;
         }
         .project-tasks-details {
             max-height: 0;
@@ -2125,7 +2125,7 @@
             const item = document.createElement('div');
             item.className = 'project-progress-item';
             item.innerHTML = `
-                <div class="project-info" onclick="toggleProjectTasks(this, '${proj.id}')">
+                <div class="project-info-header" onclick="toggleProjectTasks(this, '${proj.id}')">
                     <span>${proj.name}</span>
                     <span>${proj.percentage}% (${proj.completed}/${proj.total})</span>
                 </div>
