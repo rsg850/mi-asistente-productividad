@@ -864,7 +864,7 @@
                             <div><label for="end-date">Hasta:</label><input type="date" id="end-date"></div>
                         </div>
                     </div>
-                    <div class="form-group"><label for="sort-tasks">Ordenar por</label><select id="sort-tasks"><option value="default">Por defecto</option><option value="priority">Prioridad</option><option value="deadline">Fecha límite</option></select></div>
+                    <div class="form-group"><label for="sort-tasks">Ordenar por</label><select id="sort-tasks"><option value="default">Por defecto</option><option value="priority">Prioridad</option><option value="deadline">Fecha límite</option><option value="status">Estado</option></select></div>
                     <div class="form-group"><label for="sort-direction">Dirección</label><select id="sort-direction"><option value="ascending">Ascendente</option><option value="descending">Descendente</option></select></div>
                 </div>
                 <div id="task-list-container"></div>
@@ -941,7 +941,7 @@
     </div>
 
     <script>
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbySMF6Y1CeZrGW7lFyZS0nwgh9aIYBCYbY5SaIvVUS0C0caHgSjg84IgijDzm0KHSzDzg/exec';
+        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxS9V5rOBULkVe4shpFru_pKgm2Z-iChQK1Worya7cEb9dAVOxVm6Q4NjHRvZWMg_cNGQ/exec';
         let projectsCache = [];
         let areasCache = [];
         let publicCalendarsCache = [];
