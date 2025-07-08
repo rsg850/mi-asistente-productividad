@@ -783,6 +783,31 @@
         }
 
         /* --- ESTILOS PARA LA PESTAÑA DE ANÁLISIS --- */
+        .sub-tab-navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .sub-tab-btn {
+            padding: 10px 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-bottom: 3px solid transparent;
+        }
+        .sub-tab-btn.active {
+            color: var(--secondary-color);
+            border-bottom-color: var(--secondary-color);
+        }
+        .sub-tab-content {
+            display: none;
+        }
+        .sub-tab-content.active {
+            display: block;
+        }
+
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -1176,18 +1201,34 @@
 
             <!-- PESTAÑA 4: ANÁLISIS -->
             <div id="analisis" class="tab-content">
-                <div class="filters-panel" style="justify-content: center;">
-                    <div class="form-group">
-                        <label for="dashboard-period">Seleccionar Periodo</label>
-                        <select id="dashboard-period">
-                            <option value="thisWeek">Esta Semana</option>
-                            <option value="last7days">Últimos 7 días</option>
-                            <option value="thisMonth">Este Mes</option>
-                        </select>
+                <div class="sub-tab-navigation">
+                    <button class="sub-tab-btn active" data-subtab="analisis-global">Visión Global</button>
+                    <button class="sub-tab-btn" data-subtab="analisis-proyecto">Por Proyecto</button>
+                    <button class="sub-tab-btn" data-subtab="analisis-temporal">Temporal</button>
+                </div>
+
+                <div id="analisis-global" class="sub-tab-content active">
+                    <div class="filters-panel" style="justify-content: center;">
+                        <div class="form-group">
+                            <label for="dashboard-period">Seleccionar Periodo</label>
+                            <select id="dashboard-period">
+                                <option value="thisWeek">Esta Semana</option>
+                                <option value="last7days">Últimos 7 días</option>
+                                <option value="thisMonth">Este Mes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="dashboard-container">
+                        <!-- Los datos se cargarán aquí -->
                     </div>
                 </div>
-                <div id="dashboard-container">
-                    <!-- Los datos se cargarán aquí -->
+
+                <div id="analisis-proyecto" class="sub-tab-content">
+                    <p>Análisis por proyecto (Heatmap) se implementará en la siguiente fase.</p>
+                </div>
+
+                <div id="analisis-temporal" class="sub-tab-content">
+                    <p>Análisis temporal detallado se implementará en la siguiente fase.</p>
                 </div>
             </div>
 
@@ -1316,6 +1357,17 @@
                     renderAreasManagement();
                     renderPublicCalendarsManagement();
                 }
+            });
+        });
+
+        // Listeners para sub-pestañas de Análisis
+        document.querySelectorAll('.sub-tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                document.querySelectorAll('.sub-tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(button.dataset.subtab).classList.add('active');
             });
         });
         
