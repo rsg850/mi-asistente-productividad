@@ -782,14 +782,12 @@
             border-radius: 6px;
             margin-bottom: 8px;
             font-size: 0.95em;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
         }
-        .status-column li a {
-            text-decoration: none;
-            color: var(--text-color);
-            transition: color 0.2s;
-        }
-        .status-column li a:hover {
-            color: var(--primary-color);
+        .status-column li:hover {
+            background-color: #e9ecef;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         .project-chart-container {
             margin-top: 20px;
@@ -1206,7 +1204,7 @@
 
 <script>
 // ===================================
-// SCRIPT DE LA APLICACIÓN V46.0
+// SCRIPT DE LA APLICACIÓN V47.0
 // ===================================
 const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxIbJtxkKX6ZAfNZP7ee-1j2GA5ObdRwH6z9KW6akmprYZJUOQBYf4pFLGprbxfXEqL1w/exec'; // Reemplaza con tu URL
 
@@ -1215,7 +1213,8 @@ let allProjectsCache = [];
 let areasCache = [];
 let publicCalendarsCache = [];
 let calendar;
-let activeProjectCharts = {}; // Almacena instancias de gráficos
+let activeProjectCharts = {};
+let projectTasksCache = {}; // Cache para las tareas de cada proyecto en la vista global
 
 document.addEventListener('DOMContentLoaded', initializeApp);
 
@@ -1263,6 +1262,20 @@ function setupEventListeners() {
             button.closest('.tab-content').querySelectorAll('.sub-tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById(subtabId).classList.add('active');
         });
+    });
+    
+    // Listener delegado para los clics en las tareas de la Visión Global
+    document.getElementById('global-vision-container').addEventListener('click', (e) => {
+        const taskElement = e.target.closest('li[data-task-id]');
+        if (taskElement) {
+            const taskId = taskElement.dataset.taskId;
+            const projectId = taskElement.closest('.project-tasks-details').id.replace('project-tasks-', '');
+            
+            const task = projectTasksCache[projectId]?.find(t => t.id === taskId);
+            if (task) {
+                showTaskModal({ extendedProps: task });
+            }
+        }
     });
 
     document.getElementById('taskForm').addEventListener('submit', handleFormSubmit);
@@ -1338,10 +1351,11 @@ async function toggleProjectTasksDetails(element, projectId) {
     const detailsContainer = document.getElementById(`project-tasks-${projectId}`);
     const isVisible = detailsContainer.classList.toggle('visible');
 
-    if (isVisible && detailsContainer.innerHTML.trim() === '') {
+    if (isVisible && !projectTasksCache[projectId]) { // Cargar solo si es visible y no está en caché
         detailsContainer.innerHTML = '<p class="message">Cargando todas las tareas del proyecto...</p>';
         try {
-            const result = await apiCall({ action: 'getAllProjectTasks', projectId });
+            const result = await apiCall({ action: 'getTasks', filters: { projectId }, sortBy: 'status' });
+            projectTasksCache[projectId] = result.data; // Guardar en caché
             renderProjectDetailsView(detailsContainer, projectId, result.data);
         } catch (error) {
             detailsContainer.innerHTML = `<div class="message error-message" style="margin:0;">Error: ${error.message}</div>`;
@@ -1350,53 +1364,31 @@ async function toggleProjectTasksDetails(element, projectId) {
 }
 
 function renderProjectDetailsView(container, projectId, tasks) {
-    // 1. Agrupar tareas por estado
-    const tasksByStatus = {
-        'Sin empezar': [],
-        'En progreso': [],
-        'Listo': []
-    };
+    const tasksByStatus = { 'Sin empezar': [], 'En progreso': [], 'Listo': [] };
     tasks.forEach(task => {
-        if (tasksByStatus[task.status]) {
-            tasksByStatus[task.status].push(task);
-        } else {
-            tasksByStatus['Sin empezar'].push(task); // Fallback
-        }
+        (tasksByStatus[task.status] || tasksByStatus['Sin empezar']).push(task);
     });
 
-    // 2. Construir el HTML de las columnas
+    const createTaskList = (taskList) => {
+        if (taskList.length === 0) return '<ul><li>-</li></ul>';
+        return '<ul>' + taskList.map(t => `<li data-task-id="${t.id}">${t.title}</li>`).join('') + '</ul>';
+    };
+
     const gridHtml = `
         <div class="tasks-by-status-grid">
-            <div class="status-column status-pending">
-                <h4>Sin Empezar</h4>
-                <ul>${tasksByStatus['Sin empezar'].map(t => `<li><a href="${t.notionUrl}" target="_blank">${t.title}</a></li>`).join('') || '<li>-</li>'}</ul>
-            </div>
-            <div class="status-column status-progress">
-                <h4>En Progreso</h4>
-                <ul>${tasksByStatus['En progreso'].map(t => `<li><a href="${t.notionUrl}" target="_blank">${t.title}</a></li>`).join('') || '<li>-</li>'}</ul>
-            </div>
-            <div class="status-column status-done">
-                <h4>Listo</h4>
-                <ul>${tasksByStatus['Listo'].map(t => `<li><a href="${t.notionUrl}" target="_blank">${t.title}</a></li>`).join('') || '<li>-</li>'}</ul>
-            </div>
+            <div class="status-column status-pending"><h4>Sin Empezar</h4>${createTaskList(tasksByStatus['Sin empezar'])}</div>
+            <div class="status-column status-progress"><h4>En Progreso</h4>${createTaskList(tasksByStatus['En progreso'])}</div>
+            <div class="status-column status-done"><h4>Listo</h4>${createTaskList(tasksByStatus['Listo'])}</div>
         </div>
-        <div class="project-chart-container">
-            <canvas id="chart-${projectId}"></canvas>
-        </div>
-    `;
+        <div class="project-chart-container"><canvas id="chart-${projectId}"></canvas></div>`;
     container.innerHTML = gridHtml;
 
-    // 3. Renderizar el gráfico
     renderProjectStatusChart(projectId, tasksByStatus);
 }
 
 function renderProjectStatusChart(projectId, tasksByStatus) {
     const ctx = document.getElementById(`chart-${projectId}`).getContext('2d');
-    
-    // Si ya existe un gráfico para este canvas, destruirlo primero
-    if (activeProjectCharts[projectId]) {
-        activeProjectCharts[projectId].destroy();
-    }
+    if (activeProjectCharts[projectId]) activeProjectCharts[projectId].destroy();
 
     const data = {
         labels: ['Sin empezar', 'En progreso', 'Listo'],
@@ -1407,16 +1399,8 @@ function renderProjectStatusChart(projectId, tasksByStatus) {
                 tasksByStatus['En progreso'].length,
                 tasksByStatus['Listo'].length
             ],
-            backgroundColor: [
-                'rgba(254, 243, 199, 0.8)', // Amarillo
-                'rgba(219, 234, 254, 0.8)', // Azul
-                'rgba(209, 250, 229, 0.8)'  // Verde
-            ],
-            borderColor: [
-                'rgba(146, 64, 14, 1)',
-                'rgba(30, 64, 175, 1)',
-                'rgba(6, 95, 70, 1)'
-            ],
+            backgroundColor: ['rgba(254, 243, 199, 0.8)', 'rgba(219, 234, 254, 0.8)', 'rgba(209, 250, 229, 0.8)'],
+            borderColor: ['rgba(146, 64, 14, 1)', 'rgba(30, 64, 175, 1)', 'rgba(6, 95, 70, 1)'],
             borderWidth: 1
         }]
     };
@@ -1427,18 +1411,12 @@ function renderProjectStatusChart(projectId, tasksByStatus) {
         options: {
             responsive: true,
             plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: true,
-                    text: 'Distribución de Tareas por Estado'
-                }
+                legend: { position: 'top' },
+                title: { display: true, text: 'Distribución de Tareas por Estado' }
             }
         }
     });
 }
-
 
 // ===================================
 // EL RESTO DEL JAVASCRIPT SE MANTIENE
@@ -1569,6 +1547,15 @@ async function handleModalSave() {
     try {
         await apiCall({ action: 'updateTask', taskId, details });
         btn.textContent = 'Guardado';
+        // Actualizar la vista de análisis si está visible
+        const projectId = projectTasksCache && Object.keys(projectTasksCache).find(pId => projectTasksCache[pId].some(t => t.id === taskId));
+        if (projectId) {
+            delete projectTasksCache[projectId]; // Invalidar caché para recargar
+            const detailsContainer = document.getElementById(`project-tasks-${projectId}`);
+            if(detailsContainer && detailsContainer.classList.contains('visible')) {
+                toggleProjectTasksDetails(null, projectId);
+            }
+        }
         setTimeout(() => closeTaskModal(), 1000);
         calendar.refetchEvents();
         loadTasks();
@@ -1940,7 +1927,10 @@ async function handleTaskDelete(taskId, taskTitle, fromModal = false) {
         try {
             await apiCall({ action: 'deleteTask', taskId });
             if (fromModal) {
+                const projectId = projectTasksCache && Object.keys(projectTasksCache).find(pId => projectTasksCache[pId].some(t => t.id === taskId));
+                if (projectId) delete projectTasksCache[projectId];
                 closeTaskModal();
+                loadGlobalVision();
             } else {
                 const taskCard = document.getElementById(`task-${taskId}`);
                 if (taskCard) {
