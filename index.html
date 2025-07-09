@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Centro de Productividad</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1002,6 +1003,7 @@
             <button class="tab-btn" data-tab="ajustes">⚙️ Ajustes</button>
         </nav>
         <main class="main-content">
+            <!-- PESTAÑA 1: ASISTENTE (FORMULARIO) -->
             <div id="asistente" class="tab-content active">
                 <form id="taskForm" novalidate>
                     <section class="form-section">
@@ -1177,6 +1179,7 @@
                 </form>
             </div>
 
+            <!-- PESTAÑA 2: GESTOR DE TAREAS -->
             <div id="gestor" class="tab-content">
                  <div id="project-details-container" class="hidden"></div>
                  <div class="filters-panel">
@@ -1222,6 +1225,7 @@
                  <div id="task-list-container" class="loading-container"></div>
             </div>
 
+            <!-- PESTAÑA 3: GESTOR DE PROYECTOS -->
             <div id="proyectos" class="tab-content">
                 <h2 class="section-title"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>Gestión de Proyectos</h2>
                 <div id="project-editor-container" class="hidden"></div>
@@ -1258,6 +1262,7 @@
                 <div id="projects-list-container" class="loading-container" style="margin-top: 20px;"></div>
             </div>
 
+            <!-- PESTAÑA 4: AGENDA -->
             <div id="agenda" class="tab-content">
                 <div class="filters-panel">
                      <div class="form-group">
@@ -1274,6 +1279,7 @@
                 </div>
             </div>
 
+            <!-- PESTAÑA 5: ANÁLISIS -->
             <div id="analisis" class="tab-content">
                  <nav class="sub-tab-navigation">
                     <button class="sub-tab-btn active" data-subtab="analisis-global">Visión Global</button>
@@ -1300,7 +1306,8 @@
                              <div id="cal-heatmap-anchor" style="margin: 0 auto; text-align: center;"></div>
                         </div>
                         <div id="project-tasks-table-container">
-                             </div>
+                             <!-- Las columnas de tareas por estado se renderizarán aquí -->
+                        </div>
                         <div id="pending-priority-chart-container" class="project-chart-container">
                              <h3 style="text-align: center; margin-bottom: 15px; color: var(--label-color);">Tareas Pendientes por Prioridad</h3>
                              <canvas id="pending-priority-chart"></canvas>
@@ -1314,6 +1321,7 @@
                 </div>
             </div>
 
+            <!-- PESTAÑA 6: AJUSTES -->
             <div id="ajustes" class="tab-content">
                  <section class="form-section">
                     <h2 class="section-title"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>Gestionar Áreas</h2>
@@ -1350,6 +1358,7 @@
         </main>
     </div>
     
+    <!-- Modal para detalles de la tarea -->
     <div id="task-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -1371,9 +1380,9 @@
 
 <script>
 // =============================
-// SCRIPT DE LA APLICACIÓN V47.0
+// SCRIPT DE LA APLICACIÓN V47.1
 // =============================
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzALCV2hFjVR9KL4KsdRSJEMBufaOPJI0tlwO-0Ux5oAA7ZtFMdrFsQkMU3G6zla0IYZw/exec'; // Reemplaza con tu URL
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzu-v9vaHaPZqKhayON4lypJKuVq_E-XH1mTr9VEjEhdqTzZNdY4v2dYWTOLdiZwn4p3g/exec'; // Reemplaza con tu URL
 
 // --- DEFINICIONES Y CACHÉ ---
 const ICONS = {
@@ -2578,7 +2587,7 @@ async function apiCall(payload) {
     });
     if (!response.ok) throw new Error(`Error del servidor: ${response.statusText}`);
     const result = await response.json();
-    if (!result.success) throw new Error(result.error);
+    if (result.success === false) throw new Error(result.error); // Manejar errores de la API
     return result;
 }
 </script>
