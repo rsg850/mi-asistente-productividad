@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Centro de Productividad</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -31,25 +29,17 @@
             --shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
             --border-radius: 12px;
             --status-pending-bg: #FEF3C7;
-            /* Amarillo claro */
             --status-pending-text: #92400E;
-            /* Amarillo oscuro */
             --status-progress-bg: #DBEAFE;
-            /* Azul claro */
             --status-progress-text: #1E40AF;
-            /* Azul oscuro */
             --status-done-bg: #D1FAE5;
-            /* Verde claro */
             --status-done-text: #065F46;
-            /* Verde oscuro */
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--background-color);
@@ -57,11 +47,9 @@
             line-height: 1.6;
             padding: 20px;
         }
-
         body.is-dragging {
             cursor: grabbing;
         }
-
         .container {
             max-width: 900px;
             margin: 20px auto;
@@ -70,32 +58,24 @@
             box-shadow: var(--shadow);
             overflow: hidden;
         }
-
         .header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             padding: 30px;
             text-align: center;
         }
-
-        h1,
-        h2,
-        h3,
-        h4 {
+        h1, h2, h3, h4 {
             font-weight: 700;
         }
-
         .main-content {
             padding: 30px 40px;
         }
-
         .tab-navigation {
             display: flex;
             flex-wrap: wrap;
             border-bottom: 2px solid var(--border-color);
             margin-bottom: 30px;
         }
-
         .tab-btn {
             padding: 15px 25px;
             cursor: pointer;
@@ -108,34 +88,24 @@
             border-bottom: 3px solid transparent;
             flex-shrink: 0;
         }
-
         .tab-btn.active {
             color: var(--primary-color);
             border-bottom-color: var(--primary-color);
         }
-
         .tab-content {
             display: none;
         }
-
         .tab-content.active {
             display: block;
             animation: fadeIn 0.5s;
         }
-
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-
         .form-section {
             margin-bottom: 30px;
         }
-
         .section-title {
             font-size: 1.4em;
             color: var(--primary-color);
@@ -145,16 +115,13 @@
             display: flex;
             align-items: center;
         }
-
         .section-title svg {
             margin-right: 12px;
             stroke: var(--primary-color);
         }
-
         .form-group {
             margin-bottom: 20px;
         }
-
         label {
             display: block;
             margin-bottom: 8px;
@@ -162,13 +129,11 @@
             color: var(--label-color);
             font-size: 0.95em;
         }
-
         .label-with-icon {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-
         .label-with-icon svg {
             width: 18px;
             height: 18px;
@@ -176,19 +141,14 @@
             stroke-width: 2;
             fill: none;
         }
-
         .checkbox-item .label-with-icon {
             font-weight: 500;
             margin-bottom: 0;
         }
-
         .checkbox-item .label-with-icon svg {
             stroke-width: 2.5;
         }
-
-        input,
-        select,
-        textarea {
+        input, select, textarea {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid var(--border-color);
@@ -198,23 +158,17 @@
             transition: all 0.3s;
             background-color: #FDFDFD;
         }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.2);
         }
-
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-
-        .submit-btn,
-        .action-btn {
+        .submit-btn, .action-btn {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             border: none;
@@ -229,48 +183,40 @@
             justify-content: center;
             gap: 10px;
         }
-
         .submit-btn {
             width: 100%;
             margin-top: 20px;
         }
-
         .submit-btn:disabled {
             background: #BDBDBD;
             cursor: not-allowed;
         }
-
         .message {
             padding: 15px;
             border-radius: 8px;
             margin-top: 20px;
             text-align: center;
         }
-
         .error-message {
             background: #FFF3F3;
             color: var(--error-color);
             border: 1px solid var(--error-color);
         }
-
         .success-message {
             background: #F0FFF4;
             color: var(--success-color);
             border: 1px solid var(--success-color);
         }
-
         .datetime-group {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 10px;
         }
-
         .datetime-group-reminder {
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 10px;
         }
-
         .calendar-section {
             background: #F8F9FA;
             padding: 20px;
@@ -278,41 +224,31 @@
             border: 1px solid #F1F3F5;
             margin-top: 20px;
         }
-
-        .checkbox-group,
-        .main-checkbox {
+        .checkbox-group, .main-checkbox {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
             align-items: center;
         }
-
-        .checkbox-item,
-        .main-checkbox {
+        .checkbox-item, .main-checkbox {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-
-        .checkbox-item input[type="checkbox"],
-        .main-checkbox input[type="checkbox"] {
+        .checkbox-item input[type="checkbox"], .main-checkbox input[type="checkbox"] {
             width: auto;
             margin: 0;
             accent-color: var(--primary-color);
             height: 1.2em;
             width: 1.2em;
         }
-
-        .checkbox-item label,
-        .main-checkbox label {
+        .checkbox-item label, .main-checkbox label {
             margin: 0;
             font-weight: 500;
         }
-
         .main-checkbox label {
             font-weight: 600;
         }
-
         .loading-spinner {
             width: 20px;
             height: 20px;
@@ -321,38 +257,28 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            to { transform: rotate(360deg); }
         }
-
         .hidden {
             display: none;
         }
-
-        #project-details-container,
-        #project-editor-container {
+        #project-details-container, #project-editor-container {
             background-color: #e6f7ff;
             border: 1px solid #91d5ff;
             border-radius: var(--border-radius);
             padding: 20px;
             margin-bottom: 30px;
         }
-
         .project-details-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-
         .project-details-grid .form-group {
             margin-bottom: 0;
         }
-
-        #project-details-container button,
-        #project-editor-container button {
+        #project-details-container button, #project-editor-container button {
             background-color: var(--secondary-color);
             color: white;
             border: none;
@@ -361,7 +287,6 @@
             cursor: pointer;
             margin-top: 10px;
         }
-
         .filters-panel {
             display: flex;
             flex-wrap: wrap;
@@ -371,33 +296,26 @@
             background-color: #F8F9FA;
             border-radius: var(--border-radius);
         }
-
         .filters-panel .form-group {
             flex: 1;
             min-width: 150px;
             margin-bottom: 0;
         }
-
-        #custom-date-filter,
-        #temporal-custom-date-filter {
+        #custom-date-filter, #temporal-custom-date-filter {
             display: flex;
             flex-direction: column;
             gap: 10px;
             margin-top: 10px;
         }
-
-        #custom-date-filter div,
-        #temporal-custom-date-filter div {
+        #custom-date-filter div, #temporal-custom-date-filter div {
             display: flex;
             align-items: center;
             gap: 5px;
         }
-
         .task-list {
             display: grid;
             gap: 15px;
         }
-
         .task-card {
             background-color: #fff;
             border-radius: var(--border-radius);
@@ -406,7 +324,6 @@
             transition: all 0.3s;
             overflow: hidden;
         }
-
         .task-card-header {
             display: flex;
             justify-content: space-between;
@@ -414,7 +331,6 @@
             padding: 20px;
             cursor: pointer;
         }
-
         .task-card-header-main {
             display: flex;
             align-items: center;
@@ -422,7 +338,6 @@
             flex-grow: 1;
             min-width: 0;
         }
-
         .task-card-header h3 {
             font-size: 1.2em;
             margin: 0;
@@ -430,39 +345,25 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         .task-card-toggle {
             transition: transform 0.3s;
             flex-shrink: 0;
         }
-
         .task-card.is-expanded .task-card-toggle {
             transform: rotate(180deg);
         }
-
         .task-card-details {
             max-height: 0;
             transition: max-height 0.5s ease-out, padding 0.5s ease-out;
             padding: 0 20px;
         }
-
         .task-card.is-expanded .task-card-details {
             max-height: 1000px;
             padding: 0 20px 20px 20px;
         }
-
-        .task-card.priority-Alta {
-            border-color: #e53e3e;
-        }
-
-        .task-card.priority-Medio {
-            border-color: #dd6b20;
-        }
-
-        .task-card.priority-Baja {
-            border-color: #3182ce;
-        }
-
+        .task-card.priority-Alta { border-color: #e53e3e; }
+        .task-card.priority-Medio { border-color: #dd6b20; }
+        .task-card.priority-Baja { border-color: #3182ce; }
         .task-status-badge {
             display: inline-flex;
             align-items: center;
@@ -473,40 +374,17 @@
             font-size: 0.9em;
             flex-shrink: 0;
         }
-
         .status-dot {
             width: 10px;
             height: 10px;
             border-radius: 50%;
         }
-
-        .status-sin-empezar {
-            background-color: #f1f3f5;
-            color: #495057;
-        }
-
-        .status-sin-empezar .status-dot {
-            background-color: #868e96;
-        }
-
-        .status-en-progreso {
-            background-color: #dbe4ff;
-            color: #364fc7;
-        }
-
-        .status-en-progreso .status-dot {
-            background-color: #4c6ef5;
-        }
-
-        .status-listo {
-            background-color: #d3f9d8;
-            color: #2f9e44;
-        }
-
-        .status-listo .status-dot {
-            background-color: #51cf66;
-        }
-
+        .status-sin-empezar { background-color: #f1f3f5; color: #495057; }
+        .status-sin-empezar .status-dot { background-color: #868e96; }
+        .status-en-progreso { background-color: #dbe4ff; color: #364fc7; }
+        .status-en-progreso .status-dot { background-color: #4c6ef5; }
+        .status-listo { background-color: #d3f9d8; color: #2f9e44; }
+        .status-listo .status-dot { background-color: #51cf66; }
         .task-card-footer {
             display: flex;
             justify-content: flex-end;
@@ -515,11 +393,9 @@
             border-top: 1px solid #f1f3f5;
             padding-top: 15px;
         }
-
         .task-card-body .form-group {
             margin-bottom: 15px;
         }
-
         .task-card-footer button {
             border: none;
             padding: 8px 15px;
@@ -528,17 +404,14 @@
             font-weight: 600;
             transition: background-color 0.3s;
         }
-
         .save-btn {
             background-color: var(--primary-color);
             color: white;
         }
-
         .delete-btn {
             background-color: var(--delete-color);
             color: white;
         }
-
         .task-meta {
             display: flex;
             flex-wrap: wrap;
@@ -548,7 +421,6 @@
             margin-top: 15px;
             clear: both;
         }
-
         .meta-item {
             display: flex;
             align-items: center;
@@ -557,7 +429,6 @@
             padding: 5px 10px;
             border-radius: 20px;
         }
-
         .loading-container::after {
             content: 'Cargando...';
             display: block;
@@ -566,29 +437,23 @@
             font-size: 1.2em;
             color: var(--label-color);
         }
-        
         #calendar-container {
             margin-top: 20px;
         }
-
         .fc {
             font-family: 'Inter', sans-serif;
         }
-
         .fc .fc-button-primary {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
         }
-
         .fc .fc-button-primary:hover {
             background-color: var(--secondary-color);
             border-color: var(--secondary-color);
         }
-
         .fc .fc-daygrid-day.fc-day-today {
             background-color: rgba(0, 169, 157, 0.1);
         }
-
         .fc-event {
             cursor: pointer;
             border-width: 2px !important;
@@ -598,11 +463,9 @@
             opacity: 0.7;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
-
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
+            top: 0; left: 0;
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.6);
@@ -614,30 +477,26 @@
             visibility: hidden;
             transition: opacity 0.3s, visibility 0.3s;
         }
-
         .modal-overlay.visible {
             opacity: 1;
             visibility: visible;
         }
-        
         .modal-content {
             background: white;
             padding: 30px;
             border-radius: var(--border-radius);
             width: 90%;
             max-width: 600px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             transform: scale(0.9);
             transition: transform 0.3s;
             display: flex;
             flex-direction: column;
             max-height: 90vh;
         }
-
         .modal-overlay.visible .modal-content {
             transform: scale(1);
         }
-
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -647,13 +506,11 @@
             margin-bottom: 20px;
             flex-shrink: 0;
         }
-
         .modal-header h3 {
             margin: 0;
             font-size: 1.5em;
             color: var(--primary-color);
         }
-
         .modal-close {
             background: none;
             border: none;
@@ -662,7 +519,6 @@
             color: var(--label-color);
             line-height: 1;
         }
-
         .modal-body {
             overflow-y: auto;
             margin-right: -15px;
@@ -671,7 +527,6 @@
         .modal-body .form-group {
             margin-bottom: 15px;
         }
-
         .modal-footer {
             margin-top: 25px;
             display: flex;
@@ -699,30 +554,21 @@
         .modal-footer button { background-color: var(--primary-color); color: white; }
         .modal-footer button:disabled { background-color: #BDBDBD; }
         .modal-footer .delete-btn { background-color: var(--delete-color); }
-
-
-        #areas-list,
-        #public-calendars-list {
+        #areas-list, #public-calendars-list {
             list-style: none;
             padding: 0;
         }
-
-        #areas-list li,
-        #public-calendars-list li {
+        #areas-list li, #public-calendars-list li {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 12px;
             border-bottom: 1px solid var(--border-color);
         }
-
-        #areas-list li:last-child,
-        #public-calendars-list li:last-child {
+        #areas-list li:last-child, #public-calendars-list li:last-child {
             border-bottom: none;
         }
-
-        #areas-list .delete-area-btn,
-        #public-calendars-list .delete-cal-btn {
+        #areas-list .delete-area-btn, #public-calendars-list .delete-cal-btn {
             background: none;
             border: none;
             color: var(--delete-color);
@@ -730,19 +576,13 @@
             font-size: 1.2em;
             padding: 5px;
         }
-
         #public-calendars-list .cal-color-swatch {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            margin-right: 10px;
+            width: 20px; height: 20px; border-radius: 50%; margin-right: 10px;
         }
-
         #public-calendars-list .cal-info {
             display: flex;
             align-items: center;
         }
-
         .event-type-selector {
             display: flex;
             gap: 10px;
@@ -798,7 +638,6 @@
             color: white;
             border-color: var(--primary-color);
         }
-
         .project-list-item {
             display: flex;
             flex-wrap: wrap;
@@ -841,7 +680,6 @@
         .archive-btn:hover {
             background-color: #5a6268;
         }
-
         #create-project-form-container {
             padding: 20px;
             border: 1px solid var(--border-color);
@@ -849,7 +687,6 @@
             margin-bottom: 20px;
             background-color: #fdfdfd;
         }
-
         .sub-tab-navigation {
             display: flex;
             gap: 10px;
@@ -874,7 +711,6 @@
         .sub-tab-content.active {
             display: block;
         }
-
         .progress-bar {
             width: 100%;
             background-color: #e9ecef;
@@ -918,7 +754,6 @@
             padding: 15px 20px;
             border-top: 1px solid var(--border-color);
         }
-
         .tasks-by-status-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -951,17 +786,11 @@
             background-color: #e9ecef;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-
-        .project-chart-container, #pending-priority-chart-container {
+        .project-chart-container {
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid var(--border-color);
         }
-        #heatmap-container {
-            margin: 30px 0;
-        }
-
-
         @media (max-width: 768px) {
             body { padding: 5px; }
             .container { margin: 5px auto; }
@@ -988,19 +817,18 @@
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <header class="header">
             <h1>Centro de Productividad</h1>
         </header>
         <nav class="tab-navigation">
-            <button class="tab-btn active" data-tab="asistente">➕ Asistente</button>
-            <button class="tab-btn" data-tab="gestor">🗂️ Gestor</button>
-            <button class="tab-btn" data-tab="proyectos">🏗️ Proyectos</button>
-            <button class="tab-btn" data-tab="agenda">🗓️ Agenda</button>
-            <button class="tab-btn" data-tab="analisis">📊 Análisis</button>
-            <button class="tab-btn" data-tab="ajustes">⚙️ Ajustes</button>
+            <button class="tab-btn active" data-tab="asistente"> + Asistente</button>
+            <button class="tab-btn" data-tab="gestor"> Gestor</button>
+            <button class="tab-btn" data-tab="proyectos"> Proyectos</button>
+            <button class="tab-btn" data-tab="agenda"> Agenda</button>
+            <button class="tab-btn" data-tab="analisis"> Análisis</button>
+            <button class="tab-btn" data-tab="ajustes"> Ajustes</button>
         </nav>
         <main class="main-content">
             <!-- PESTAÑA 1: ASISTENTE (FORMULARIO) -->
@@ -1010,14 +838,14 @@
                         <h2 class="section-title"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>Información de la Tarea</h2>
                         <div class="form-group">
                             <label for="titulo" class="label-with-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
                                 <span>¿Qué necesitas hacer? *</span>
                             </label>
                             <input type="text" id="titulo" name="titulo" required>
                         </div>
                         <div class="form-group">
                             <label for="descripcion" class="label-with-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                                 <span>Descripción</span>
                             </label>
                             <textarea id="descripcion" name="descripcion"></textarea>
@@ -1025,14 +853,14 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="estado" class="label-with-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                                     <span>Estado</span>
                                 </label>
                                 <select id="estado" name="estado"></select>
                             </div>
                             <div class="form-group">
                                 <label for="prioridad" class="label-with-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 2v6h6L2.5 2zM2.5 22v-6h6L2.5 22zM21.5 2l-6 6h6V2zm-6 14h6v6l-6-6z"/></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 2v6h6L2.5 2zM2.5 22v-6h6L2.5 22zM21.5 2l-6 6h6V2zm-6 14h6v6l-6-6z"/></svg>
                                     <span>Prioridad</span>
                                 </label>
                                 <select id="prioridad" name="prioridad"></select>
@@ -1042,9 +870,9 @@
                     <section class="form-section">
                         <h2 class="section-title"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>Categorización</h2>
                         <div class="form-row">
-                             <div class="form-group">
+                            <div class="form-group">
                                 <label for="area" class="label-with-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
                                     <span>Área</span>
                                 </label>
                                 <select id="area" name="area"><option value="">Cargando áreas...</option></select>
@@ -1052,7 +880,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="proyecto_id" class="label-with-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                                     <span>Proyecto</span>
                                 </label>
                                 <select id="proyecto_id" name="proyecto_id"><option value="none">Cargando...</option></select>
@@ -1061,7 +889,7 @@
                     </section>
                     <section class="form-section">
                         <h2 class="section-title"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>Fechas y Recordatorios</h2>
-                         <div class="event-type-selector">
+                        <div class="event-type-selector">
                             <input type="radio" id="type-puntual" name="eventType" value="puntual" checked>
                             <label for="type-puntual">Tarea Puntual</label>
                             <input type="radio" id="type-rango" name="eventType" value="rango">
@@ -1071,7 +899,7 @@
                         </div>
                         <div id="fecha-puntual-section">
                             <p class="form-subtitle">Para tareas en un día concreto con hora de inicio y fin.</p>
-                             <div class="form-group">
+                            <div class="form-group">
                                 <div class="datetime-group">
                                     <input type="date" id="fecha_limite" name="fecha_limite" title="Fecha límite">
                                     <input type="time" id="hora_limite" name="hora_limite" title="Hora de inicio">
@@ -1080,8 +908,8 @@
                             </div>
                         </div>
                         <div id="fecha-rango-section" class="hidden">
-                             <p class="form-subtitle">Para eventos que duran varios días (vacaciones, conferencias, etc.).</p>
-                             <div class="form-row">
+                            <p class="form-subtitle">Para eventos que duran varios días (vacaciones, conferencias, etc.).</p>
+                            <div class="form-row">
                                 <div class="form-group">
                                     <label for="fecha_inicio">Fecha de Inicio</label>
                                     <input type="date" id="fecha_inicio" name="fecha_inicio">
@@ -1090,59 +918,58 @@
                                     <label for="fecha_fin">Fecha de Fin</label>
                                     <input type="date" id="fecha_fin" name="fecha_fin">
                                 </div>
-                             </div>
-                             <div class="form-row">
+                            </div>
+                            <div class="form-row">
                                 <div class="form-group">
-                                     <label for="hora_inicio">Hora de Inicio (Opcional)</label>
-                                     <input type="time" id="hora_inicio" name="hora_inicio">
+                                    <label for="hora_inicio">Hora de Inicio (Opcional)</label>
+                                    <input type="time" id="hora_inicio" name="hora_inicio">
                                 </div>
                                 <div class="form-group">
-                                     <label for="hora_fin_rango">Hora de Fin (Opcional)</label>
-                                     <input type="time" id="hora_fin_rango" name="hora_fin_rango">
+                                    <label for="hora_fin_rango">Hora de Fin (Opcional)</label>
+                                    <input type="time" id="hora_fin_rango" name="hora_fin_rango">
                                 </div>
-                             </div>
+                            </div>
                         </div>
                         <div id="fecha-recurrente-section" class="hidden">
                             <p class="form-subtitle">Para rutinas y hábitos que se repiten en días concretos de la semana.</p>
                             <div class="form-group">
                                 <label>Días de la semana</label>
                                 <div class="weekdays-selector">
-                                     <input type="checkbox" id="dia-1" name="dias_semana" value="1"><label for="dia-1">L</label>
-                                     <input type="checkbox" id="dia-2" name="dias_semana" value="2"><label for="dia-2">M</label>
-                                     <input type="checkbox" id="dia-3" name="dias_semana" value="3"><label for="dia-3">X</label>
-                                     <input type="checkbox" id="dia-4" name="dias_semana" value="4"><label for="dia-4">J</label>
-                                     <input type="checkbox" id="dia-5" name="dias_semana" value="5"><label for="dia-5">V</label>
-                                     <input type="checkbox" id="dia-6" name="dias_semana" value="6"><label for="dia-6">S</label>
-                                     <input type="checkbox" id="dia-0" name="dias_semana" value="0"><label for="dia-0">D</label>
+                                    <input type="checkbox" id="dia-1" name="dias_semana" value="1"><label for="dia-1">L</label>
+                                    <input type="checkbox" id="dia-2" name="dias_semana" value="2"><label for="dia-2">M</label>
+                                    <input type="checkbox" id="dia-3" name="dias_semana" value="3"><label for="dia-3">X</label>
+                                    <input type="checkbox" id="dia-4" name="dias_semana" value="4"><label for="dia-4">J</label>
+                                    <input type="checkbox" id="dia-5" name="dias_semana" value="5"><label for="dia-5">V</label>
+                                    <input type="checkbox" id="dia-6" name="dias_semana" value="6"><label for="dia-6">S</label>
+                                    <input type="checkbox" id="dia-0" name="dias_semana" value="0"><label for="dia-0">D</label>
                                 </div>
                             </div>
                             <div class="form-row">
-                                 <div class="form-group">
-                                     <label for="fecha_inicio_recurrente">Desde la fecha</label>
-                                     <input type="date" id="fecha_inicio_recurrente" name="fecha_inicio_recurrente">
-                                 </div>
-                                 <div class="form-group">
-                                     <label for="fecha_fin_recurrente">Hasta la fecha</label>
-                                     <input type="date" id="fecha_fin_recurrente" name="fecha_fin_recurrente">
-                                 </div>
+                                <div class="form-group">
+                                    <label for="fecha_inicio_recurrente">Desde la fecha</label>
+                                    <input type="date" id="fecha_inicio_recurrente" name="fecha_inicio_recurrente">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fecha_fin_recurrente">Hasta la fecha</label>
+                                    <input type="date" id="fecha_fin_recurrente" name="fecha_fin_recurrente">
+                                </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                     <label for="hora_recurrente">Hora de inicio</label>
-                                     <input type="time" id="hora_recurrente" name="hora_recurrente">
+                                    <label for="hora_recurrente">Hora de inicio</label>
+                                    <input type="time" id="hora_recurrente" name="hora_recurrente">
                                 </div>
                                 <div class="form-group">
-                                     <label for="hora_fin_recurrente">Hora de fin (Opcional)</label>
-                                     <input type="time" id="hora_fin_recurrente" name="hora_fin_recurrente">
+                                    <label for="hora_fin_recurrente">Hora de fin (Opcional)</label>
+                                    <input type="time" id="hora_fin_recurrente" name="hora_fin_recurrente">
                                 </div>
                             </div>
                         </div>
-
                         <div class="calendar-section">
                             <div class="main-checkbox">
                                 <input type="checkbox" id="add_to_calendar" name="add_to_calendar">
                                 <label for="add_to_calendar" class="label-with-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                                     <span>Añadir a Google Calendar</span>
                                 </label>
                             </div>
@@ -1152,14 +979,14 @@
                                     <div class="checkbox-item">
                                         <input type="checkbox" id="recordatorio_2h" name="recordatorio_2h">
                                         <label for="recordatorio_2h" class="label-with-icon">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                                             <span>2 horas antes</span>
                                         </label>
                                     </div>
                                     <div class="checkbox-item">
                                         <input type="checkbox" id="recordatorio_custom" name="recordatorio_custom">
                                         <label for="recordatorio_custom" class="label-with-icon">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                                             <span>Personalizado</span>
                                         </label>
                                     </div>
@@ -1181,48 +1008,48 @@
 
             <!-- PESTAÑA 2: GESTOR DE TAREAS -->
             <div id="gestor" class="tab-content">
-                 <div id="project-details-container" class="hidden"></div>
-                 <div class="filters-panel">
-                     <div class="form-group">
-                         <label for="filter-project">Proyecto</label>
-                         <select id="filter-project"><option value="all">Todos los proyectos</option></select>
-                     </div>
-                     <div class="form-group">
+                <div id="project-details-container" class="hidden"></div>
+                <div class="filters-panel">
+                    <div class="form-group">
+                        <label for="filter-project">Proyecto</label>
+                        <select id="filter-project"><option value="all">Todos los proyectos</option></select>
+                    </div>
+                    <div class="form-group">
                         <label for="filter-area">Área</label>
                         <select id="filter-area" multiple size="4" style="padding: 0;"></select>
                     </div>
-                     <div class="form-group">
-                         <label for="filter-date">Fecha</label>
-                         <select id="filter-date">
-                             <option value="all">Cualquier fecha</option>
-                             <option value="today">Hoy</option>
-                             <option value="week">Esta semana</option>
-                             <option value="month">Este mes</option>
-                             <option value="custom">Personalizado...</option>
-                         </select>
-                         <div id="custom-date-filter" class="hidden">
+                    <div class="form-group">
+                        <label for="filter-date">Fecha</label>
+                        <select id="filter-date">
+                            <option value="all">Cualquier fecha</option>
+                            <option value="today">Hoy</option>
+                            <option value="week">Esta semana</option>
+                            <option value="month">Este mes</option>
+                            <option value="custom">Personalizado...</option>
+                        </select>
+                        <div id="custom-date-filter" class="hidden">
                             <div><label for="start-date">Desde: </label><input type="date" id="start-date"></div>
                             <div><label for="end-date">Hasta: </label><input type="date" id="end-date"></div>
-                         </div>
-                     </div>
-                     <div class="form-group">
-                         <label for="sort-tasks">Ordenar por</label>
-                         <select id="sort-tasks">
-                             <option value="default">Por defecto</option>
-                             <option value="priority">Prioridad</option>
-                             <option value="deadline">Fecha límite</option>
-                             <option value="status">Estado</option>
-                         </select>
-                     </div>
-                      <div class="form-group">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="sort-tasks">Ordenar por</label>
+                        <select id="sort-tasks">
+                            <option value="default">Por defecto</option>
+                            <option value="priority">Prioridad</option>
+                            <option value="deadline">Fecha límite</option>
+                            <option value="status">Estado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="sort-direction">Dirección</label>
                         <select id="sort-direction">
                             <option value="ascending">Ascendente</option>
                             <option value="descending">Descendente</option>
                         </select>
                     </div>
-                 </div>
-                 <div id="task-list-container" class="loading-container"></div>
+                </div>
+                <div id="task-list-container" class="loading-container"></div>
             </div>
 
             <!-- PESTAÑA 3: GESTOR DE PROYECTOS -->
@@ -1247,7 +1074,7 @@
                                     <option>Cancelado</option>
                                 </select>
                             </div>
-                             <div class="form-group">
+                            <div class="form-group">
                                 <label for="new-project-start-date">Fecha de Inicio</label>
                                 <input type="date" id="new-project-start-date">
                             </div>
@@ -1265,11 +1092,11 @@
             <!-- PESTAÑA 4: AGENDA -->
             <div id="agenda" class="tab-content">
                 <div class="filters-panel">
-                     <div class="form-group">
+                    <div class="form-group">
                         <label for="filter-agenda-project">Filtrar por Proyecto</label>
                         <select id="filter-agenda-project"><option value="all">Todos los proyectos</option></select>
                     </div>
-                     <div class="form-group">
+                    <div class="form-group">
                         <label for="filter-agenda-area">Filtrar por Área</label>
                         <select id="filter-agenda-area"><option value="all">Todas las áreas</option></select>
                     </div>
@@ -1281,37 +1108,24 @@
 
             <!-- PESTAÑA 5: ANÁLISIS -->
             <div id="analisis" class="tab-content">
-                 <nav class="sub-tab-navigation">
+                <nav class="sub-tab-navigation">
                     <button class="sub-tab-btn active" data-subtab="analisis-global">Visión Global</button>
                     <button class="sub-tab-btn" data-subtab="analisis-proyecto">Por Proyecto</button>
                     <button class="sub-tab-btn" data-subtab="analisis-temporal">Temporal</button>
                 </nav>
 
                 <div id="analisis-global" class="sub-tab-content active">
-                     <h2 class="section-title" style="border: none; margin-bottom: 20px;">Progreso General de Proyectos Activos</h2>
-                     <div id="global-vision-container" class="loading-container"></div>
+                    <h2 class="section-title" style="border: none; margin-bottom: 20px;">Progreso General de Proyectos Activos</h2>
+                    <div id="global-vision-container" class="loading-container"></div>
                 </div>
 
                 <div id="analisis-proyecto" class="sub-tab-content">
                     <h2 class="section-title">Análisis por Proyecto</h2>
-                    <div class="form-group">
-                        <label for="project-analysis-selector">Selecciona un proyecto para analizarlo en detalle:</label>
-                        <select id="project-analysis-selector">
-                            <option value="">Cargando proyectos...</option>
-                        </select>
+                    <div id="project-analysis-selector-container" class="form-group" style="margin-bottom: 20px;">
+                        <!-- El selector se generará aquí con JavaScript -->
                     </div>
-                    <div id="project-analysis-dashboard" class="hidden">
-                        <div id="heatmap-container">
-                             <h3 style="text-align: center; margin-bottom: 15px; color: var(--label-color);">Mapa de Calor de Tareas Completadas</h3>
-                             <div id="cal-heatmap-anchor" style="margin: 0 auto; text-align: center;"></div>
-                        </div>
-                        <div id="project-tasks-table-container">
-                             <!-- Las columnas de tareas por estado se renderizarán aquí -->
-                        </div>
-                        <div id="pending-priority-chart-container" class="project-chart-container">
-                             <h3 style="text-align: center; margin-bottom: 15px; color: var(--label-color);">Tareas Pendientes por Prioridad</h3>
-                             <canvas id="pending-priority-chart"></canvas>
-                        </div>
+                    <div id="project-analysis-dashboard">
+                         <!-- El contenido (heatmap, gráficos, etc.) se generará aquí en la siguiente fase -->
                     </div>
                 </div>
 
@@ -1323,7 +1137,7 @@
 
             <!-- PESTAÑA 6: AJUSTES -->
             <div id="ajustes" class="tab-content">
-                 <section class="form-section">
+                <section class="form-section">
                     <h2 class="section-title"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>Gestionar Áreas</h2>
                     <p>Aquí puedes eliminar las áreas que ya no necesites. Para añadir una nueva, simplemente seleccióna "+ Otra..." en el formulario de creación de tareas.</p>
                     <div id="areas-management-container" style="margin-top: 20px;">
@@ -1331,33 +1145,33 @@
                     </div>
                 </section>
                 <section class="form-section">
-                     <h2 class="section-title"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/></svg>Gestionar Calendarios Públicos</h2>
-                     <p>Añade calendarios externos (festivos, escolares, etc.) usando su dirección pública en formato iCal (.ics).</p>
+                    <h2 class="section-title"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/></svg>Gestionar Calendarios Públicos</h2>
+                    <p>Añade calendarios externos (festivos, escolares, etc.) usando su dirección pública en formato iCal (.ics).</p>
                     <div id="public-calendars-management-container" style="margin-top: 20px;">
                         <ul id="public-calendars-list"></ul>
                         <form id="add-public-calendar-form" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
-                             <div class="form-row">
-                                 <div class="form-group">
+                            <div class="form-row">
+                                <div class="form-group">
                                     <label for="new-cal-name">Nombre del Calendario</label>
                                     <input type="text" id="new-cal-name" required>
-                                 </div>
-                                 <div class="form-group">
-                                     <label for="new-cal-color">Color</label>
-                                     <input type="color" id="new-cal-color" value="#D81B60">
-                                 </div>
-                             </div>
-                             <div class="form-group">
-                                 <label for="new-cal-url">URL del Calendario (.ics)</label>
-                                 <input type="url" id="new-cal-url" required>
-                             </div>
-                             <button type="submit" class="submit-btn" style="width: auto; padding: 10px 20px; font-size: 1em;">Añadir Calendario</button>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-cal-color">Color</label>
+                                    <input type="color" id="new-cal-color" value="#D81B60">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="new-cal-url">URL del Calendario (.ics)</label>
+                                <input type="url" id="new-cal-url" required>
+                            </div>
+                            <button type="submit" class="submit-btn" style="width: auto; padding: 10px 20px; font-size: 1em;">Añadir Calendario</button>
                         </form>
                     </div>
                 </section>
             </div>
         </main>
     </div>
-    
+
     <!-- Modal para detalles de la tarea -->
     <div id="task-modal" class="modal-overlay">
         <div class="modal-content">
@@ -1379,27 +1193,25 @@
     </div>
 
 <script>
-// =============================
-// SCRIPT DE LA APLICACIÓN V47.2
-// =============================
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbymLZOhXjfW-v8m2vDeND6r4uyKKvWpOpDXBRV8NQbi8a8HY5umFKHXz69j0BCgu8YtnA/exec'; // Reemplaza con tu URL
+// =================================
+// SCRIPT DE LA APLICACIÓN V47.0
+// =================================
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbw7DbmF92_K14x8WBUjXCp84tC85_Zpbtp6OOjgujNwApxAz15nAvYzidog9JyukaKquQ/exec'; // ¡¡¡IMPORTANTE!!! Reemplaza esta URL
 
 // --- DEFINICIONES Y CACHÉ ---
 const ICONS = {
-    STATUS: { 'Sin empezar': '⚪', 'En progreso': '🔵', 'Listo': '✅'},
+    STATUS: { 'Sin empezar': '⚪', 'En progreso': '🔵', 'Listo': '🟢'},
     PRIORITY: { 'Alta': '🔴', 'Medio':'🟡', 'Baja': '🟢'},
-    AREA: { 'Profesional': '💼', 'Hogar': '🏠', 'Formación': '🎓', 'Académico': '📚', 'Personal': '👤', 'Salud': '❤️‍🩹', 'Taller':'🛠️', 'Default': '🏷️'}
+    AREA: { 'Profesional': '💼', 'Académico': '🎓', 'Personal': '👤', 'Salud': '❤️', 'Hogar': '🏠', 'Formación': '📚', 'Taller': '🛠️', 'Default': '📋'}
 };
-
 let projectsCache = [];
-let allProjectsCache = []; // Caché para todos los proyectos (activos e inactivos)
+let allProjectsCache = [];
 let areasCache = [];
 let publicCalendarsCache = [];
 let calendar;
 let activeProjectCharts = {};
 let projectTasksCache = {};
-let pendingPriorityChart = null; // Instancia para el nuevo gráfico de barras
-let calHeatmap = null; // Instancia para el mapa de calor
+let projectAnalysisTabLoaded = false;
 
 document.addEventListener('DOMContentLoaded', initializeApp);
 
@@ -1408,30 +1220,29 @@ async function initializeApp() {
     populateStaticSelects();
     await Promise.all([
         loadProjects(),
-        loadAllProjects(), // Carga todos los proyectos al inicio
+        loadAllProjects(),
         loadAreas(),
         loadPublicCalendars()
     ]);
-    await loadTasks(); 
+    await loadTasks();
     initializeCalendar();
 }
 
-
 function setupEventListeners() {
-    // --- NAVEGACIÓN PRINCIPAL ---
     document.querySelectorAll('.tab-btn').forEach(button => {
         button.addEventListener('click', () => {
             const tabId = button.dataset.tab;
-            
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
 
             if (tabId === 'agenda' && calendar) setTimeout(() => calendar.render(), 10);
             if (tabId === 'proyectos') renderProjectsList();
-            if (tabId === 'analisis') initializeAnalysisTab();
+            if (tabId === 'analisis') {
+                const activeSubTab = document.querySelector('#analisis .sub-tab-btn.active').dataset.subtab;
+                loadSubTabData(activeSubTab);
+            }
             if (tabId === 'ajustes') {
                 renderAreasManagement();
                 renderPublicCalendarsManagement();
@@ -1439,95 +1250,153 @@ function setupEventListeners() {
         });
     });
 
-    // --- NAVEGACIÓN SECUNDARIA (SUB-PESTAÑAS) ---
     document.querySelectorAll('.sub-tab-btn').forEach(button => {
         button.addEventListener('click', () => {
             const subtabId = button.dataset.subtab;
             button.closest('.sub-tab-navigation').querySelectorAll('.sub-tab-btn').forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            
             button.closest('.tab-content').querySelectorAll('.sub-tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById(subtabId).classList.add('active');
-
-            initializeAnalysisTab(); // Re-inicializar por si hay que cargar datos
+            loadSubTabData(subtabId);
         });
     });
 
-    // --- MANEJADORES DE CLICS EN TAREAS (MODAL) ---
     document.getElementById('global-vision-container').addEventListener('click', (e) => {
         const taskElement = e.target.closest('li[data-task-id]');
         if (taskElement) {
             const taskId = taskElement.dataset.taskId;
             const projectId = taskElement.closest('.project-tasks-details').id.replace('project-tasks-', '');
             const task = projectTasksCache[projectId]?.find(t => t.id === taskId);
-            if (task) showTaskModal({ extendedProps: task });
+            if (task) {
+                showTaskModal({ extendedProps: task });
+            }
         }
     });
 
-    document.getElementById('analisis-proyecto').addEventListener('click', (e) => {
-        const taskElement = e.target.closest('li[data-task-id]');
-        if (taskElement) {
-            const taskId = taskElement.dataset.taskId;
-            const projectId = document.getElementById('project-analysis-selector').value;
-             const task = projectTasksCache[projectId]?.find(t => t.id === taskId);
-            if (task) showTaskModal({ extendedProps: task });
-        }
-    });
-
-
-    // --- FORMULARIOS ---
     document.getElementById('taskForm').addEventListener('submit', handleFormSubmit);
     document.getElementById('add-public-calendar-form').addEventListener('submit', handleAddPublicCalendar);
     document.getElementById('create-project-form').addEventListener('submit', handleCreateProject);
-
-    // --- EVENTOS DE CAMBIO (CHANGE) ---
     document.getElementById('area').addEventListener('change', toggleOtherArea);
     document.getElementById('add_to_calendar').addEventListener('change', toggleCalendarOptions);
     document.getElementById('recordatorio_custom').addEventListener('change', toggleCustomReminder);
     document.querySelectorAll('input[name="eventType"]').forEach(radio => radio.addEventListener('change', toggleDateSections));
-    
     document.getElementById('create-project-btn').addEventListener('click', () => document.getElementById('create-project-form-container').classList.toggle('hidden'));
-
     ['filter-project', 'filter-area', 'start-date', 'end-date', 'sort-tasks', 'sort-direction'].forEach(id => document.getElementById(id).addEventListener('change', loadTasks));
     document.getElementById('filter-date').addEventListener('change', toggleCustomDateFilter);
     document.getElementById('filter-project').addEventListener('change', () => loadProjectDetails(document.getElementById('filter-project').value, 'project-details-container'));
-    
     ['filter-agenda-project', 'filter-agenda-area'].forEach(id => {
-        if(document.getElementById(id)) document.getElementById(id).addEventListener('change', () => calendar.refetchEvents());
+        if (document.getElementById(id))
+            document.getElementById(id).addEventListener('change', () => calendar.refetchEvents());
     });
-
-    // --- GESTOR DE TAREAS ---
     document.getElementById('task-list-container').addEventListener('click', e => {
         if (e.target.closest('.task-card-header')) e.target.closest('.task-card').classList.toggle('is-expanded');
     });
-
-    // --- MODAL ---
     document.getElementById('modal-close').addEventListener('click', closeTaskModal);
     document.getElementById('task-modal').addEventListener('click', e => { if (e.target.id === 'task-modal') closeTaskModal(); });
     document.getElementById('modal-save-btn').addEventListener('click', handleModalSave);
     document.getElementById('modal-delete-btn').addEventListener('click', handleModalDelete);
-    
-    // --- ANÁLISIS ---
-    document.getElementById('project-analysis-selector').addEventListener('change', (e) => {
-        const selectedOption = e.target.options[e.target.selectedIndex];
-        const projectId = selectedOption.value;
-        const projectStartDate = selectedOption.dataset.startDate;
-        if (projectId) {
-            loadProjectAnalysis(projectId, projectStartDate);
-        }
-    });
 }
 
+function loadSubTabData(subtabId) {
+    if (subtabId === 'analisis-global') {
+        const container = document.getElementById('global-vision-container');
+        if (container.innerHTML.trim() === '' || container.classList.contains('loading-container')) {
+            loadGlobalVision();
+        }
+    } else if (subtabId === 'analisis-proyecto') {
+        if (!projectAnalysisTabLoaded) {
+            loadProjectAnalysisTab();
+        }
+    }
+}
 
 // ===================================
-// --- FUNCIONES DE UI Y POBLACIÓN ---
+// --- FASE 1: ANÁLISIS POR PROYECTO ---
 // ===================================
+async function loadProjectAnalysisTab() {
+    projectAnalysisTabLoaded = true;
+    const selectorContainer = document.getElementById('project-analysis-selector-container');
+    selectorContainer.classList.add('loading-container');
+    selectorContainer.innerHTML = '';
+
+    try {
+        const result = await apiCall({ action: 'getAllProjects' });
+        if(allProjectsCache.length === 0) allProjectsCache = result.data;
+        renderProjectAnalysisSelector(result.data);
+    } catch (error) {
+        selectorContainer.innerHTML = `<div class="message error-message">Error al cargar la lista de proyectos: ${error.message}</div>`;
+        selectorContainer.classList.remove('loading-container');
+        console.error("Error en loadProjectAnalysisTab:", error);
+    }
+}
+
+function renderProjectAnalysisSelector(projects) {
+    const selectorContainer = document.getElementById('project-analysis-selector-container');
+    if (!projects || projects.length === 0) {
+        selectorContainer.innerHTML = '<p>No se encontraron proyectos para analizar.</p>';
+        selectorContainer.classList.remove('loading-container');
+        return;
+    }
+
+    let selectHTML = `
+        <label for="project-analysis-select">Selecciona un proyecto para analizarlo en detalle:</label>
+        <select id="project-analysis-select">
+            <option value="">-- Elige un proyecto --</option>
+            ${projects.map(p => `<option value="${p.id}">${p.name} (${p.status})</option>`).join('')}
+        </select>
+    `;
+    selectorContainer.innerHTML = selectHTML;
+    selectorContainer.classList.remove('loading-container');
+
+    document.getElementById('project-analysis-select').addEventListener('change', handleProjectAnalysisSelection);
+}
+
+function handleProjectAnalysisSelection(event) {
+    const projectId = event.target.value;
+    const dashboardContainer = document.getElementById('project-analysis-dashboard');
+
+    if (!projectId) {
+        dashboardContainer.innerHTML = '';
+        return;
+    }
+    console.log(`Fase 2: Se ha seleccionado el proyecto con ID: ${projectId}. Próximo paso: cargar y renderizar su dashboard.`);
+    dashboardContainer.innerHTML = `<div class="message">Cargando datos de análisis para el proyecto seleccionado... (Esto se implementará en la Fase 2)</div>`;
+}
+
+// ===================================
+// --- FUNCIONES COMPLETAS DE V46.0 ---
+// ===================================
+
+async function apiCall(payload) {
+    try {
+        const response = await fetch(WEBHOOK_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Error del servidor: ${response.statusText}`);
+        }
+        const result = await response.json();
+        if (!result.success) {
+            throw new Error(result.error);
+        }
+        return result;
+    } catch (error) {
+        console.error("Error en apiCall:", error);
+        throw error;
+    }
+}
+
 function populateStaticSelects() {
     const statusSelect = document.getElementById('estado');
     const prioritySelect = document.getElementById('prioridad');
     statusSelect.innerHTML = Object.entries(ICONS.STATUS).map(([key, icon]) => `<option value="${key}">${icon} ${key}</option>`).join('');
     prioritySelect.innerHTML = Object.entries(ICONS.PRIORITY).map(([key, icon]) => `<option value="${key}">${icon} ${key}</option>`).join('');
-    prioritySelect.value = 'Medio'; // Valor por defecto
+    prioritySelect.value = 'Medio';
 }
 
 function populateSelectWithOptions(selectElement, options, selectedValue) {
@@ -1541,28 +1410,6 @@ function populateSelectWithOptions(selectElement, options, selectedValue) {
         selectElement.value = selectedValue;
     }
 }
-
-
-// ===================================
-// --- FUNCIONES DE ANÁLISIS ---
-// ===================================
-function initializeAnalysisTab() {
-    const activeSubTab = document.querySelector('.sub-tab-btn.active').dataset.subtab;
-    
-    if (activeSubTab === 'analisis-global') {
-        const container = document.getElementById('global-vision-container');
-        if (container.innerHTML.trim() === '' || container.classList.contains('loading-container')) {
-            loadGlobalVision();
-        }
-    } else if (activeSubTab === 'analisis-proyecto') {
-        const selector = document.getElementById('project-analysis-selector');
-        // Solo poblar si está vacío para evitar recargas innecesarias
-        if (selector.options.length <= 1) {
-            populateProjectAnalysisSelector();
-        }
-    }
-}
-
 
 async function loadGlobalVision() {
     const container = document.getElementById('global-vision-container');
@@ -1596,8 +1443,7 @@ function renderGlobalVision(projects) {
             <div class="progress-bar">
                 <div class="progress-bar-inner" style="width: ${proj.percentage}%;"></div>
             </div>
-            <div class="project-tasks-details" id="project-tasks-${proj.id}"></div>
-        `;
+            <div class="project-tasks-details" id="project-tasks-${proj.id}"></div>`;
         container.appendChild(item);
     });
 }
@@ -1605,13 +1451,11 @@ function renderGlobalVision(projects) {
 async function toggleProjectTasksDetails(element, projectId) {
     const detailsContainer = document.getElementById(`project-tasks-${projectId}`);
     const isVisible = detailsContainer.classList.toggle('visible');
-
-    // Cargar datos solo si se va a hacer visible y no están en caché
     if (isVisible && !projectTasksCache[projectId]) {
-        detailsContainer.innerHTML = `<p class="message">Cargando tareas del proyecto...</p>`;
+        detailsContainer.innerHTML = '<p class="message">Cargando todas las tareas del proyecto...</p>';
         try {
             const result = await apiCall({ action: 'getTasks', filters: { projectId }, sortBy: 'status', sortDirection: 'ascending' });
-            projectTasksCache[projectId] = result.data; // Guardar en caché
+            projectTasksCache[projectId] = result.data;
             renderProjectDetailsView(detailsContainer, projectId, result.data);
         } catch (error) {
             detailsContainer.innerHTML = `<div class="message error-message" style="margin:0;">Error: ${error.message}</div>`;
@@ -1624,12 +1468,10 @@ function renderProjectDetailsView(container, projectId, tasks) {
     tasks.forEach(task => {
         (tasksByStatus[task.status] || tasksByStatus['Sin empezar']).push(task);
     });
-
     const createTaskList = (taskList) => {
         if (taskList.length === 0) return '<ul><li>-</li></ul>';
         return '<ul>' + taskList.map(t => `<li data-task-id="${t.id}">${t.title}</li>`).join('') + '</ul>';
     };
-
     const gridHtml = `
         <div class="tasks-by-status-grid">
             <div class="status-column status-pending"><h4>${ICONS.STATUS['Sin empezar']} Sin Empezar</h4>${createTaskList(tasksByStatus['Sin empezar'])}</div>
@@ -1637,7 +1479,6 @@ function renderProjectDetailsView(container, projectId, tasks) {
             <div class="status-column status-done"><h4>${ICONS.STATUS['Listo']} Listo</h4>${createTaskList(tasksByStatus['Listo'])}</div>
         </div>
         <div class="project-chart-container"><canvas id="chart-${projectId}"></canvas></div>`;
-    
     container.innerHTML = gridHtml;
     renderProjectStatusChart(projectId, tasksByStatus);
 }
@@ -1645,7 +1486,6 @@ function renderProjectDetailsView(container, projectId, tasks) {
 function renderProjectStatusChart(projectId, tasksByStatus) {
     const ctx = document.getElementById(`chart-${projectId}`).getContext('2d');
     if (activeProjectCharts[projectId]) activeProjectCharts[projectId].destroy();
-
     const data = {
         labels: ['Sin empezar', 'En progreso', 'Listo'],
         datasets: [{
@@ -1660,7 +1500,6 @@ function renderProjectStatusChart(projectId, tasksByStatus) {
             borderWidth: 1
         }]
     };
-
     activeProjectCharts[projectId] = new Chart(ctx, {
         type: 'doughnut',
         data: data,
@@ -1674,192 +1513,11 @@ function renderProjectStatusChart(projectId, tasksByStatus) {
     });
 }
 
-// --- NUEVAS FUNCIONES PARA ANÁLISIS POR PROYECTO ---
-
-function populateProjectAnalysisSelector() {
-    const selector = document.getElementById('project-analysis-selector');
-    selector.innerHTML = '<option value="">Seleccionar un proyecto...</option>';
-    allProjectsCache.forEach(proj => {
-        const option = new Option(proj.name, proj.id);
-        if (proj.startDate) {
-            option.dataset.startDate = proj.startDate;
-        }
-        selector.add(option);
-    });
-}
-
-async function loadProjectAnalysis(projectId, projectStartDate) {
-    const dashboard = document.getElementById('project-analysis-dashboard');
-    dashboard.classList.remove('hidden');
-    dashboard.innerHTML = `<div class="loading-container"></div>`;
-
-    try {
-        const result = await apiCall({ action: 'getProjectAnalysisData', projectId });
-        projectTasksCache[projectId] = result.data.tasksByStatus['Sin empezar']
-            .concat(result.data.tasksByStatus['En progreso'])
-            .concat(result.data.tasksByStatus['Listo']);
-
-        // Limpiar dashboard antes de renderizar
-        dashboard.innerHTML = `
-            <div id="heatmap-container">
-                 <h3 style="text-align: center; margin-bottom: 15px; color: var(--label-color);">Mapa de Calor de Tareas Completadas</h3>
-                 <div id="cal-heatmap-anchor" style="margin: 0 auto; text-align: center;"></div>
-            </div>
-            <div id="project-tasks-table-container"></div>
-            <div id="pending-priority-chart-container" class="project-chart-container">
-                 <h3 style="text-align: center; margin-bottom: 15px; color: var(--label-color);">Tareas Pendientes por Prioridad</h3>
-                 <canvas id="pending-priority-chart"></canvas>
-            </div>`;
-
-        renderProjectHeatmap(result.data.heatmapData, projectStartDate);
-        renderProjectTasksTable(document.getElementById('project-tasks-table-container'), result.data.tasksByStatus);
-        renderPendingPriorityChart(result.data.pendingByPriority);
-
-    } catch (error) {
-        dashboard.innerHTML = `<div class="message error-message">Error al cargar el análisis del proyecto: ${error.message}</div>`;
-    }
-}
-
-function renderProjectHeatmap(data, startDate) {
-    const anchor = document.getElementById('cal-heatmap-anchor');
-    if (!anchor) return;
-    
-    // Destruir instancia anterior si existe
-    if (calHeatmap) {
-        calHeatmap.destroy();
-        calHeatmap = null;
-    }
-    
-    calHeatmap = new CalHeatmap();
-    calHeatmap.paint({
-        data: {
-            source: data,
-            x: 'date',
-            y: d => +1 // Contar 1 por cada tarea
-        },
-        date: {
-            start: startDate ? new Date(startDate) : new Date(new Date().getFullYear(), 0, 1)
-        },
-        range: 1,
-        scale: {
-            color: {
-                type: 'threshold',
-                range: ['#c6e48b', '#7bc96f', '#239a3b', '#196127'],
-                domain: [1, 3, 5, 8],
-            },
-        },
-        domain: {
-            type: 'year',
-            label: {
-                position: 'top',
-            },
-        },
-        subDomain: {
-            type: 'ghDay',
-            radius: 2,
-            width: 11,
-            height: 11,
-            gutter: 4,
-        },
-    }, [
-        [
-            CalHeatmap.Tooltip,
-            {
-                text: function (date, value, dayjsDate) {
-                    return (value ? value : 'Sin') + ' tareas completadas el ' + dayjsDate.format('LL');
-                },
-            },
-        ],
-        [
-            CalHeatmap.Legend,
-            {
-                tickSize: 0,
-                label: {
-                    position: 'right',
-                },
-                itemSelector: '#heatmap-legend',
-                width: 150
-            },
-        ],
-    ]);
-}
-
-
-function renderProjectTasksTable(container, tasksByStatus) {
-    const createTaskList = (taskList) => {
-        if (taskList.length === 0) return '<ul><li>-</li></ul>';
-        return '<ul>' + taskList.map(t => `<li data-task-id="${t.id}">${t.title}</li>`).join('') + '</ul>';
-    };
-
-    const gridHtml = `
-        <h3 style="text-align: center; margin: 30px 0 15px 0; color: var(--label-color); grid-column: 1 / -1;">Desglose de Tareas</h3>
-        <div class="tasks-by-status-grid">
-            <div class="status-column status-pending"><h4>${ICONS.STATUS['Sin empezar']} Sin Empezar</h4>${createTaskList(tasksByStatus['Sin empezar'])}</div>
-            <div class="status-column status-progress"><h4>${ICONS.STATUS['En progreso']} En Progreso</h4>${createTaskList(tasksByStatus['En progreso'])}</div>
-            <div class="status-column status-done"><h4>${ICONS.STATUS['Listo']} Listo</h4>${createTaskList(tasksByStatus['Listo'])}</div>
-        </div>`;
-    
-    container.innerHTML = gridHtml;
-}
-
-
-function renderPendingPriorityChart(data) {
-    const ctx = document.getElementById('pending-priority-chart').getContext('2d');
-    if (pendingPriorityChart) {
-        pendingPriorityChart.destroy();
-    }
-    pendingPriorityChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Alta', 'Medio', 'Baja'],
-            datasets: [{
-                label: 'Nº de Tareas Pendientes',
-                data: [data['Alta'], data['Medio'], data['Baja']],
-                backgroundColor: [
-                    'rgba(229, 62, 62, 0.6)',
-                    'rgba(221, 107, 32, 0.6)',
-                    'rgba(49, 130, 206, 0.6)'
-                ],
-                borderColor: [
-                    'rgba(229, 62, 62, 1)',
-                    'rgba(221, 107, 32, 1)',
-                    'rgba(49, 130, 206, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
-        }
-    });
-}
-
-
-
-// ===================================
-// EL RESTO DEL JAVASCRIPT SE MANTIENE
-// ===================================
-
 function initializeCalendar() {
     const calendarEl = document.getElementById('calendar');
     if (!calendarEl) return;
     if (calendar) calendar.destroy();
-    
     const isMobile = window.innerWidth < 768;
-
     const notionEventSource = {
         events: async (fetchInfo, successCallback, failureCallback) => {
             try {
@@ -1873,9 +1531,9 @@ function initializeCalendar() {
                 const result = await apiCall({ action: 'getTasks', filters, sortBy: 'deadline', sortDirection: 'ascending' });
                 const events = result.data.map(task => ({
                     id: task.id,
-                    title: `${ICONS.STATUS[task.status] || '⚪'} ${task.title}`,
+                    title: `${ICONS.STATUS[task.status] || ''} ${task.title}`,
                     start: task.deadline,
-                    end: task.deadlineEnd, 
+                    end: task.deadlineEnd,
                     allDay: task.deadline ? !task.deadline.includes('T') : true,
                     color: { 'Alta': '#e53e3e', 'Medio': '#dd6b20', 'Baja': '#3182ce' }[task.priority] || '#3182ce',
                     extendedProps: { ...task, isEditable: true }
@@ -1887,26 +1545,18 @@ function initializeCalendar() {
             }
         },
     };
-
     const publicCalSources = publicCalendarsCache.map(cal => ({
         url: cal.url,
         format: 'ical',
         color: cal.color,
         display: 'background'
     }));
-
     const allEventSources = [notionEventSource, ...publicCalSources];
-
     calendar = new FullCalendar.Calendar(calendarEl, {
-        plugins: [FullCalendar.dayGrid, FullCalendar.timeGrid, FullCalendar.iCalendar, FullCalendar.interaction],
         locale: 'es',
         firstDay: 1,
         initialView: isMobile ? 'timeGridDay' : 'dayGridMonth',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
+        headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
         height: 'auto',
         editable: true,
         eventSources: allEventSources,
@@ -1931,7 +1581,6 @@ function initializeCalendar() {
             }
         },
     });
-
     calendar.render();
 }
 
@@ -1940,14 +1589,11 @@ function showTaskModal(event) {
     const props = event.extendedProps;
     document.getElementById('modal-title').textContent = props.title;
     const body = document.getElementById('modal-body');
-
     const deadlineDate = props.deadline ? new Date(props.deadline) : null;
     const deadlineDateValue = deadlineDate ? deadlineDate.toISOString().split('T')[0] : "";
     const deadlineTimeValue = deadlineDate && props.deadline.includes('T') ? deadlineDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
-
     const deadlineEndDate = props.deadlineEnd ? new Date(props.deadlineEnd) : null;
     const deadlineEndTimeValue = deadlineEndDate ? deadlineEndDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
-    
     const customReminderDate = props.customReminderDateTime ? new Date(props.customReminderDateTime) : null;
     const customReminderDateValue = customReminderDate ? customReminderDate.toISOString().split('T')[0] : "";
     const customReminderTimeValue = customReminderDate ? customReminderDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
@@ -1960,8 +1606,7 @@ function showTaskModal(event) {
         <div class="form-group"><label>Descripción</label><textarea id="modal-description">${props.description || ""}</textarea></div>
         <div class="form-group"><label>Anotaciones / Observaciones</label><textarea id="modal-annotations">${props.annotations || ""}</textarea></div>
         <div class="form-group"><label>Fecha y Horas (Inicio y Fin)</label><div class="datetime-group"><input type="date" id="modal-deadline-date" value="${deadlineDateValue}"><input type="time" id="modal-deadline-time" value="${deadlineTimeValue}"><input type="time" id="modal-deadline-end-time" value="${deadlineEndTimeValue}"></div></div>
-        <div class="form-group reminder-group ${props.calendarEventId ? "" : 'hidden'}"><label>Recordatorios de Calendar</label><div class="checkbox-item"><input type="checkbox" id="modal-reminder-2h" ${props.hasTwoHourReminder ? 'checked' : ""}><label for="modal-reminder-2h"> 2 horas antes</label></div><div class="datetime-group-reminder" style="margin-top: 5px;"><input type="date" id="modal-reminder-date" value="${customReminderDateValue}"><input type="time" id="modal-reminder-time" value="${customReminderTimeValue}"></div></div>
-    `;
+        <div class="form-group reminder-group ${props.calendarEventId ? "" : 'hidden'}"><label>Recordatorios de Calendar</label><div class="checkbox-item"><input type="checkbox" id="modal-reminder-2h" ${props.hasTwoHourReminder ? 'checked' : ''}><label for="modal-reminder-2h"> 2 horas antes</label></div><div class="datetime-group-reminder" style="margin-top: 5px;"><input type="date" id="modal-reminder-date" value="${customReminderDateValue}"><input type="time" id="modal-reminder-time" value="${customReminderTimeValue}"></div></div>`;
 
     populateSelectWithOptions(document.getElementById('modal-status'), ICONS.STATUS, props.status);
     populateSelectWithOptions(document.getElementById('modal-priority'), ICONS.PRIORITY, props.priority);
@@ -1969,14 +1614,11 @@ function showTaskModal(event) {
     const notionLink = document.getElementById('modal-notion-link');
     notionLink.href = props.notionUrl || '#';
     notionLink.style.display = props.notionUrl ? 'inline-block' : 'none';
-
     document.getElementById('modal-save-btn').dataset.taskId = props.id;
     document.getElementById('modal-delete-btn').dataset.taskId = props.id;
     document.getElementById('modal-delete-btn').dataset.taskTitle = props.title;
-
     modal.classList.add('visible');
 }
-
 
 function closeTaskModal() { document.getElementById('task-modal').classList.remove('visible'); }
 
@@ -1985,23 +1627,15 @@ async function handleModalSave() {
     const taskId = btn.dataset.taskId;
     if (!taskId) return;
     btn.disabled = true;
-    btn.innerHTML = `<div class="loading-spinner"></div>`;
-
-    const dateInput = document.getElementById('modal-deadline-date'),
-          timeInput = document.getElementById('modal-deadline-time'),
-          endTimeInput = document.getElementById('modal-deadline-end-time');
-    
+    btn.textContent = 'Guardando...';
+    const dateInput = document.getElementById('modal-deadline-date'), timeInput = document.getElementById('modal-deadline-time'), endTimeInput = document.getElementById('modal-deadline-end-time');
     let deadline = null, deadlineEnd = null;
     if (dateInput.value) {
         deadline = `${dateInput.value}T${timeInput.value || '00:00'}:00`;
-        if (endTimeInput.value) {
-            deadlineEnd = `${dateInput.value}T${endTimeInput.value}:00`;
-        }
+        if (endTimeInput.value) deadlineEnd = `${dateInput.value}T${endTimeInput.value}:00`;
     }
-
     const reminderDate = document.getElementById('modal-reminder-date').value,
-          reminderTime = document.getElementById('modal-reminder-time').value;
-
+        reminderTime = document.getElementById('modal-reminder-time').value;
     const details = {
         status: document.getElementById('modal-status').value,
         priority: document.getElementById('modal-priority').value,
@@ -2012,25 +1646,21 @@ async function handleModalSave() {
         hasTwoHourReminder: document.getElementById('modal-reminder-2h').checked,
         customReminder: reminderDate && reminderTime ? `${reminderDate}T${reminderTime}:00` : null
     };
-
     try {
         await apiCall({ action: 'updateTask', taskId, details });
         btn.textContent = 'Guardado';
-
         const projectId = Object.keys(projectTasksCache).find(pId => projectTasksCache[pId]?.some(t => t.id === taskId));
         if (projectId) {
             delete projectTasksCache[projectId];
             const detailsContainer = document.getElementById(`project-tasks-${projectId}`);
-             if(detailsContainer && detailsContainer.classList.contains('visible')) {
-                detailsContainer.classList.remove('visible'); // Cierra para forzar recarga
+            if(detailsContainer && detailsContainer.classList.contains('visible')) {
+                detailsContainer.classList.remove('visible');
                 toggleProjectTasksDetails(null, projectId);
             }
         }
-        
         setTimeout(() => closeTaskModal(), 1000);
         calendar.refetchEvents();
         loadTasks();
-
     } catch (error) {
         console.error('Error al guardar desde el modal:', error);
         alert('Error al guardar los cambios: ' + error.message);
@@ -2040,15 +1670,12 @@ async function handleModalSave() {
     }
 }
 
-
 async function handleModalDelete() {
     const btn = document.getElementById('modal-delete-btn');
     const taskId = btn.dataset.taskId, taskTitle = btn.dataset.taskTitle;
     if (!taskId) return;
-
     handleTaskDelete(taskId, taskTitle, true);
 }
-
 
 async function loadProjects() {
     try {
@@ -2057,7 +1684,7 @@ async function loadProjects() {
         populateProjectFilters();
     } catch (error) {
         console.error('Error al cargar proyectos activos:', error);
-        document.querySelectorAll('#proyecto_id, #filter-project, #filter-agenda-project').forEach(s => s.innerHTML = `<option>Error</option>`);
+        document.querySelectorAll('#proyecto_id, #filter-project, #filter-agenda-project').forEach(s => s.innerHTML = '<option>Error</option>');
     }
 }
 
@@ -2065,14 +1692,12 @@ async function loadAllProjects() {
     try {
         const result = await apiCall({ action: 'getAllProjects' });
         allProjectsCache = result.data;
-        // La población del selector de análisis se hace bajo demanda
     } catch (error) {
         console.error('Error al cargar todos los proyectos:', error);
         const container = document.getElementById('projects-list-container');
         if(container) container.innerHTML = `<div class="message error-message">Error al cargar proyectos: ${error.message}</div>`;
     }
 }
-
 
 function populateProjectFilters() {
     const selects = [document.getElementById('proyecto_id'), document.getElementById('filter-project'), document.getElementById('filter-agenda-project')];
@@ -2083,7 +1708,6 @@ function populateProjectFilters() {
     });
 }
 
-
 async function loadAreas() {
     try {
         const result = await apiCall({ action: 'getAreas' });
@@ -2091,7 +1715,7 @@ async function loadAreas() {
         populateAreaFilters();
     } catch (error) {
         console.error('Error al cargar áreas:', error);
-        document.querySelectorAll('#area, #filter-area, #filter-agenda-area').forEach(s => { if(s) s.innerHTML = `<option>Error</option>` });
+        document.querySelectorAll('#area, #filter-area, #filter-agenda-area').forEach(s => { if(s) s.innerHTML = '<option>Error</option>'; });
     }
 }
 
@@ -2099,22 +1723,18 @@ function populateAreaFilters() {
     const selects = [document.getElementById('area'), document.getElementById('filter-area'), document.getElementById('filter-agenda-area')];
     selects.forEach(select => {
         if (!select) return;
-
         const isMainForm = select.id === 'area', isFilter = select.id.startsWith('filter-');
         let selectedValues = [];
         if (select.multiple) selectedValues = Array.from(select.selectedOptions).map(opt => opt.value);
-        
         select.innerHTML = '';
         if (isMainForm) select.add(new Option('Seleccionar área...', ''));
         else if (isFilter && !select.multiple) select.add(new Option('Todas las áreas', 'all'));
-        
         areasCache.forEach(area => {
             const option = new Option(`${ICONS.AREA[area] || ICONS.AREA.Default} ${area}`, area);
-            if(selectedValues.includes(area)) option.selected = true;
+            if (selectedValues.includes(area)) option.selected = true;
             select.add(option);
         });
-        
-        if (isMainForm) select.add(new Option('➕ Otra...', 'other'));
+        if (isMainForm) select.add(new Option('+ Otra...', 'other'));
     });
 }
 
@@ -2122,7 +1742,6 @@ function renderAreasManagement() {
     const list = document.getElementById('areas-list');
     list.innerHTML = "";
     if (areasCache.length === 0) { list.innerHTML = '<li>No hay áreas personalizadas.</li>'; return; }
-
     areasCache.forEach(area => {
         const li = document.createElement('li');
         li.textContent = area;
@@ -2138,11 +1757,10 @@ function renderAreasManagement() {
 
 async function handleDeleteArea(areaToDelete) {
     if (!confirm(`¿Estás seguro de que quieres eliminar el área "${areaToDelete}"? Esta acción no se puede deshacer.`)) return;
-    
     const updatedAreas = areasCache.filter(area => area !== areaToDelete);
     try {
         await apiCall({ action: 'saveAreas', areas: updatedAreas });
-        await loadAreas(); 
+        await loadAreas();
         renderAreasManagement();
     } catch (error) {
         console.error('Error al eliminar el área:', error);
@@ -2164,13 +1782,9 @@ function renderPublicCalendarsManagement() {
     const list = document.getElementById('public-calendars-list');
     list.innerHTML = "";
     if (publicCalendarsCache.length === 0) { list.innerHTML = '<li>No hay calendarios públicos añadidos.</li>'; return; }
-
     publicCalendarsCache.forEach((cal, index) => {
         const li = document.createElement('li');
-        li.innerHTML = `
-            <div class="cal-info"><span class="cal-color-swatch" style="background-color: ${cal.color};"></span><span>${cal.name}</span></div>
-            <button class="delete-cal-btn" title="Eliminar calendario" onclick="handleDeletePublicCalendar(${index})">&times;</button>
-        `;
+        li.innerHTML = `<div class="cal-info"><span class="cal-color-swatch" style="background-color: ${cal.color};"></span><span>${cal.name}</span></div><button class="delete-cal-btn" title="Eliminar calendario" onclick="handleDeletePublicCalendar(${index})">&times;</button>`;
         list.appendChild(li);
     });
 }
@@ -2178,11 +1792,7 @@ function renderPublicCalendarsManagement() {
 async function handleAddPublicCalendar(e) {
     e.preventDefault();
     const form = e.target;
-    const newCal = {
-        name: document.getElementById('new-cal-name').value,
-        url: document.getElementById('new-cal-url').value,
-        color: document.getElementById('new-cal-color').value
-    };
+    const newCal = { name: document.getElementById('new-cal-name').value, url: document.getElementById('new-cal-url').value, color: document.getElementById('new-cal-color').value };
     publicCalendarsCache.push(newCal);
     try {
         await apiCall({ action: 'savePublicCalendars', calendars: publicCalendarsCache });
@@ -2192,14 +1802,13 @@ async function handleAddPublicCalendar(e) {
     } catch (error) {
         console.error('Error al añadir calendario público:', error);
         alert('No se pudo añadir el calendario: ' + error.message);
-        publicCalendarsCache.pop(); // Revertir si falla
+        publicCalendarsCache.pop();
     }
 }
 
 async function handleDeletePublicCalendar(index) {
     const calToDelete = publicCalendarsCache[index];
     if (!confirm(`¿Estás seguro de que quieres eliminar el calendario "${calToDelete.name}"?`)) return;
-
     publicCalendarsCache.splice(index, 1);
     try {
         await apiCall({ action: 'savePublicCalendars', calendars: publicCalendarsCache });
@@ -2208,16 +1817,14 @@ async function handleDeletePublicCalendar(index) {
     } catch (error) {
         console.error('Error al eliminar calendario público:', error);
         alert('No se pudo eliminar el calendario: ' + error.message);
-        publicCalendarsCache.splice(index, 0, calToDelete); // Revertir si falla
+        publicCalendarsCache.splice(index, 0, calToDelete);
     }
 }
-
 
 async function loadTasks() {
     const taskContainer = document.getElementById('task-list-container');
     taskContainer.innerHTML = '';
     taskContainer.classList.add('loading-container');
-
     const selectedAreas = Array.from(document.getElementById('filter-area').selectedOptions).map(opt => opt.value);
     const filters = {
         projectId: document.getElementById('filter-project').value,
@@ -2226,9 +1833,7 @@ async function loadTasks() {
         startDate: document.getElementById('start-date').value,
         endDate: document.getElementById('end-date').value,
     };
-    const sortBy = document.getElementById('sort-tasks').value,
-          sortDirection = document.getElementById('sort-direction').value;
-          
+    const sortBy = document.getElementById('sort-tasks').value, sortDirection = document.getElementById('sort-direction').value;
     try {
         const result = await apiCall({ action: 'getTasks', filters, sortBy, sortDirection });
         taskContainer.classList.remove('loading-container');
@@ -2239,68 +1844,51 @@ async function loadTasks() {
     }
 }
 
-function getStatusBadge(status) {
-    return `<span class="task-status-badge status-${status.toLowerCase().replace(/ /g, '-')}">${ICONS.STATUS[status] || '⚪'} ${status}</span>`;
-}
-
+function getStatusBadge(status) { return `<span class="task-status-badge status-${status.toLowerCase().replace(/ /g, '-')}">${ICONS.STATUS[status] || ''} ${status}</span>`; }
 
 function renderTasks(tasks) {
     const container = document.getElementById('task-list-container');
     container.innerHTML = "";
-    if (tasks.length === 0) {
-        container.innerHTML = '<div class="message">No se encontraron tareas con los filtros seleccionados.</div>';
-        return;
-    }
+    if (tasks.length === 0) { container.innerHTML = '<div class="message">No se encontraron tareas con los filtros seleccionados.</div>'; return; }
     const list = document.createElement('div');
     list.className = 'task-list';
-
     tasks.forEach(task => {
         const project = projectsCache.find(p => p.id === task.project);
         const card = document.createElement('div');
         card.className = `task-card priority-${task.priority || 'default'}`;
         card.id = `task-${task.id}`;
-
         const deadlineDate = task.deadline ? new Date(task.deadline) : null;
         const deadlineDateValue = deadlineDate ? deadlineDate.toISOString().split('T')[0] : "";
         const deadlineTimeValue = deadlineDate && task.deadline.includes('T') ? deadlineDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
-
         const deadlineEndDate = task.deadlineEnd ? new Date(task.deadlineEnd) : null;
         const deadlineEndTimeValue = deadlineEndDate ? deadlineEndDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
-
         const customReminderDate = task.customReminderDateTime ? new Date(task.customReminderDateTime) : null;
         const customReminderDateValue = customReminderDate ? customReminderDate.toISOString().split('T')[0] : '';
         const customReminderTimeValue = customReminderDate ? customReminderDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
-
         card.innerHTML = `
             <div class="task-card-header"><div class="task-card-header-main">${getStatusBadge(task.status)}<h3>${task.title}</h3></div><svg class="task-card-toggle" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
             <div class="task-card-details"><div class="task-card-body">
-                 <div class="form-group"><label>Descripción:</label><textarea class="task-description-input" data-task-id="${task.id}">${task.description || ""}</textarea></div>
-                 <div class="form-group"><label>Anotaciones:</label><textarea class="task-annotations-input" data-task-id="${task.id}">${task.annotations || ""}</textarea></div>
+                <div class="form-group"><label>Descripción:</label><textarea class="task-description-input" data-task-id="${task.id}">${task.description || ""}</textarea></div>
+                <div class="form-group"><label>Anotaciones:</label><textarea class="task-annotations-input" data-task-id="${task.id}">${task.annotations || ""}</textarea></div>
                 <div class="form-row">
                     <div class="form-group"><label>Prioridad:</label><select class="task-priority-select" data-task-id="${task.id}"></select></div>
                     <div class="form-group"><label>Estado:</label><select class="task-status-select" data-task-id="${task.id}"></select></div>
                 </div>
                 <div class="form-group"><label>Fecha y Horas (Inicio y Fin):</label><div class="datetime-group"><input type="date" class="task-deadline-date" value="${deadlineDateValue}" data-task-id="${task.id}"><input type="time" class="task-deadline-time" value="${deadlineTimeValue}" data-task-id="${task.id}"><input type="time" class="task-deadline-end-time" value="${deadlineEndTimeValue}" data-task-id="${task.id}"></div></div>
                 <div class="form-group reminder-group ${task.calendarEventId ? "" : 'hidden'}"><label>Recordatorios de Calendar:</label><div class="checkbox-item"><input type="checkbox" class="task-reminder-2h" id="reminder-2h-${task.id}" data-task-id="${task.id}" ${task.hasTwoHourReminder ? 'checked' : ''}><label for="reminder-2h-${task.id}"> 2 horas antes</label></div><div class="datetime-group-reminder" style="margin-top: 5px;"><input type="date" class="task-reminder-date" value="${customReminderDateValue}" data-task-id="${task.id}" placeholder="Fecha personalizada"><input type="time" class="task-reminder-time" value="${customReminderTimeValue}" data-task-id="${task.id}"></div></div>
-            </div><div class="task-meta">${project ? `<div class="meta-item">${project.name}</div>` : ""}${task.area ? `<div class="meta-item">${ICONS.AREA[task.area] || ICONS.AREA.Default} ${task.area}</div>` : ""}</div><div class="task-card-footer"><button class="delete-btn" onclick="handleTaskDelete('${task.id}', '${task.title.replace(/'/g, "\\'")}')">Eliminar</button><button class="save-btn" onclick="handleTaskUpdate(this, '${task.id}')">Guardar Tarea</button></div></div>
-        `;
+            </div><div class="task-meta">${project ? `<div class="meta-item">${project.name}</div>` : ""}${task.area ? `<div class="meta-item">${ICONS.AREA[task.area] || ICONS.AREA.Default} ${task.area}</div>` : ""}</div><div class="task-card-footer"><button class="delete-btn" onclick="handleTaskDelete('${task.id}', '${task.title.replace(/'/g, "\\'")}')">Eliminar</button><button class="save-btn" onclick="handleTaskUpdate(this, '${task.id}')">Guardar Tarea</button></div></div>`;
         list.appendChild(card);
-        
         populateSelectWithOptions(card.querySelector('.task-status-select'), ICONS.STATUS, task.status);
         populateSelectWithOptions(card.querySelector('.task-priority-select'), ICONS.PRIORITY, task.priority);
     });
-
     container.appendChild(list);
 }
-
 
 async function loadProjectDetails(projectId, containerId) {
     const container = document.getElementById(containerId);
     if (!projectId || projectId === 'all') { container.innerHTML = ''; container.classList.add('hidden'); return; }
-
     container.classList.remove('hidden');
     container.innerHTML = '<div class="message">Cargando detalles...</div>';
-    
     try {
         const result = await apiCall({ action: 'getProjectDetails', projectId });
         renderProjectDetails(result.data, projectId, containerId);
@@ -2309,62 +1897,35 @@ async function loadProjectDetails(projectId, containerId) {
     }
 }
 
-
 function renderProjectDetails(details, projectId, containerId) {
     const container = document.getElementById(containerId);
     if (!details) { container.innerHTML = ''; return; }
-    container.innerHTML = `
-        <h3>Detalles de: ${details.name}</h3>
-        <div class="project-details-grid">
-            <div class="form-group"><label>Fecha final estimada</label><input type="date" id="${containerId}-end-date" value="${details.endDate || ""}"></div>
-            <div class="form-group"><label>Estado</label><input type="text" value="${details.status}" disabled></div>
-        </div>
-        <div class="form-group"><label>Observaciones</label><textarea id="${containerId}-observations">${details.observations || ""}</textarea></div>
-        <button onclick="handleProjectDetailsSave(event, '${projectId}', '${containerId}')">Guardar Cambios del Proyecto</button>
-    `;
+    container.innerHTML = `<h3>Detalles de: ${details.name}</h3><div class="project-details-grid"><div class="form-group"><label>Fecha final estimada</label><input type="date" id="${containerId}-end-date" value="${details.endDate || ""}"></div><div class="form-group"><label>Estado</label><input type="text" value="${details.status}" disabled></div></div><div class="form-group"><label>Observaciones</label><textarea id="${containerId}-observations">${details.observations || ""}</textarea></div><button onclick="handleProjectDetailsSave(event, '${projectId}', '${containerId}')">Guardar Cambios del Proyecto</button>`;
 }
 
 function renderProjectsList() {
     const container = document.getElementById('projects-list-container');
     container.innerHTML = "";
-    if (allProjectsCache.length === 0) {
-        container.innerHTML = '<div class="message">No se encontraron proyectos.</div>';
-        return;
-    }
+    if (allProjectsCache.length === 0) { container.innerHTML = '<div class="message">No se encontraron proyectos.</div>'; return; }
     const list = document.createElement('div');
     list.className = 'project-list';
     const possibleStatus = ['Activo', 'En Pausa', 'Terminado', 'Planificación', 'Cancelado'];
-    
     allProjectsCache.forEach(project => {
         const item = document.createElement('div');
         item.className = 'project-list-item';
         item.id = `project-${project.id}`;
         let optionsHtml = possibleStatus.map(status => `<option value="${status}" ${project.status === status ? 'selected' : ''}>${status}</option>`).join('');
-        item.innerHTML = `
-            <span class="project-info">${project.name}</span>
-            <div class="project-controls">
-                <select class="project-status-select" onchange="handleProjectStatusChange('${project.id}', this.value)">${optionsHtml}</select>
-                <button class="action-btn edit-project-btn" onclick="loadProjectDetails('${project.id}', 'project-editor-container')">Ver/Editar</button>
-                <button class="delete-btn archive-btn" onclick="handleArchiveProject('${project.id}', '${project.name.replace(/'/g, "\\'")}')">Archivar</button>
-            </div>
-        `;
+        item.innerHTML = `<span class="project-info">${project.name}</span><div class="project-controls"><select class="project-status-select" onchange="handleProjectStatusChange('${project.id}', this.value)">${optionsHtml}</select><button class="action-btn edit-project-btn" onclick="loadProjectDetails('${project.id}', 'project-editor-container')">Ver/Editar</button><button class="delete-btn archive-btn" onclick="handleArchiveProject('${project.id}', '${project.name.replace(/'/g, "\\'")}')">Archivar</button></div>`;
         list.appendChild(item);
     });
     container.appendChild(list);
 }
 
-
 async function handleCreateProject(e) {
     e.preventDefault();
     const btn = e.target.querySelector('button[type="submit"]');
     btn.disabled = true;
-    const projectDetails = {
-        name: document.getElementById('new-project-name').value,
-        status: document.getElementById('new-project-status').value,
-        startDate: document.getElementById('new-project-start-date').value,
-        observations: document.getElementById('new-project-observations').value
-    };
-
+    const projectDetails = { name: document.getElementById('new-project-name').value, status: document.getElementById('new-project-status').value, startDate: document.getElementById('new-project-start-date').value, observations: document.getElementById('new-project-observations').value };
     try {
         await apiCall({ action: 'createProject', ...projectDetails });
         document.getElementById('create-project-form').reset();
@@ -2379,19 +1940,17 @@ async function handleCreateProject(e) {
     }
 }
 
-
 async function handleProjectStatusChange(projectId, newStatus) {
     try {
         await apiCall({ action: 'updateProjectStatus', projectId, status: newStatus });
         const projectInCache = allProjectsCache.find(p => p.id === projectId);
         if (projectInCache) projectInCache.status = newStatus;
-        await loadProjects(); // Recargar proyectos activos para los filtros
+        await loadProjects();
     } catch (error) {
         alert(`Error al cambiar el estado del proyecto: ${error.message}`);
-        renderProjectsList(); // Re-render para revertir el cambio visual
+        renderProjectsList();
     }
 }
-
 
 async function handleArchiveProject(projectId, projectName) {
     if (confirm(`¿Estás seguro de que quieres archivar el proyecto "${projectName}"? No se podrá deshacer desde aquí.`)) {
@@ -2414,13 +1973,14 @@ async function handleArchiveProject(projectId, projectName) {
     }
 }
 
-
 function toggleOtherArea() {
     document.getElementById('area_other').classList.toggle('hidden', document.getElementById('area').value !== 'other');
 }
+
 function toggleCalendarOptions() {
     document.getElementById('calendarOptions').classList.toggle('hidden', !document.getElementById('add_to_calendar').checked);
 }
+
 function toggleCustomReminder() {
     document.getElementById('customReminderFields').classList.toggle('hidden', !document.getElementById('recordatorio_custom').checked);
 }
@@ -2438,14 +1998,12 @@ function toggleCustomDateFilter() {
     if (!isCustom) { document.getElementById('start-date').value = ''; document.getElementById('end-date').value = ''; loadTasks(); }
 }
 
-
 async function handleFormSubmit(e) {
     e.preventDefault();
     const btn = document.getElementById('submitBtn'), msgBox = document.getElementById('messageBoxForm');
     msgBox.innerHTML = "";
     btn.disabled = true;
     btn.innerHTML = `<div class="loading-spinner"></div><span>Creando...</span>`;
-
     const dias_semana = Array.from(document.querySelectorAll('input[name="dias_semana"]:checked')).map(node => node.value);
     const formData = {
         action: 'createTask',
@@ -2467,7 +2025,6 @@ async function handleFormSubmit(e) {
         recordatorio_fecha: document.getElementById('recordatorio_fecha').value,
         recordatorio_hora: document.getElementById('recordatorio_hora').value,
     };
-
     try {
         const result = await apiCall(formData);
         msgBox.innerHTML = `<div class="message success-message">${result.message}</div>`;
@@ -2484,26 +2041,19 @@ async function handleFormSubmit(e) {
     }
 }
 
-
 async function handleTaskUpdate(button, taskId, details = null) {
     const isSaveButton = button.classList.contains('save-btn');
-    if (isSaveButton) { button.innerHTML = `<div class="loading-spinner"></div>`; button.disabled = true; }
-
+    if (isSaveButton) { button.textContent = 'Guardando...'; button.disabled = true; }
     if (!details) {
         const card = button.closest('.task-card');
         const reminderDate = card.querySelector('.task-reminder-date').value,
-              reminderTime = card.querySelector('.task-reminder-time').value;
-
-        const dateInput = card.querySelector('.task-deadline-date').value,
-              timeInput = card.querySelector('.task-deadline-time').value,
-              endTimeInput = card.querySelector('.task-deadline-end-time').value;
-        
+            reminderTime = card.querySelector('.task-reminder-time').value;
+        const dateInput = card.querySelector('.task-deadline-date').value, timeInput = card.querySelector('.task-deadline-time').value, endTimeInput = card.querySelector('.task-deadline-end-time').value;
         let deadline = null, deadlineEnd = null;
         if (dateInput) {
             deadline = `${dateInput}T${timeInput || '00:00'}:00`;
             if (endTimeInput) deadlineEnd = `${dateInput}T${endTimeInput}:00`;
         }
-
         details = {
             description: card.querySelector('.task-description-input').value,
             annotations: card.querySelector('.task-annotations-input').value,
@@ -2515,7 +2065,6 @@ async function handleTaskUpdate(button, taskId, details = null) {
             customReminder: reminderDate && reminderTime ? `${reminderDate}T${reminderTime}:00` : null
         };
     }
-    
     try {
         await apiCall({ action: 'updateTask', taskId, details });
         if (isSaveButton) { button.textContent = 'Guardado'; setTimeout(() => button.textContent = 'Guardar Tarea', 2000); }
@@ -2528,16 +2077,15 @@ async function handleTaskUpdate(button, taskId, details = null) {
     }
 }
 
-
 async function handleTaskDelete(taskId, taskTitle, fromModal = false) {
     if (confirm(`¿Estás seguro de que quieres eliminar la tarea "${taskTitle}"? Esta acción no se puede deshacer.`)) {
         try {
             await apiCall({ action: 'deleteTask', taskId });
             if (fromModal) {
-                 const projectId = Object.keys(projectTasksCache).find(pId => projectTasksCache[pId]?.some(t => t.id === taskId));
-                 if (projectId) delete projectTasksCache[projectId];
-                 closeTaskModal();
-                 loadGlobalVision();
+                const projectId = Object.keys(projectTasksCache).find(pId => projectTasksCache[pId]?.some(t => t.id === taskId));
+                if (projectId) delete projectTasksCache[projectId];
+                closeTaskModal();
+                loadGlobalVision();
             } else {
                 const taskCard = document.getElementById(`task-${taskId}`);
                 if (taskCard) {
@@ -2554,17 +2102,11 @@ async function handleTaskDelete(taskId, taskTitle, fromModal = false) {
     }
 }
 
-
 async function handleProjectDetailsSave(event, projectId, containerId) {
     const button = event.target;
     button.textContent = 'Guardando...';
     button.disabled = true;
-
-    const details = {
-        endDate: document.getElementById(`${containerId}-end-date`).value,
-        observations: document.getElementById(`${containerId}-observations`).value
-    };
-
+    const details = { endDate: document.getElementById(`${containerId}-end-date`).value, observations: document.getElementById(`${containerId}-observations`).value };
     try {
         await apiCall({ action: 'updateProjectDetails', projectId, details });
         button.textContent = 'Guardado';
@@ -2577,20 +2119,6 @@ async function handleProjectDetailsSave(event, projectId, containerId) {
     }
 }
 
-
-async function apiCall(payload) {
-    const response = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        mode: 'cors',
-        headers: { 'Content-Type': 'application/json' }
-    });
-    if (!response.ok) throw new Error(`Error del servidor: ${response.statusText}`);
-    const result = await response.json();
-    if (result.success === false) throw new Error(result.error); // Manejar errores de la API
-    return result;
-}
 </script>
 </body>
-
 </html>
