@@ -1480,11 +1480,19 @@ async function toggleProjectTasksDetails(element, projectId) {
     const detailsContainer = document.getElementById(`project-tasks-${projectId}`);
     const isVisible = detailsContainer.classList.toggle('visible');
 
+    // Solo cargar los datos si el contenedor se va a hacer visible y no tiene datos en caché
     if (isVisible && !projectTasksCache[projectId]) {
-        detailsContainer.innerHTML = '<p class="message">Cargando todas las tareas del proyecto...</p>';
+        detailsContainer.innerHTML = '<p class="message">Cargando tareas del proyecto...</p>';
         try {
-            // CORRECCIÓN: Añadido sortDirection para evitar el error de la API.
-            const result = await apiCall({ action: 'getTasks', filters: { projectId }, sortBy: 'status', sortDirection: 'ascending' });
+            // --- ESTA ES LA CORRECCIÓN CLAVE ---
+            // Usamos la acción 'getAllProjectTasks' que es más simple y directa,
+            // pasando el projectId directamente.
+            const result = await apiCall({ 
+                action: 'getAllProjectTasks', 
+                projectId: projectId 
+            });
+            // ------------------------------------
+
             projectTasksCache[projectId] = result.data;
             renderProjectDetailsView(detailsContainer, projectId, result.data);
         } catch (error) {
@@ -1492,6 +1500,7 @@ async function toggleProjectTasksDetails(element, projectId) {
         }
     }
 }
+
 
 function renderProjectDetailsView(container, projectId, tasks) {
     const tasksByStatus = { 'Sin empezar': [], 'En progreso': [], 'Listo': [] };
