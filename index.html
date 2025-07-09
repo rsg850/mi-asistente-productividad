@@ -819,6 +819,67 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* Estilos para el Heatmap */
+        .cal-heatmap-container {
+            margin-top: 20px;
+        }
+        .graph-label {
+            font-size: 0.8em;
+            fill: #999;
+        }
+        
+        /* Estilos para el multiselector de proyectos */
+        .multiselect-container {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .multiselect-container label {
+            display: block;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+        .multiselect-container label:hover {
+            background-color: #f1f3f5;
+        }
+        
+        /* Estilos para el dashboard temporal */
+        .kpi-container {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .kpi-value {
+            font-size: 3em;
+            font-weight: 700;
+        }
+        .kpi-label {
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+        .chart-toggle-buttons {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .chart-toggle-buttons button {
+            background-color: #e9ecef;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 0 5px;
+            transition: background-color 0.3s;
+        }
+        .chart-toggle-buttons button.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -1127,15 +1188,22 @@
                 </div>
 
                 <div id="analisis-proyecto" class="sub-tab-content">
-                     <h2 class="section-title">Análisis por Proyecto</h2>
-                     <p>La funcionalidad de análisis por proyecto (Heatmap) se implementará en una fase posterior.</p>
+                    <div id="project-analysis-selector-container" class="form-group" style="margin-bottom: 20px;">
+                        <!-- El selector de proyectos se generará aquí -->
+                    </div>
+                    <div id="project-analysis-dashboard">
+                        <!-- El dashboard (heatmap y gráficos) se generará aquí -->
+                    </div>
                 </div>
 
                 <div id="analisis-temporal" class="sub-tab-content">
-                    <h2 class="section-title">Análisis Temporal</h2>
-                    <p>La funcionalidad de análisis temporal detallado se implementará en una fase posterior.</p>
+                    <div id="temporal-analysis-filters-container">
+                        <!-- Los filtros se generarán aquí -->
+                    </div>
+                    <div id="temporal-analysis-dashboard" style="margin-top: 20px;">
+                        <!-- El KPI y los gráficos se generarán aquí -->
+                    </div>
                 </div>
-            </div>
 
             <!-- PESTAÑA 6: AJUSTES -->
             <div id="ajustes" class="tab-content">
@@ -1198,7 +1266,7 @@
 // ===================================
 // SCRIPT DE LA APLICACIÓN V48.0
 // ===================================
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz5C3dy3Hm27yoHexCAUgEYe4cFDhxXjjofcamH7SxPtIuPAconHYUi9sofo4E8qL_f8g/exec'; // Reemplaza con tu URL
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyQJ8vFp0t3J8roBz-3QYcbAXZz4XHKY9xQBbE1UfCnsJv2awHR8LDkqURUHtdpRvh3oA/exec'; // Reemplaza con tu URL
 
 // --- DEFINICIONES Y CACHÉ ---
 const ICONS = {
@@ -1213,7 +1281,10 @@ let areasCache = [];
 let publicCalendarsCache = [];
 let calendar;
 let activeProjectCharts = {};
-let projectTasksCache = {}; 
+let projectTasksCache = {};
+let temporalAnalysisTabLoaded = false;
+let temporalAnalysisChart = null;
+let projectHeatmap = null;
 
 document.addEventListener('DOMContentLoaded', initializeApp);
 
@@ -1253,7 +1324,40 @@ function setupEventListeners() {
             }
         });
     });
+function loadSubTabData(subtabId) {
+    if (subtabId === 'analisis-global') {
+        const container = document.getElementById('global-vision-container');
+        if (container.innerHTML.trim() === '' || container.classList.contains('loading-container')) {
+            loadGlobalVision();
+        }
+    } else if (subtabId === 'analisis-proyecto') {
+        if (!projectAnalysisTabLoaded) {
+            loadProjectAnalysisTab();
+        }
+    } else if (subtabId === 'analisis-temporal') {
+        if (!temporalAnalysisTabLoaded) {
+            loadTemporalAnalysisTab();
+        }
+    }
+}
+async function handleProjectAnalysisSelection(event) {
+    const projectId = event.target.value;
+    const dashboardContainer = document.getElementById('project-analysis-dashboard');
 
+    if (!projectId) {
+        dashboardContainer.innerHTML = '';
+        return;
+    }
+    
+    dashboardContainer.innerHTML = '<div class="loading-container"></div>';
+
+    try {
+        const result = await apiCall({ action: 'getProjectAnalysisData', projectId });
+        renderProjectAnalysisDashboard(result.data);
+    } catch (error) {
+        dashboardContainer.innerHTML = `<div class="message error-message">Error al cargar datos del proyecto: ${error.message}</div>`;
+    }
+}
     document.querySelectorAll('.sub-tab-btn').forEach(button => {
         button.addEventListener('click', () => {
             const subtabId = button.dataset.subtab;
@@ -2012,6 +2116,246 @@ async function apiCall(payload) {
     if (!result.success) throw new Error(result.error);
     return result;
 }
+// ===================================
+// --- RENDERIZADO ANÁLISIS POR PROYECTO ---
+// ===================================
+
+function renderProjectAnalysisDashboard(data) {
+    const container = document.getElementById('project-analysis-dashboard');
+    container.innerHTML = `
+        <div class="project-chart-container">
+            <h4>Tareas Pendientes por Prioridad</h4>
+            <canvas id="project-priority-chart"></canvas>
+        </div>
+        <div class="project-chart-container">
+            <h4>Distribución de Tareas por Estado</h4>
+            <canvas id="project-status-chart"></canvas>
+        </div>
+        <div class="project-chart-container">
+            <h4>Heatmap de Tareas Completadas (Último Año)</h4>
+            <div id="cal-heatmap-project" class="cal-heatmap-container"></div>
+        </div>
+    `;
+
+    // Renderizar Gráfico de Prioridad (Barras)
+    const priorityCtx = document.getElementById('project-priority-chart').getContext('2d');
+    new Chart(priorityCtx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(data.tasksByPriority),
+            datasets: [{
+                label: 'Nº de Tareas Pendientes',
+                data: Object.values(data.tasksByPriority),
+                backgroundColor: '#0077B6'
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Renderizar Gráfico de Estado (Anillo)
+    const statusCtx = document.getElementById('project-status-chart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(data.tasksByStatus),
+            datasets: [{
+                data: Object.values(data.tasksByStatus),
+                backgroundColor: [
+                    'rgba(254, 243, 199, 0.8)', // Sin empezar
+                    'rgba(219, 234, 254, 0.8)', // En progreso
+                    'rgba(209, 250, 229, 0.8)'  // Listo
+                ],
+                borderColor: [
+                    'rgba(146, 64, 14, 1)',
+                    'rgba(30, 64, 175, 1)',
+                    'rgba(6, 95, 70, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'top' } }
+        }
+    });
+
+    // Renderizar Heatmap
+    if (projectHeatmap) {
+        projectHeatmap.destroy();
+    }
+    projectHeatmap = new CalHeatmap();
+    projectHeatmap.paint({
+        data: {
+            source: data.heatmapData,
+            type: 'json',
+            x: 'timestamp',
+            y: 'value'
+        },
+        date: { start: new Date(new Date().setFullYear(new Date().getFullYear() - 1)) },
+        range: 12,
+        scale: {
+            color: {
+                type: 'threshold',
+                range: ['#d1fae5', '#86efac', '#4ade80', '#22c55e', '#16a34a'],
+                domain: [1, 2, 4, 6, 8]
+            }
+        },
+        domain: {
+            type: 'month',
+            gutter: 4,
+            label: { text: 'MMM', textAlign: 'start', position: 'top' }
+        },
+        subDomain: { type: 'ghDay', radius: 2, width: 11, height: 11, gutter: 4 },
+        itemSelector: '#cal-heatmap-project'
+    });
+}
+
+
+// ===================================
+// --- ANÁLISIS TEMPORAL ---
+// ===================================
+async function loadTemporalAnalysisTab() {
+    temporalAnalysisTabLoaded = true;
+    const filtersContainer = document.getElementById('temporal-analysis-filters-container');
+    filtersContainer.classList.add('loading-container');
+    
+    try {
+        if (allProjectsCache.length === 0) await loadAllProjects();
+        renderTemporalAnalysisFilters(allProjectsCache);
+        filtersContainer.classList.remove('loading-container');
+        handleTemporalAnalysisFiltersChange();
+    } catch (error) {
+        filtersContainer.innerHTML = `<div class="message error-message">Error al cargar filtros: ${error.message}</div>`;
+        filtersContainer.classList.remove('loading-container');
+    }
+}
+
+function renderTemporalAnalysisFilters(projects) {
+    const container = document.getElementById('temporal-analysis-filters-container');
+    
+    const projectOptions = projects.map(p => `
+        <label>
+            <input type="checkbox" name="temporal-project-filter" value="${p.id}" checked>
+            ${p.name}
+        </label>
+    `).join('');
+
+    container.innerHTML = `
+        <div class="filters-panel">
+            <div class="form-group">
+                <label>Proyectos a incluir</label>
+                <div class="multiselect-container">
+                    ${projectOptions}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="temporal-filter-date">Periodo</label>
+                <select id="temporal-filter-date">
+                    <option value="week">Esta Semana</option>
+                    <option value="month">Este Mes</option>
+                    <option value="today">Hoy</option>
+                    <option value="custom">Personalizado...</option>
+                </select>
+                <div id="temporal-custom-date-filter" class="hidden">
+                    <div><label for="temporal-start-date">Desde: </label><input type="date" id="temporal-start-date"></div>
+                    <div><label for="temporal-end-date">Hasta: </label><input type="date" id="temporal-end-date"></div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.querySelectorAll('input[name="temporal-project-filter"]').forEach(el => el.addEventListener('change', handleTemporalAnalysisFiltersChange));
+    document.getElementById('temporal-filter-date').addEventListener('change', () => {
+        const isCustom = document.getElementById('temporal-filter-date').value === 'custom';
+        document.getElementById('temporal-custom-date-filter').classList.toggle('hidden', !isCustom);
+        if (!isCustom) handleTemporalAnalysisFiltersChange();
+    });
+    document.getElementById('temporal-start-date').addEventListener('change', handleTemporalAnalysisFiltersChange);
+    document.getElementById('temporal-end-date').addEventListener('change', handleTemporalAnalysisFiltersChange);
+}
+
+async function handleTemporalAnalysisFiltersChange() {
+    const dashboardContainer = document.getElementById('temporal-analysis-dashboard');
+    dashboardContainer.innerHTML = '<div class="loading-container"></div>';
+
+    const selectedProjects = Array.from(document.querySelectorAll('input[name="temporal-project-filter"]:checked')).map(el => el.value);
+    const dateRangeType = document.getElementById('temporal-filter-date').value;
+    const startDate = document.getElementById('temporal-start-date').value;
+    const endDate = document.getElementById('temporal-end-date').value;
+
+    try {
+        const result = await apiCall({
+            action: 'getTemporalAnalysisData',
+            filters: {
+                projectIds: selectedProjects,
+                dateRangeType,
+                startDate,
+                endDate
+            }
+        });
+        renderTemporalAnalysisDashboard(result.data);
+    } catch (error) {
+        dashboardContainer.innerHTML = `<div class="message error-message">Error al cargar datos de análisis: ${error.message}</div>`;
+    }
+}
+
+function renderTemporalAnalysisDashboard(data) {
+    const container = document.getElementById('temporal-analysis-dashboard');
+    container.innerHTML = `
+        <div class="kpi-container">
+            <div class="kpi-value">${data.completedTasksCount}</div>
+            <div class="kpi-label">Tareas Completadas en el Periodo</div>
+        </div>
+        <div class="chart-toggle-buttons">
+            <button class="active" data-chart="byArea">Por Área</button>
+            <button data-chart="byPriority">Por Prioridad</button>
+            <button data-chart="byProject">Por Proyecto</button>
+        </div>
+        <div class="project-chart-container">
+            <canvas id="temporal-analysis-chart"></canvas>
+        </div>
+    `;
+
+    const renderChart = (chartType) => {
+        const chartData = data.distribution[chartType];
+        const ctx = document.getElementById('temporal-analysis-chart').getContext('2d');
+        if (temporalAnalysisChart) {
+            temporalAnalysisChart.destroy();
+        }
+        temporalAnalysisChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(chartData),
+                datasets: [{
+                    data: Object.values(chartData),
+                    backgroundColor: ['#00A99D', '#0077B6', '#F4A261', '#E76F51', '#2A9D8F', '#264653', '#e9c46a'],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: `Distribución de Tareas por ${chartType.replace('by', '')}` }
+                }
+            }
+        });
+    };
+
+    renderChart('byArea'); // Gráfico inicial
+
+    document.querySelectorAll('.chart-toggle-buttons button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            document.querySelectorAll('.chart-toggle-buttons button').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            renderChart(e.target.dataset.chart);
+        });
+    });
+}
+
 </script>
 
 </body>
