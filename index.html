@@ -7,12 +7,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar-icalendar@6.1.14/index.global.min.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script src="https://cdn.jsdelivr.net/npm/cal-heatmap@4.2.3/dist/cal-heatmap.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cal-heatmap@4.2.3/dist/cal-heatmap.css">
+
     <style>
         :root {
             --primary-color: #00A99D;
@@ -28,12 +30,12 @@
             --archive-color: #6c757d;
             --shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
             --border-radius: 12px;
-            --status-pending-bg: #FEF3C7;
-            --status-pending-text: #92400E;
-            --status-progress-bg: #DBEAFE;
-            --status-progress-text: #1E40AF;
-            --status-done-bg: #D1FAE5;
-            --status-done-text: #065F46;
+            --status-pending-bg: #FEF3C7; /* Amarillo claro */
+            --status-pending-text: #92400E; /* Amarillo oscuro */
+            --status-progress-bg: #DBEAFE; /* Azul claro */
+            --status-progress-text: #1E40AF; /* Azul oscuro */
+            --status-done-bg: #D1FAE5; /* Verde claro */
+            --status-done-text: #065F46; /* Verde oscuro */
         }
         * {
             margin: 0;
@@ -769,6 +771,7 @@
         .status-column.status-pending h4 { border-color: var(--status-pending-text); color: var(--status-pending-text); }
         .status-column.status-progress h4 { border-color: var(--status-progress-text); color: var(--status-progress-text); }
         .status-column.status-done h4 { border-color: var(--status-done-text); color: var(--status-done-text); }
+        
         .status-column ul {
             list-style: none;
             padding: 0;
@@ -791,6 +794,7 @@
             padding-top: 20px;
             border-top: 1px solid var(--border-color);
         }
+
         @media (max-width: 768px) {
             body { padding: 5px; }
             .container { margin: 5px auto; }
@@ -822,18 +826,21 @@
         <header class="header">
             <h1>Centro de Productividad</h1>
         </header>
+
         <nav class="tab-navigation">
-            <button class="tab-btn active" data-tab="asistente"> + Asistente</button>
-            <button class="tab-btn" data-tab="gestor"> Gestor</button>
-            <button class="tab-btn" data-tab="proyectos"> Proyectos</button>
-            <button class="tab-btn" data-tab="agenda"> Agenda</button>
-            <button class="tab-btn" data-tab="analisis"> Análisis</button>
-            <button class="tab-btn" data-tab="ajustes"> Ajustes</button>
+            <button class="tab-btn active" data-tab="asistente">➕ Asistente</button>
+            <button class="tab-btn" data-tab="gestor">📋 Gestor</button>
+            <button class="tab-btn" data-tab="proyectos">🗂️ Proyectos</button>
+            <button class="tab-btn" data-tab="agenda">🗓️ Agenda</button>
+            <button class="tab-btn" data-tab="analisis">📊 Análisis</button>
+            <button class="tab-btn" data-tab="ajustes">⚙️ Ajustes</button>
         </nav>
+
         <main class="main-content">
             <!-- PESTAÑA 1: ASISTENTE (FORMULARIO) -->
             <div id="asistente" class="tab-content active">
                 <form id="taskForm" novalidate>
+                    <!-- Contenido del formulario sin cambios -->
                     <section class="form-section">
                         <h2 class="section-title"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>Información de la Tarea</h2>
                         <div class="form-group">
@@ -1120,13 +1127,8 @@
                 </div>
 
                 <div id="analisis-proyecto" class="sub-tab-content">
-                    <h2 class="section-title">Análisis por Proyecto</h2>
-                    <div id="project-analysis-selector-container" class="form-group" style="margin-bottom: 20px;">
-                        <!-- El selector se generará aquí con JavaScript -->
-                    </div>
-                    <div id="project-analysis-dashboard">
-                         <!-- El contenido (heatmap, gráficos, etc.) se generará aquí en la siguiente fase -->
-                    </div>
+                     <h2 class="section-title">Análisis por Proyecto</h2>
+                     <p>La funcionalidad de análisis por proyecto (Heatmap) se implementará en una fase posterior.</p>
                 </div>
 
                 <div id="analisis-temporal" class="sub-tab-content">
@@ -1193,44 +1195,39 @@
     </div>
 
 <script>
-// =================================
-// SCRIPT DE LA APLICACIÓN V49.0
-// =================================
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwWpW1nXZbj-qq49W71jQtqkVEs5jTrza2FtevfmpV_KBdr3flKt6O4_0f_nxpczNf7uA/exec'; // ¡¡¡IMPORTANTE!!! Reemplaza esta URL
+// ===================================
+// SCRIPT DE LA APLICACIÓN V48.0
+// ===================================
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxgfIf9p-AeXkfP0JDiTdduWx9QB_VPxZh-rEnyoUO9FEEi25mv-j9mDJyHycldfWmwRA/exec'; // Reemplaza con tu URL
 
 // --- DEFINICIONES Y CACHÉ ---
 const ICONS = {
-    STATUS: { 'Sin empezar': '⚪', 'En progreso': '🔵', 'Listo': '🟢'},
-    PRIORITY: { 'Alta': '🔴', 'Medio':'🟡', 'Baja': '🟢'},
-    AREA: { 'Profesional': '💼', 'Académico': '🎓', 'Personal': '👤', 'Salud': '❤️', 'Hogar': '🏠', 'Formación': '📚', 'Taller': '🛠️', 'Default': '📋'}
+    STATUS: { 'Sin empezar': '⚪', 'En progreso': '🔵', 'Listo': '🟢' },
+    PRIORITY: { 'Alta': '🔺', 'Medio': '🔸', 'Baja': '🔹' },
+    AREA: { 'Profesional': '💼', 'Académico': '🎓', 'Personal': '👤', 'Salud': '❤️', 'Hogar': '🏠', 'Formación': '📚', 'Taller': '🛠️', 'Default': '📁' }
 };
+
 let projectsCache = [];
 let allProjectsCache = [];
 let areasCache = [];
 let publicCalendarsCache = [];
 let calendar;
 let activeProjectCharts = {};
-let projectTasksCache = {};
-let projectAnalysisTabLoaded = false;
+let projectTasksCache = {}; 
 
 document.addEventListener('DOMContentLoaded', initializeApp);
 
 async function initializeApp() {
     setupEventListeners();
-    populateStaticSelects();
-    try {
-        await Promise.all([
-            loadProjects(),
-            loadAllProjects(),
-            loadAreas(),
-            loadPublicCalendars()
-        ]);
-        await loadTasks();
-        initializeCalendar();
-    } catch (error) {
-        console.error("Error fatal durante la inicialización:", error);
-        // Podrías mostrar un mensaje de error general al usuario aquí
-    }
+    populateStaticSelects(); // Poblar selects estáticos con iconos
+    await Promise.all([
+        loadProjects(),
+        loadAllProjects(),
+        loadAreas(),
+        loadPublicCalendars()
+    ]);
+    await loadTasks();
+    initializeCalendar();
 }
 
 function setupEventListeners() {
@@ -1245,8 +1242,10 @@ function setupEventListeners() {
             if (tabId === 'agenda' && calendar) setTimeout(() => calendar.render(), 10);
             if (tabId === 'proyectos') renderProjectsList();
             if (tabId === 'analisis') {
-                const activeSubTab = document.querySelector('#analisis .sub-tab-btn.active').dataset.subtab;
-                loadSubTabData(activeSubTab);
+                const container = document.getElementById('global-vision-container');
+                if (container.innerHTML.trim() === '' || container.classList.contains('loading-container')) {
+                    loadGlobalVision();
+                }
             }
             if (tabId === 'ajustes') {
                 renderAreasManagement();
@@ -1262,17 +1261,18 @@ function setupEventListeners() {
             button.classList.add('active');
             button.closest('.tab-content').querySelectorAll('.sub-tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById(subtabId).classList.add('active');
-            loadSubTabData(subtabId);
         });
     });
-
+    
     document.getElementById('global-vision-container').addEventListener('click', (e) => {
         const taskElement = e.target.closest('li[data-task-id]');
         if (taskElement) {
             const taskId = taskElement.dataset.taskId;
             const projectId = taskElement.closest('.project-tasks-details').id.replace('project-tasks-', '');
+            
             const task = projectTasksCache[projectId]?.find(t => t.id === taskId);
             if (task) {
+                // Simulamos un objeto 'event' para el modal
                 showTaskModal({ extendedProps: task });
             }
         }
@@ -1286,156 +1286,36 @@ function setupEventListeners() {
     document.getElementById('recordatorio_custom').addEventListener('change', toggleCustomReminder);
     document.querySelectorAll('input[name="eventType"]').forEach(radio => radio.addEventListener('change', toggleDateSections));
     document.getElementById('create-project-btn').addEventListener('click', () => document.getElementById('create-project-form-container').classList.toggle('hidden'));
+    
     ['filter-project', 'filter-area', 'start-date', 'end-date', 'sort-tasks', 'sort-direction'].forEach(id => document.getElementById(id).addEventListener('change', loadTasks));
     document.getElementById('filter-date').addEventListener('change', toggleCustomDateFilter);
     document.getElementById('filter-project').addEventListener('change', () => loadProjectDetails(document.getElementById('filter-project').value, 'project-details-container'));
+    
     ['filter-agenda-project', 'filter-agenda-area'].forEach(id => {
-        if (document.getElementById(id))
-            document.getElementById(id).addEventListener('change', () => calendar.refetchEvents());
+        if (document.getElementById(id)) document.getElementById(id).addEventListener('change', () => calendar.refetchEvents());
     });
+
     document.getElementById('task-list-container').addEventListener('click', e => {
         if (e.target.closest('.task-card-header')) e.target.closest('.task-card').classList.toggle('is-expanded');
     });
+
     document.getElementById('modal-close').addEventListener('click', closeTaskModal);
     document.getElementById('task-modal').addEventListener('click', e => { if (e.target.id === 'task-modal') closeTaskModal(); });
     document.getElementById('modal-save-btn').addEventListener('click', handleModalSave);
     document.getElementById('modal-delete-btn').addEventListener('click', handleModalDelete);
 }
 
-function loadSubTabData(subtabId) {
-    if (subtabId === 'analisis-global') {
-        const container = document.getElementById('global-vision-container');
-        if (container.innerHTML.trim() === '' || container.classList.contains('loading-container')) {
-            loadGlobalVision();
-        }
-    } else if (subtabId === 'analisis-proyecto') {
-        if (!projectAnalysisTabLoaded) {
-            loadProjectAnalysisTab();
-        }
-    }
-}
-
 // ===================================
-// --- ANÁLISIS POR PROYECTO (FASE 1) ---
-// ===================================
-async function loadProjectAnalysisTab() {
-    projectAnalysisTabLoaded = true;
-    const selectorContainer = document.getElementById('project-analysis-selector-container');
-    selectorContainer.classList.add('loading-container');
-    selectorContainer.innerHTML = '';
-
-    try {
-        const result = await apiCall({ action: 'getAllProjects' });
-        if(allProjectsCache.length === 0) allProjectsCache = result.data;
-        renderProjectAnalysisSelector(result.data);
-    } catch (error) {
-        selectorContainer.innerHTML = `<div class="message error-message">Error al cargar la lista de proyectos: ${error.message}</div>`;
-        selectorContainer.classList.remove('loading-container');
-        console.error("Error en loadProjectAnalysisTab:", error);
-    }
-}
-
-function renderProjectAnalysisSelector(projects) {
-    const selectorContainer = document.getElementById('project-analysis-selector-container');
-    if (!projects || projects.length === 0) {
-        selectorContainer.innerHTML = '<p>No se encontraron proyectos para analizar.</p>';
-        selectorContainer.classList.remove('loading-container');
-        return;
-    }
-
-    let selectHTML = `
-        <label for="project-analysis-select">Selecciona un proyecto para analizarlo en detalle:</label>
-        <select id="project-analysis-select">
-            <option value="">-- Elige un proyecto --</option>
-            ${projects.map(p => `<option value="${p.id}">${p.name} (${p.status})</option>`).join('')}
-        </select>
-    `;
-    selectorContainer.innerHTML = selectHTML;
-    selectorContainer.classList.remove('loading-container');
-
-    document.getElementById('project-analysis-select').addEventListener('change', handleProjectAnalysisSelection);
-}
-
-function handleProjectAnalysisSelection(event) {
-    const projectId = event.target.value;
-    const dashboardContainer = document.getElementById('project-analysis-dashboard');
-
-    if (!projectId) {
-        dashboardContainer.innerHTML = '';
-        return;
-    }
-    console.log(`Fase 2: Se ha seleccionado el proyecto con ID: ${projectId}. Próximo paso: cargar y renderizar su dashboard.`);
-    dashboardContainer.innerHTML = `<div class="message">Cargando datos de análisis para el proyecto seleccionado... (Esto se implementará en la Fase 2)</div>`;
-}
-
-// ===================================
-// --- API CALL (INTELIGENTE) ---
-// ===================================
-async function apiCall(payload) {
-    const READ_ACTIONS = new Set([
-        'getProjects', 'getAllProjects', 'getTasks', 'getProjectDetails',
-        'getGlobalVisionData', 'getAllProjectTasks', 'getAreas', 'getPublicCalendars'
-    ]);
-
-    const isReadAction = READ_ACTIONS.has(payload.action);
-
-    if (isReadAction) {
-        // --- Petición GET para acciones de LECTURA ---
-        const params = new URLSearchParams();
-        for (const key in payload) {
-            if (payload[key] === null || payload[key] === undefined) continue;
-            
-            if (typeof payload[key] === 'object') {
-                params.append(key, JSON.stringify(payload[key]));
-            } else {
-                params.append(key, payload[key]);
-            }
-        }
-        
-        const url = `${WEBHOOK_URL}?${params.toString()}`;
-
-        try {
-            const response = await fetch(url, { method: 'GET', mode: 'cors' });
-            if (!response.ok) throw new Error(`Error del servidor (GET): ${response.statusText}`);
-            const result = await response.json();
-            if (!result.success) throw new Error(result.error);
-            return result;
-        } catch (error) {
-            console.error(`Error en apiCall (GET) para la acción ${payload.action}:`, error);
-            throw error;
-        }
-
-    } else {
-        // --- Petición POST para acciones de ESCRITURA ---
-        try {
-            const response = await fetch(WEBHOOK_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload),
-                mode: 'cors',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            if (!response.ok) throw new Error(`Error del servidor (POST): ${response.statusText}`);
-            const result = await response.json();
-            if (!result.success) throw new Error(result.error);
-            return result;
-        } catch (error) {
-            console.error(`Error en apiCall (POST) para la acción ${payload.action}:`, error);
-            throw error;
-        }
-    }
-}
-
-
-// ===================================
-// --- RESTO DE FUNCIONES ---
+// --- FUNCIONES DE UI Y POBLACIÓN ---
 // ===================================
 
 function populateStaticSelects() {
     const statusSelect = document.getElementById('estado');
     const prioritySelect = document.getElementById('prioridad');
+
     statusSelect.innerHTML = Object.entries(ICONS.STATUS).map(([key, icon]) => `<option value="${key}">${icon} ${key}</option>`).join('');
     prioritySelect.innerHTML = Object.entries(ICONS.PRIORITY).map(([key, icon]) => `<option value="${key}">${icon} ${key}</option>`).join('');
-    prioritySelect.value = 'Medio';
+    prioritySelect.value = 'Medio'; // Valor por defecto
 }
 
 function populateSelectWithOptions(selectElement, options, selectedValue) {
@@ -1449,6 +1329,10 @@ function populateSelectWithOptions(selectElement, options, selectedValue) {
         selectElement.value = selectedValue;
     }
 }
+
+// ===================================
+// --- FUNCIONES DE ANÁLISIS MEJORADAS ---
+// ===================================
 
 async function loadGlobalVision() {
     const container = document.getElementById('global-vision-container');
@@ -1482,7 +1366,8 @@ function renderGlobalVision(projects) {
             <div class="progress-bar">
                 <div class="progress-bar-inner" style="width: ${proj.percentage}%;"></div>
             </div>
-            <div class="project-tasks-details" id="project-tasks-${proj.id}"></div>`;
+            <div class="project-tasks-details" id="project-tasks-${proj.id}"></div>
+        `;
         container.appendChild(item);
     });
 }
@@ -1490,16 +1375,12 @@ function renderGlobalVision(projects) {
 async function toggleProjectTasksDetails(element, projectId) {
     const detailsContainer = document.getElementById(`project-tasks-${projectId}`);
     const isVisible = detailsContainer.classList.toggle('visible');
+
     if (isVisible && !projectTasksCache[projectId]) {
         detailsContainer.innerHTML = '<p class="message">Cargando todas las tareas del proyecto...</p>';
         try {
-            const payload = { 
-                action: 'getTasks', 
-                filters: { projectId }, 
-                sortBy: 'status', 
-                sortDirection: 'ascending' 
-            };
-            const result = await apiCall(payload);
+            // CORRECCIÓN: Añadido sortDirection para evitar el error de la API.
+            const result = await apiCall({ action: 'getTasks', filters: { projectId }, sortBy: 'status', sortDirection: 'ascending' });
             projectTasksCache[projectId] = result.data;
             renderProjectDetailsView(detailsContainer, projectId, result.data);
         } catch (error) {
@@ -1513,10 +1394,12 @@ function renderProjectDetailsView(container, projectId, tasks) {
     tasks.forEach(task => {
         (tasksByStatus[task.status] || tasksByStatus['Sin empezar']).push(task);
     });
+
     const createTaskList = (taskList) => {
         if (taskList.length === 0) return '<ul><li>-</li></ul>';
         return '<ul>' + taskList.map(t => `<li data-task-id="${t.id}">${t.title}</li>`).join('') + '</ul>';
     };
+
     const gridHtml = `
         <div class="tasks-by-status-grid">
             <div class="status-column status-pending"><h4>${ICONS.STATUS['Sin empezar']} Sin Empezar</h4>${createTaskList(tasksByStatus['Sin empezar'])}</div>
@@ -1525,12 +1408,14 @@ function renderProjectDetailsView(container, projectId, tasks) {
         </div>
         <div class="project-chart-container"><canvas id="chart-${projectId}"></canvas></div>`;
     container.innerHTML = gridHtml;
+
     renderProjectStatusChart(projectId, tasksByStatus);
 }
 
 function renderProjectStatusChart(projectId, tasksByStatus) {
     const ctx = document.getElementById(`chart-${projectId}`).getContext('2d');
     if (activeProjectCharts[projectId]) activeProjectCharts[projectId].destroy();
+
     const data = {
         labels: ['Sin empezar', 'En progreso', 'Listo'],
         datasets: [{
@@ -1545,6 +1430,7 @@ function renderProjectStatusChart(projectId, tasksByStatus) {
             borderWidth: 1
         }]
     };
+
     activeProjectCharts[projectId] = new Chart(ctx, {
         type: 'doughnut',
         data: data,
@@ -1558,6 +1444,9 @@ function renderProjectStatusChart(projectId, tasksByStatus) {
     });
 }
 
+// ===================================
+// EL RESTO DEL JAVASCRIPT SE MANTIENE
+// ===================================
 function initializeCalendar() {
     const calendarEl = document.getElementById('calendar');
     if (!calendarEl) return;
@@ -1566,19 +1455,14 @@ function initializeCalendar() {
     const notionEventSource = {
         events: async (fetchInfo, successCallback, failureCallback) => {
             try {
-                const payload = {
-                    action: 'getTasks',
-                    filters: {
-                        dateRangeType: 'custom',
-                        startDate: fetchInfo.startStr.split('T')[0],
-                        endDate: fetchInfo.endStr.split('T')[0],
-                        projectId: document.getElementById('filter-agenda-project').value,
-                        area: document.getElementById('filter-agenda-area').value,
-                    },
-                    sortBy: 'deadline',
-                    sortDirection: 'ascending'
+                const filters = {
+                    dateRangeType: 'custom',
+                    startDate: fetchInfo.startStr.split('T')[0],
+                    endDate: fetchInfo.endStr.split('T')[0],
+                    projectId: document.getElementById('filter-agenda-project').value,
+                    area: document.getElementById('filter-agenda-area').value,
                 };
-                const result = await apiCall(payload);
+                const result = await apiCall({ action: 'getTasks', filters, sortBy: 'deadline', sortDirection: 'ascending' });
                 const events = result.data.map(task => ({
                     id: task.id,
                     title: `${ICONS.STATUS[task.status] || ''} ${task.title}`,
@@ -1594,7 +1478,7 @@ function initializeCalendar() {
                 failureCallback(error);
             }
         },
-    };
+    }
     const publicCalSources = publicCalendarsCache.map(cal => ({
         url: cal.url,
         format: 'ical',
@@ -1629,11 +1513,10 @@ function initializeCalendar() {
             } finally {
                 document.body.classList.remove('is-dragging');
             }
-        },
+        }
     });
     calendar.render();
 }
-
 function showTaskModal(event) {
     const modal = document.getElementById('task-modal');
     const props = event.extendedProps;
@@ -1645,9 +1528,9 @@ function showTaskModal(event) {
     const deadlineEndDate = props.deadlineEnd ? new Date(props.deadlineEnd) : null;
     const deadlineEndTimeValue = deadlineEndDate ? deadlineEndDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
     const customReminderDate = props.customReminderDateTime ? new Date(props.customReminderDateTime) : null;
-    const customReminderDateValue = customReminderDate ? customReminderDate.toISOString().split('T')[0] : "";
+    const customReminderDateValue = customReminderDate ? customReminderDate.toISOString().split('T')[0] : '';
     const customReminderTimeValue = customReminderDate ? customReminderDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
-
+    
     body.innerHTML = `
         <div class="form-row">
             <div class="form-group"><label>Estado</label><select id="modal-status"></select></div>
@@ -1656,8 +1539,8 @@ function showTaskModal(event) {
         <div class="form-group"><label>Descripción</label><textarea id="modal-description">${props.description || ""}</textarea></div>
         <div class="form-group"><label>Anotaciones / Observaciones</label><textarea id="modal-annotations">${props.annotations || ""}</textarea></div>
         <div class="form-group"><label>Fecha y Horas (Inicio y Fin)</label><div class="datetime-group"><input type="date" id="modal-deadline-date" value="${deadlineDateValue}"><input type="time" id="modal-deadline-time" value="${deadlineTimeValue}"><input type="time" id="modal-deadline-end-time" value="${deadlineEndTimeValue}"></div></div>
-        <div class="form-group reminder-group ${props.calendarEventId ? "" : 'hidden'}"><label>Recordatorios de Calendar</label><div class="checkbox-item"><input type="checkbox" id="modal-reminder-2h" ${props.hasTwoHourReminder ? 'checked' : ''}><label for="modal-reminder-2h"> 2 horas antes</label></div><div class="datetime-group-reminder" style="margin-top: 5px;"><input type="date" id="modal-reminder-date" value="${customReminderDateValue}"><input type="time" id="modal-reminder-time" value="${customReminderTimeValue}"></div></div>`;
-
+        <div class="form-group reminder-group ${props.calendarEventId ? "" : 'hidden'}"><label>Recordatorios de Calendar</label><div class="checkbox-item"><input type="checkbox" id="modal-reminder-2h" ${props.hasTwoHourReminder ? 'checked' : ""}><label for="modal-reminder-2h"> 2 horas antes</label></div><div class="datetime-group-reminder" style="margin-top: 5px;"><input type="date" id="modal-reminder-date" value="${customReminderDateValue}"><input type="time" id="modal-reminder-time" value="${customReminderTimeValue}"></div></div>`;
+    
     populateSelectWithOptions(document.getElementById('modal-status'), ICONS.STATUS, props.status);
     populateSelectWithOptions(document.getElementById('modal-priority'), ICONS.PRIORITY, props.priority);
 
@@ -1669,9 +1552,7 @@ function showTaskModal(event) {
     document.getElementById('modal-delete-btn').dataset.taskTitle = props.title;
     modal.classList.add('visible');
 }
-
 function closeTaskModal() { document.getElementById('task-modal').classList.remove('visible'); }
-
 async function handleModalSave() {
     const btn = document.getElementById('modal-save-btn');
     const taskId = btn.dataset.taskId;
@@ -1684,15 +1565,13 @@ async function handleModalSave() {
         deadline = `${dateInput.value}T${timeInput.value || '00:00'}:00`;
         if (endTimeInput.value) deadlineEnd = `${dateInput.value}T${endTimeInput.value}:00`;
     }
-    const reminderDate = document.getElementById('modal-reminder-date').value,
-        reminderTime = document.getElementById('modal-reminder-time').value;
+    const reminderDate = document.getElementById('modal-reminder-date').value, reminderTime = document.getElementById('modal-reminder-time').value;
     const details = {
         status: document.getElementById('modal-status').value,
         priority: document.getElementById('modal-priority').value,
         description: document.getElementById('modal-description').value,
         annotations: document.getElementById('modal-annotations').value,
-        deadline,
-        deadlineEnd,
+        deadline, deadlineEnd,
         hasTwoHourReminder: document.getElementById('modal-reminder-2h').checked,
         customReminder: reminderDate && reminderTime ? `${reminderDate}T${reminderTime}:00` : null
     };
@@ -1704,7 +1583,7 @@ async function handleModalSave() {
             delete projectTasksCache[projectId];
             const detailsContainer = document.getElementById(`project-tasks-${projectId}`);
             if(detailsContainer && detailsContainer.classList.contains('visible')) {
-                detailsContainer.classList.remove('visible');
+                detailsContainer.classList.remove('visible'); // Cierra para forzar recarga
                 toggleProjectTasksDetails(null, projectId);
             }
         }
@@ -1719,14 +1598,12 @@ async function handleModalSave() {
         setTimeout(() => { btn.disabled = false; btn.textContent = 'Guardar Cambios'; }, 2000);
     }
 }
-
 async function handleModalDelete() {
     const btn = document.getElementById('modal-delete-btn');
     const taskId = btn.dataset.taskId, taskTitle = btn.dataset.taskTitle;
     if (!taskId) return;
     handleTaskDelete(taskId, taskTitle, true);
 }
-
 async function loadProjects() {
     try {
         const result = await apiCall({ action: 'getProjects' });
@@ -1734,10 +1611,9 @@ async function loadProjects() {
         populateProjectFilters();
     } catch (error) {
         console.error('Error al cargar proyectos activos:', error);
-        document.querySelectorAll('#proyecto_id, #filter-project, #filter-agenda-project').forEach(s => s.innerHTML = '<option>Error</option>');
+        document.querySelectorAll('#proyecto_id, #filter-project, #filter-agenda-project').forEach(s => s.innerHTML = `<option>Error</option>`);
     }
 }
-
 async function loadAllProjects() {
     try {
         const result = await apiCall({ action: 'getAllProjects' });
@@ -1748,7 +1624,6 @@ async function loadAllProjects() {
         if(container) container.innerHTML = `<div class="message error-message">Error al cargar proyectos: ${error.message}</div>`;
     }
 }
-
 function populateProjectFilters() {
     const selects = [document.getElementById('proyecto_id'), document.getElementById('filter-project'), document.getElementById('filter-agenda-project')];
     selects.forEach(select => {
@@ -1757,7 +1632,6 @@ function populateProjectFilters() {
         projectsCache.forEach(p => select.add(new Option(p.name, p.id)));
     });
 }
-
 async function loadAreas() {
     try {
         const result = await apiCall({ action: 'getAreas' });
@@ -1765,10 +1639,9 @@ async function loadAreas() {
         populateAreaFilters();
     } catch (error) {
         console.error('Error al cargar áreas:', error);
-        document.querySelectorAll('#area, #filter-area, #filter-agenda-area').forEach(s => { if(s) s.innerHTML = '<option>Error</option>'; });
+        document.querySelectorAll('#area, #filter-area, #filter-agenda-area').forEach(s => { if(s) s.innerHTML = `<option>Error</option>` });
     }
 }
-
 function populateAreaFilters() {
     const selects = [document.getElementById('area'), document.getElementById('filter-area'), document.getElementById('filter-agenda-area')];
     selects.forEach(select => {
@@ -1787,7 +1660,6 @@ function populateAreaFilters() {
         if (isMainForm) select.add(new Option('+ Otra...', 'other'));
     });
 }
-
 function renderAreasManagement() {
     const list = document.getElementById('areas-list');
     list.innerHTML = "";
@@ -1804,7 +1676,6 @@ function renderAreasManagement() {
         list.appendChild(li);
     });
 }
-
 async function handleDeleteArea(areaToDelete) {
     if (!confirm(`¿Estás seguro de que quieres eliminar el área "${areaToDelete}"? Esta acción no se puede deshacer.`)) return;
     const updatedAreas = areasCache.filter(area => area !== areaToDelete);
@@ -1817,7 +1688,6 @@ async function handleDeleteArea(areaToDelete) {
         alert('No se pudo eliminar el área: ' + error.message);
     }
 }
-
 async function loadPublicCalendars() {
     try {
         const result = await apiCall({ action: 'getPublicCalendars' });
@@ -1827,10 +1697,9 @@ async function loadPublicCalendars() {
         publicCalendarsCache = [];
     }
 }
-
 function renderPublicCalendarsManagement() {
     const list = document.getElementById('public-calendars-list');
-    list.innerHTML = "";
+    list.innerHTML = '';
     if (publicCalendarsCache.length === 0) { list.innerHTML = '<li>No hay calendarios públicos añadidos.</li>'; return; }
     publicCalendarsCache.forEach((cal, index) => {
         const li = document.createElement('li');
@@ -1838,7 +1707,6 @@ function renderPublicCalendarsManagement() {
         list.appendChild(li);
     });
 }
-
 async function handleAddPublicCalendar(e) {
     e.preventDefault();
     const form = e.target;
@@ -1855,7 +1723,6 @@ async function handleAddPublicCalendar(e) {
         publicCalendarsCache.pop();
     }
 }
-
 async function handleDeletePublicCalendar(index) {
     const calToDelete = publicCalendarsCache[index];
     if (!confirm(`¿Estás seguro de que quieres eliminar el calendario "${calToDelete.name}"?`)) return;
@@ -1870,26 +1737,21 @@ async function handleDeletePublicCalendar(index) {
         publicCalendarsCache.splice(index, 0, calToDelete);
     }
 }
-
 async function loadTasks() {
     const taskContainer = document.getElementById('task-list-container');
     taskContainer.innerHTML = '';
     taskContainer.classList.add('loading-container');
     const selectedAreas = Array.from(document.getElementById('filter-area').selectedOptions).map(opt => opt.value);
-    const payload = {
-        action: 'getTasks',
-        filters: {
-            projectId: document.getElementById('filter-project').value,
-            area: selectedAreas.length > 0 ? selectedAreas : null,
-            dateRangeType: document.getElementById('filter-date').value,
-            startDate: document.getElementById('start-date').value,
-            endDate: document.getElementById('end-date').value,
-        },
-        sortBy: document.getElementById('sort-tasks').value,
-        sortDirection: document.getElementById('sort-direction').value
+    const filters = {
+        projectId: document.getElementById('filter-project').value,
+        area: selectedAreas.length > 0 ? selectedAreas : null,
+        dateRangeType: document.getElementById('filter-date').value,
+        startDate: document.getElementById('start-date').value,
+        endDate: document.getElementById('end-date').value,
     };
+    const sortBy = document.getElementById('sort-tasks').value, sortDirection = document.getElementById('sort-direction').value;
     try {
-        const result = await apiCall(payload);
+        const result = await apiCall({ action: 'getTasks', filters, sortBy, sortDirection });
         taskContainer.classList.remove('loading-container');
         renderTasks(result.data);
     } catch (error) {
@@ -1897,12 +1759,10 @@ async function loadTasks() {
         taskContainer.innerHTML = `<div class="message error-message">Error al cargar tareas: ${error.message}</div>`;
     }
 }
-
 function getStatusBadge(status) { return `<span class="task-status-badge status-${status.toLowerCase().replace(/ /g, '-')}">${ICONS.STATUS[status] || ''} ${status}</span>`; }
-
 function renderTasks(tasks) {
     const container = document.getElementById('task-list-container');
-    container.innerHTML = "";
+    container.innerHTML = '';
     if (tasks.length === 0) { container.innerHTML = '<div class="message">No se encontraron tareas con los filtros seleccionados.</div>'; return; }
     const list = document.createElement('div');
     list.className = 'task-list';
@@ -1919,6 +1779,7 @@ function renderTasks(tasks) {
         const customReminderDate = task.customReminderDateTime ? new Date(task.customReminderDateTime) : null;
         const customReminderDateValue = customReminderDate ? customReminderDate.toISOString().split('T')[0] : '';
         const customReminderTimeValue = customReminderDate ? customReminderDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : "";
+        
         card.innerHTML = `
             <div class="task-card-header"><div class="task-card-header-main">${getStatusBadge(task.status)}<h3>${task.title}</h3></div><svg class="task-card-toggle" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
             <div class="task-card-details"><div class="task-card-body">
@@ -1932,12 +1793,12 @@ function renderTasks(tasks) {
                 <div class="form-group reminder-group ${task.calendarEventId ? "" : 'hidden'}"><label>Recordatorios de Calendar:</label><div class="checkbox-item"><input type="checkbox" class="task-reminder-2h" id="reminder-2h-${task.id}" data-task-id="${task.id}" ${task.hasTwoHourReminder ? 'checked' : ''}><label for="reminder-2h-${task.id}"> 2 horas antes</label></div><div class="datetime-group-reminder" style="margin-top: 5px;"><input type="date" class="task-reminder-date" value="${customReminderDateValue}" data-task-id="${task.id}" placeholder="Fecha personalizada"><input type="time" class="task-reminder-time" value="${customReminderTimeValue}" data-task-id="${task.id}"></div></div>
             </div><div class="task-meta">${project ? `<div class="meta-item">${project.name}</div>` : ""}${task.area ? `<div class="meta-item">${ICONS.AREA[task.area] || ICONS.AREA.Default} ${task.area}</div>` : ""}</div><div class="task-card-footer"><button class="delete-btn" onclick="handleTaskDelete('${task.id}', '${task.title.replace(/'/g, "\\'")}')">Eliminar</button><button class="save-btn" onclick="handleTaskUpdate(this, '${task.id}')">Guardar Tarea</button></div></div>`;
         list.appendChild(card);
+        
         populateSelectWithOptions(card.querySelector('.task-status-select'), ICONS.STATUS, task.status);
         populateSelectWithOptions(card.querySelector('.task-priority-select'), ICONS.PRIORITY, task.priority);
     });
     container.appendChild(list);
 }
-
 async function loadProjectDetails(projectId, containerId) {
     const container = document.getElementById(containerId);
     if (!projectId || projectId === 'all') { container.innerHTML = ''; container.classList.add('hidden'); return; }
@@ -1950,16 +1811,14 @@ async function loadProjectDetails(projectId, containerId) {
         container.innerHTML = `<div class="message error-message">Error: ${error.message}</div>`;
     }
 }
-
 function renderProjectDetails(details, projectId, containerId) {
     const container = document.getElementById(containerId);
     if (!details) { container.innerHTML = ''; return; }
     container.innerHTML = `<h3>Detalles de: ${details.name}</h3><div class="project-details-grid"><div class="form-group"><label>Fecha final estimada</label><input type="date" id="${containerId}-end-date" value="${details.endDate || ""}"></div><div class="form-group"><label>Estado</label><input type="text" value="${details.status}" disabled></div></div><div class="form-group"><label>Observaciones</label><textarea id="${containerId}-observations">${details.observations || ""}</textarea></div><button onclick="handleProjectDetailsSave(event, '${projectId}', '${containerId}')">Guardar Cambios del Proyecto</button>`;
 }
-
 function renderProjectsList() {
     const container = document.getElementById('projects-list-container');
-    container.innerHTML = "";
+    container.innerHTML = '';
     if (allProjectsCache.length === 0) { container.innerHTML = '<div class="message">No se encontraron proyectos.</div>'; return; }
     const list = document.createElement('div');
     list.className = 'project-list';
@@ -1968,13 +1827,12 @@ function renderProjectsList() {
         const item = document.createElement('div');
         item.className = 'project-list-item';
         item.id = `project-${project.id}`;
-        let optionsHtml = possibleStatus.map(status => `<option value="${status}" ${project.status === status ? 'selected' : ''}>${status}</option>`).join('');
+        let optionsHtml = possibleStatus.map(status => `<option value="${status}" ${project.status === status ? 'selected' : ""}>${status}</option>`).join("");
         item.innerHTML = `<span class="project-info">${project.name}</span><div class="project-controls"><select class="project-status-select" onchange="handleProjectStatusChange('${project.id}', this.value)">${optionsHtml}</select><button class="action-btn edit-project-btn" onclick="loadProjectDetails('${project.id}', 'project-editor-container')">Ver/Editar</button><button class="delete-btn archive-btn" onclick="handleArchiveProject('${project.id}', '${project.name.replace(/'/g, "\\'")}')">Archivar</button></div>`;
         list.appendChild(item);
     });
     container.appendChild(list);
 }
-
 async function handleCreateProject(e) {
     e.preventDefault();
     const btn = e.target.querySelector('button[type="submit"]');
@@ -1993,7 +1851,6 @@ async function handleCreateProject(e) {
         btn.disabled = false;
     }
 }
-
 async function handleProjectStatusChange(projectId, newStatus) {
     try {
         await apiCall({ action: 'updateProjectStatus', projectId, status: newStatus });
@@ -2005,7 +1862,6 @@ async function handleProjectStatusChange(projectId, newStatus) {
         renderProjectsList();
     }
 }
-
 async function handleArchiveProject(projectId, projectName) {
     if (confirm(`¿Estás seguro de que quieres archivar el proyecto "${projectName}"? No se podrá deshacer desde aquí.`)) {
         try {
@@ -2026,32 +1882,20 @@ async function handleArchiveProject(projectId, projectName) {
         }
     }
 }
-
-function toggleOtherArea() {
-    document.getElementById('area_other').classList.toggle('hidden', document.getElementById('area').value !== 'other');
-}
-
-function toggleCalendarOptions() {
-    document.getElementById('calendarOptions').classList.toggle('hidden', !document.getElementById('add_to_calendar').checked);
-}
-
-function toggleCustomReminder() {
-    document.getElementById('customReminderFields').classList.toggle('hidden', !document.getElementById('recordatorio_custom').checked);
-}
-
+function toggleOtherArea() { document.getElementById('area_other').classList.toggle('hidden', document.getElementById('area').value !== 'other'); }
+function toggleCalendarOptions() { document.getElementById('calendarOptions').classList.toggle('hidden', !document.getElementById('add_to_calendar').checked); }
+function toggleCustomReminder() { document.getElementById('customReminderFields').classList.toggle('hidden', !document.getElementById('recordatorio_custom').checked); }
 function toggleDateSections() {
     const eventType = document.querySelector('input[name="eventType"]:checked').value;
     document.getElementById('fecha-puntual-section').classList.toggle('hidden', eventType !== 'puntual');
     document.getElementById('fecha-rango-section').classList.toggle('hidden', eventType !== 'rango');
     document.getElementById('fecha-recurrente-section').classList.toggle('hidden', eventType !== 'recurrente');
 }
-
 function toggleCustomDateFilter() {
     const isCustom = document.getElementById('filter-date').value === 'custom';
     document.getElementById('custom-date-filter').classList.toggle('hidden', !isCustom);
     if (!isCustom) { document.getElementById('start-date').value = ''; document.getElementById('end-date').value = ''; loadTasks(); }
 }
-
 async function handleFormSubmit(e) {
     e.preventDefault();
     const btn = document.getElementById('submitBtn'), msgBox = document.getElementById('messageBoxForm');
@@ -2073,11 +1917,7 @@ async function handleFormSubmit(e) {
         fecha_inicio: document.getElementById('fecha_inicio').value, fecha_fin: document.getElementById('fecha_fin').value, hora_inicio: document.getElementById('hora_inicio').value, hora_fin_rango: document.getElementById('hora_fin_rango').value,
         dias_semana,
         fecha_inicio_recurrente: document.getElementById('fecha_inicio_recurrente').value, fecha_fin_recurrente: document.getElementById('fecha_fin_recurrente').value, hora_recurrente: document.getElementById('hora_recurrente').value, hora_fin_recurrente: document.getElementById('hora_fin_recurrente').value,
-        add_to_calendar: document.getElementById('add_to_calendar').checked,
-        recordatorio_2h: document.getElementById('recordatorio_2h').checked,
-        recordatorio_custom: document.getElementById('recordatorio_custom').checked,
-        recordatorio_fecha: document.getElementById('recordatorio_fecha').value,
-        recordatorio_hora: document.getElementById('recordatorio_hora').value,
+        add_to_calendar: document.getElementById('add_to_calendar').checked, recordatorio_2h: document.getElementById('recordatorio_2h').checked, recordatorio_custom: document.getElementById('recordatorio_custom').checked, recordatorio_fecha: document.getElementById('recordatorio_fecha').value, recordatorio_hora: document.getElementById('recordatorio_hora').value,
     };
     try {
         const result = await apiCall(formData);
@@ -2094,14 +1934,12 @@ async function handleFormSubmit(e) {
         btn.innerHTML = '<span>Crear Tarea</span>';
     }
 }
-
 async function handleTaskUpdate(button, taskId, details = null) {
     const isSaveButton = button.classList.contains('save-btn');
     if (isSaveButton) { button.textContent = 'Guardando...'; button.disabled = true; }
     if (!details) {
         const card = button.closest('.task-card');
-        const reminderDate = card.querySelector('.task-reminder-date').value,
-            reminderTime = card.querySelector('.task-reminder-time').value;
+        const reminderDate = card.querySelector('.task-reminder-date').value, reminderTime = card.querySelector('.task-reminder-time').value;
         const dateInput = card.querySelector('.task-deadline-date').value, timeInput = card.querySelector('.task-deadline-time').value, endTimeInput = card.querySelector('.task-deadline-end-time').value;
         let deadline = null, deadlineEnd = null;
         if (dateInput) {
@@ -2109,12 +1947,9 @@ async function handleTaskUpdate(button, taskId, details = null) {
             if (endTimeInput) deadlineEnd = `${dateInput}T${endTimeInput}:00`;
         }
         details = {
-            description: card.querySelector('.task-description-input').value,
-            annotations: card.querySelector('.task-annotations-input').value,
-            priority: card.querySelector('.task-priority-select').value,
-            status: card.querySelector('.task-status-select').value,
-            deadline,
-            deadlineEnd,
+            description: card.querySelector('.task-description-input').value, annotations: card.querySelector('.task-annotations-input').value,
+            priority: card.querySelector('.task-priority-select').value, status: card.querySelector('.task-status-select').value,
+            deadline, deadlineEnd,
             hasTwoHourReminder: card.querySelector('.task-reminder-2h').checked,
             customReminder: reminderDate && reminderTime ? `${reminderDate}T${reminderTime}:00` : null
         };
@@ -2130,7 +1965,6 @@ async function handleTaskUpdate(button, taskId, details = null) {
         if (isSaveButton) button.disabled = false;
     }
 }
-
 async function handleTaskDelete(taskId, taskTitle, fromModal = false) {
     if (confirm(`¿Estás seguro de que quieres eliminar la tarea "${taskTitle}"? Esta acción no se puede deshacer.`)) {
         try {
@@ -2155,7 +1989,6 @@ async function handleTaskDelete(taskId, taskTitle, fromModal = false) {
         }
     }
 }
-
 async function handleProjectDetailsSave(event, projectId, containerId) {
     const button = event.target;
     button.textContent = 'Guardando...';
@@ -2172,7 +2005,14 @@ async function handleProjectDetailsSave(event, projectId, containerId) {
         button.disabled = false;
     }
 }
-
+async function apiCall(payload) {
+    const response = await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'cors' });
+    if (!response.ok) throw new Error(`Error del servidor: ${response.statusText}`);
+    const result = await response.json();
+    if (!result.success) throw new Error(result.error);
+    return result;
+}
 </script>
+
 </body>
 </html>
