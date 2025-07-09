@@ -1349,13 +1349,24 @@ async function handleProjectAnalysisSelection(event) {
         return;
     }
     
-    dashboardContainer.innerHTML = '<div class="loading-container"></div>';
+    dashboardContainer.innerHTML = '<div class="message">Realizando petición de análisis...</div>';
 
     try {
-        const result = await apiCall({ action: 'getProjectAnalysisData', projectId });
-        renderProjectAnalysisDashboard(result.data);
+        const result = await apiCall({ action: 'getProjectAnalysisData', projectId: projectId });
+        
+        // ¡PRUEBA CLAVE! Mostramos los datos en una alerta.
+        alert("Datos recibidos del servidor:\n\n" + JSON.stringify(result.data, null, 2));
+
+        // De momento, dejamos el contenedor con un mensaje de éxito.
+        dashboardContainer.innerHTML = `<div class="message success-message">Petición exitosa. Revisa la alerta para ver los datos.</div>`;
+        
+        // La llamada a renderProjectAnalysisDashboard(result.data); está comentada.
+        // La activaremos cuando confirmemos que los datos llegan bien.
+
     } catch (error) {
         dashboardContainer.innerHTML = `<div class="message error-message">Error al cargar datos del proyecto: ${error.message}</div>`;
+        // Mostramos también el error en una alerta para no perderlo.
+        alert("ERROR en la petición: " + error.message);
     }
 }
     document.querySelectorAll('.sub-tab-btn').forEach(button => {
