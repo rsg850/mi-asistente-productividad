@@ -1194,9 +1194,9 @@
 
 <script>
 // =================================
-// SCRIPT DE LA APLICACIÓN V48.0
+// SCRIPT DE LA APLICACIÓN V49.0
 // =================================
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxGcrL-euiUyGLxfODV-yX9nVLsNMSo79UOT6ZvkN8AHx2U_uVR4GEh4hmZSmfTg1yiGg/exec'; // ¡¡¡IMPORTANTE!!! Reemplaza esta URL
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwWpW1nXZbj-qq49W71jQtqkVEs5jTrza2FtevfmpV_KBdr3flKt6O4_0f_nxpczNf7uA/exec'; // ¡¡¡IMPORTANTE!!! Reemplaza esta URL
 
 // --- DEFINICIONES Y CACHÉ ---
 const ICONS = {
@@ -1218,14 +1218,19 @@ document.addEventListener('DOMContentLoaded', initializeApp);
 async function initializeApp() {
     setupEventListeners();
     populateStaticSelects();
-    await Promise.all([
-        loadProjects(),
-        loadAllProjects(),
-        loadAreas(),
-        loadPublicCalendars()
-    ]);
-    await loadTasks();
-    initializeCalendar();
+    try {
+        await Promise.all([
+            loadProjects(),
+            loadAllProjects(),
+            loadAreas(),
+            loadPublicCalendars()
+        ]);
+        await loadTasks();
+        initializeCalendar();
+    } catch (error) {
+        console.error("Error fatal durante la inicialización:", error);
+        // Podrías mostrar un mensaje de error general al usuario aquí
+    }
 }
 
 function setupEventListeners() {
@@ -1542,6 +1547,7 @@ function renderProjectStatusChart(projectId, tasksByStatus) {
     };
     activeProjectCharts[projectId] = new Chart(ctx, {
         type: 'doughnut',
+        data: data,
         options: {
             responsive: true,
             plugins: {
