@@ -1266,7 +1266,7 @@
 // ===================================
 // SCRIPT DE LA APLICACIÓN V48.0
 // ===================================
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwqFWbUd-PbDM_a4XaxPwpi64bzwhRaPmzUnztBZoHt6cL21WWFF0s65GFxwHok5xANqA/exec'; // Reemplaza con tu URL
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxEPMOZAGN2dyxnW1_PUysjwI0zRzZtkxhnFDWr0Dy_wNFc4AIKdlf2dfMk21Q4Y2mlqA/exec'; // Reemplaza con tu URL
 
 // --- DEFINICIONES Y CACHÉ ---
 const ICONS = {
@@ -1487,9 +1487,9 @@ async function toggleProjectTasksDetails(element, projectId) {
             // --- ESTA ES LA CORRECCIÓN CLAVE ---
             // Usamos la acción 'getAllProjectTasks' que es más simple y directa,
             // pasando el projectId directamente.
-            const result = await apiCall({
-                action: 'getAllProjectTasks',
-                projectId: projectId // <-- VERSIÓN CORREGIDA
+            const result = await apiCall({ 
+                action: 'getAllProjectTasks', 
+                projectId: projectId 
             });
             // ------------------------------------
 
@@ -2119,65 +2119,11 @@ async function handleProjectDetailsSave(event, projectId, containerId) {
     }
 }
 async function apiCall(payload) {
-    const READ_ACTIONS = new Set([
-        'getProjects', 'getAllProjects', 'getTasks', 'getProjectDetails',
-        'getGlobalVisionData', 'getAllProjectTasks', 'getAreas', 'getPublicCalendars',
-        'getProjectAnalysisData'
-    ]);
-
-    // Excepción: getTemporalAnalysisData usa POST porque la lista de IDs puede ser muy larga para una URL
-    const isReadAction = READ_ACTIONS.has(payload.action);
-
-    if (isReadAction) {
-        // --- Petición GET para acciones de LECTURA ---
-        const params = new URLSearchParams();
-        for (const key in payload) {
-            if (payload[key] === null || payload[key] === undefined) continue;
-            
-            if (typeof payload[key] === 'object') {
-                params.append(key, JSON.stringify(payload[key]));
-            } else {
-                params.append(key, payload[key]);
-            }
-        }
-        
-        const url = `${WEBHOOK_URL}?${params.toString()}`;
-
-        try {
-            const response = await fetch(url, { method: 'GET', mode: 'cors' });
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Error del servidor (GET ${response.status}): ${errorText}`);
-            }
-            const result = await response.json();
-            if (!result.success) throw new Error(result.error);
-            return result;
-        } catch (error) {
-            console.error(`Error en apiCall (GET) para la acción ${payload.action}:`, error);
-            throw error;
-        }
-
-    } else {
-        // --- Petición POST para acciones de ESCRITURA ---
-        try {
-            const response = await fetch(WEBHOOK_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload),
-                mode: 'cors',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Error del servidor (POST ${response.status}): ${errorText}`);
-            }
-            const result = await response.json();
-            if (!result.success) throw new Error(result.error);
-            return result;
-        } catch (error) {
-            console.error(`Error en apiCall (POST) para la acción ${payload.action}:`, error);
-            throw error;
-        }
-    }
+    const response = await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'cors' });
+    if (!response.ok) throw new Error(`Error del servidor: ${response.statusText}`);
+    const result = await response.json();
+    if (!result.success) throw new Error(result.error);
+    return result;
 }
 // ===================================
 // --- RENDERIZADO ANÁLISIS POR PROYECTO ---
