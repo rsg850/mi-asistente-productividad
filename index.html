@@ -1266,7 +1266,7 @@
 // ===================================
 // SCRIPT DE LA APLICACIÓN V48.0
 // ===================================
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbx1jllX97GsUJJvFdzPemvIK9n1mEJG0Hgr8dELq66najTs_Gt6GPZAVGdCd5dYyypojg/exec'; // Reemplaza con tu URL
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxrhOdCOECwTpkau9d6Mpz8j2De1ouDNVqZBm9qSpsItEvPayaFGVk27Rh6DrxAuVyK3Q/exec'; // Reemplaza con tu URL
 
 // --- DEFINICIONES Y CACHÉ ---
 const ICONS = {
@@ -1313,10 +1313,9 @@ function setupEventListeners() {
             if (tabId === 'agenda' && calendar) setTimeout(() => calendar.render(), 10);
             if (tabId === 'proyectos') renderProjectsList();
             if (tabId === 'analisis') {
-                const container = document.getElementById('global-vision-container');
-                if (container.innerHTML.trim() === '' || container.classList.contains('loading-container')) {
-                    loadGlobalVision();
-                }
+                // Llama directamente a la carga de la sub-pestaña activa
+                const activeSubTab = document.querySelector('#analisis .sub-tab-btn.active').dataset.subtab;
+                loadSubTabData(activeSubTab);
             }
             if (tabId === 'ajustes') {
                 renderAreasManagement();
@@ -1353,8 +1352,9 @@ async function handleProjectAnalysisSelection(event) {
 
     try {
         const result = await apiCall({ action: 'getProjectAnalysisData', projectId: projectId });
-        renderProjectAnalysisDashboard(result.data); // ¡Ahora llamamos a la función de renderizado!
+        renderProjectAnalysisDashboard(result.data);
     } catch (error) {
+        console.error("Error en handleProjectAnalysisSelection:", error);
         dashboardContainer.innerHTML = `<div class="message error-message">Error al cargar datos del proyecto: ${error.message}</div>`;
     }
 }
