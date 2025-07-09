@@ -1194,9 +1194,9 @@
 
 <script>
 // =================================
-// SCRIPT DE LA APLICACIÓN V47.0
+// SCRIPT DE LA APLICACIÓN V48.0
 // =================================
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbw7DbmF92_K14x8WBUjXCp84tC85_Zpbtp6OOjgujNwApxAz15nAvYzidog9JyukaKquQ/exec'; // ¡¡¡IMPORTANTE!!! Reemplaza esta URL
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxGcrL-euiUyGLxfODV-yX9nVLsNMSo79UOT6ZvkN8AHx2U_uVR4GEh4hmZSmfTg1yiGg/exec'; // ¡¡¡IMPORTANTE!!! Reemplaza esta URL
 
 // --- DEFINICIONES Y CACHÉ ---
 const ICONS = {
@@ -1311,7 +1311,7 @@ function loadSubTabData(subtabId) {
 }
 
 // ===================================
-// --- FASE 1: ANÁLISIS POR PROYECTO ---
+// --- ANÁLISIS POR PROYECTO (FASE 1) ---
 // ===================================
 async function loadProjectAnalysisTab() {
     projectAnalysisTabLoaded = true;
@@ -1364,32 +1364,66 @@ function handleProjectAnalysisSelection(event) {
 }
 
 // ===================================
-// --- FUNCIONES COMPLETAS DE V46.0 ---
+// --- API CALL (INTELIGENTE) ---
 // ===================================
-
 async function apiCall(payload) {
-    try {
-        const response = await fetch(WEBHOOK_URL, {
-            method: 'POST',
-            body: JSON.stringify(payload),
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json'
+    const READ_ACTIONS = new Set([
+        'getProjects', 'getAllProjects', 'getTasks', 'getProjectDetails',
+        'getGlobalVisionData', 'getAllProjectTasks', 'getAreas', 'getPublicCalendars'
+    ]);
+
+    const isReadAction = READ_ACTIONS.has(payload.action);
+
+    if (isReadAction) {
+        // --- Petición GET para acciones de LECTURA ---
+        const params = new URLSearchParams();
+        for (const key in payload) {
+            if (payload[key] === null || payload[key] === undefined) continue;
+            
+            if (typeof payload[key] === 'object') {
+                params.append(key, JSON.stringify(payload[key]));
+            } else {
+                params.append(key, payload[key]);
             }
-        });
-        if (!response.ok) {
-            throw new Error(`Error del servidor: ${response.statusText}`);
         }
-        const result = await response.json();
-        if (!result.success) {
-            throw new Error(result.error);
+        
+        const url = `${WEBHOOK_URL}?${params.toString()}`;
+
+        try {
+            const response = await fetch(url, { method: 'GET', mode: 'cors' });
+            if (!response.ok) throw new Error(`Error del servidor (GET): ${response.statusText}`);
+            const result = await response.json();
+            if (!result.success) throw new Error(result.error);
+            return result;
+        } catch (error) {
+            console.error(`Error en apiCall (GET) para la acción ${payload.action}:`, error);
+            throw error;
         }
-        return result;
-    } catch (error) {
-        console.error("Error en apiCall:", error);
-        throw error;
+
+    } else {
+        // --- Petición POST para acciones de ESCRITURA ---
+        try {
+            const response = await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload),
+                mode: 'cors',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (!response.ok) throw new Error(`Error del servidor (POST): ${response.statusText}`);
+            const result = await response.json();
+            if (!result.success) throw new Error(result.error);
+            return result;
+        } catch (error) {
+            console.error(`Error en apiCall (POST) para la acción ${payload.action}:`, error);
+            throw error;
+        }
     }
 }
+
+
+// ===================================
+// --- RESTO DE FUNCIONES ---
+// ===================================
 
 function populateStaticSelects() {
     const statusSelect = document.getElementById('estado');
@@ -1454,7 +1488,13 @@ async function toggleProjectTasksDetails(element, projectId) {
     if (isVisible && !projectTasksCache[projectId]) {
         detailsContainer.innerHTML = '<p class="message">Cargando todas las tareas del proyecto...</p>';
         try {
-            const result = await apiCall({ action: 'getTasks', filters: { projectId }, sortBy: 'status', sortDirection: 'ascending' });
+            const payload = { 
+                action: 'getTasks', 
+                filters: { projectId }, 
+                sortBy: 'status', 
+                sortDirection: 'ascending' 
+            };
+            const result = await apiCall(payload);
             projectTasksCache[projectId] = result.data;
             renderProjectDetailsView(detailsContainer, projectId, result.data);
         } catch (error) {
@@ -1502,7 +1542,6 @@ function renderProjectStatusChart(projectId, tasksByStatus) {
     };
     activeProjectCharts[projectId] = new Chart(ctx, {
         type: 'doughnut',
-        data: data,
         options: {
             responsive: true,
             plugins: {
@@ -1521,14 +1560,19 @@ function initializeCalendar() {
     const notionEventSource = {
         events: async (fetchInfo, successCallback, failureCallback) => {
             try {
-                const filters = {
-                    dateRangeType: 'custom',
-                    startDate: fetchInfo.startStr.split('T')[0],
-                    endDate: fetchInfo.endStr.split('T')[0],
-                    projectId: document.getElementById('filter-agenda-project').value,
-                    area: document.getElementById('filter-agenda-area').value,
+                const payload = {
+                    action: 'getTasks',
+                    filters: {
+                        dateRangeType: 'custom',
+                        startDate: fetchInfo.startStr.split('T')[0],
+                        endDate: fetchInfo.endStr.split('T')[0],
+                        projectId: document.getElementById('filter-agenda-project').value,
+                        area: document.getElementById('filter-agenda-area').value,
+                    },
+                    sortBy: 'deadline',
+                    sortDirection: 'ascending'
                 };
-                const result = await apiCall({ action: 'getTasks', filters, sortBy: 'deadline', sortDirection: 'ascending' });
+                const result = await apiCall(payload);
                 const events = result.data.map(task => ({
                     id: task.id,
                     title: `${ICONS.STATUS[task.status] || ''} ${task.title}`,
@@ -1826,16 +1870,20 @@ async function loadTasks() {
     taskContainer.innerHTML = '';
     taskContainer.classList.add('loading-container');
     const selectedAreas = Array.from(document.getElementById('filter-area').selectedOptions).map(opt => opt.value);
-    const filters = {
-        projectId: document.getElementById('filter-project').value,
-        area: selectedAreas.length > 0 ? selectedAreas : null,
-        dateRangeType: document.getElementById('filter-date').value,
-        startDate: document.getElementById('start-date').value,
-        endDate: document.getElementById('end-date').value,
+    const payload = {
+        action: 'getTasks',
+        filters: {
+            projectId: document.getElementById('filter-project').value,
+            area: selectedAreas.length > 0 ? selectedAreas : null,
+            dateRangeType: document.getElementById('filter-date').value,
+            startDate: document.getElementById('start-date').value,
+            endDate: document.getElementById('end-date').value,
+        },
+        sortBy: document.getElementById('sort-tasks').value,
+        sortDirection: document.getElementById('sort-direction').value
     };
-    const sortBy = document.getElementById('sort-tasks').value, sortDirection = document.getElementById('sort-direction').value;
     try {
-        const result = await apiCall({ action: 'getTasks', filters, sortBy, sortDirection });
+        const result = await apiCall(payload);
         taskContainer.classList.remove('loading-container');
         renderTasks(result.data);
     } catch (error) {
