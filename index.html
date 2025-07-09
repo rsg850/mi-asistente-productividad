@@ -1192,7 +1192,7 @@
                         <!-- El selector de proyectos se generará aquí -->
                     </div>
                     <div id="project-analysis-dashboard">
-                        <!-- El dashboard (heatmap y gráficos) se generará aquí -->
+                        <!-- El dashboard se generará aquí -->
                     </div>
                 </div>
 
@@ -1266,7 +1266,7 @@
 // ===================================
 // SCRIPT DE LA APLICACIÓN V48.0
 // ===================================
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbw-XHrJ9EX1JhG2M3D8BWNcR5B9OCL09n19SriqAoLVInWfOi1GuZ-T__2bJm4--a4zHA/exec'; // Reemplaza con tu URL
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbx1jllX97GsUJJvFdzPemvIK9n1mEJG0Hgr8dELq66najTs_Gt6GPZAVGdCd5dYyypojg/exec'; // Reemplaza con tu URL
 
 // --- DEFINICIONES Y CACHÉ ---
 const ICONS = {
@@ -1349,24 +1349,13 @@ async function handleProjectAnalysisSelection(event) {
         return;
     }
     
-    dashboardContainer.innerHTML = '<div class="message">Realizando petición de análisis...</div>';
+    dashboardContainer.innerHTML = '<div class="loading-container"></div>';
 
     try {
         const result = await apiCall({ action: 'getProjectAnalysisData', projectId: projectId });
-        
-        // ¡PRUEBA CLAVE! Mostramos los datos en una alerta.
-        alert("Datos recibidos del servidor:\n\n" + JSON.stringify(result.data, null, 2));
-
-        // De momento, dejamos el contenedor con un mensaje de éxito.
-        dashboardContainer.innerHTML = `<div class="message success-message">Petición exitosa. Revisa la alerta para ver los datos.</div>`;
-        
-        // La llamada a renderProjectAnalysisDashboard(result.data); está comentada.
-        // La activaremos cuando confirmemos que los datos llegan bien.
-
+        renderProjectAnalysisDashboard(result.data); // ¡Ahora llamamos a la función de renderizado!
     } catch (error) {
         dashboardContainer.innerHTML = `<div class="message error-message">Error al cargar datos del proyecto: ${error.message}</div>`;
-        // Mostramos también el error en una alerta para no perderlo.
-        alert("ERROR en la petición: " + error.message);
     }
 }
     document.querySelectorAll('.sub-tab-btn').forEach(button => {
@@ -2143,6 +2132,11 @@ async function apiCall(payload) {
 function renderProjectAnalysisDashboard(data) {
     const container = document.getElementById('project-analysis-dashboard');
     container.innerHTML = `
+        <div class="tasks-by-status-grid">
+            <div class="status-column status-pending"><h4>Sin Empezar</h4><ul>${data.tasksByStatus['Sin empezar'].map(t => `<li>${t.title}</li>`).join('') || '<li>-</li>'}</ul></div>
+            <div class="status-column status-progress"><h4>En Progreso</h4><ul>${data.tasksByStatus['En progreso'].map(t => `<li>${t.title}</li>`).join('') || '<li>-</li>'}</ul></div>
+            <div class="status-column status-done"><h4>Listo</h4><ul>${data.tasksByStatus['Listo'].map(t => `<li>${t.title}</li>`).join('') || '<li>-</li>'}</ul></div>
+        </div>
         <div class="project-chart-container">
             <h4>Tareas Pendientes por Prioridad</h4>
             <canvas id="project-priority-chart"></canvas>
@@ -2169,66 +2163,39 @@ function renderProjectAnalysisDashboard(data) {
                 backgroundColor: '#0077B6'
             }]
         },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            plugins: { legend: { display: false } }
-        }
+        options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } } }
     });
 
     // Renderizar Gráfico de Estado (Anillo)
+    const statusDataForChart = {
+        'Sin empezar': data.tasksByStatus['Sin empezar'].length,
+        'En progreso': data.tasksByStatus['En progreso'].length,
+        'Listo': data.tasksByStatus['Listo'].length
+    };
     const statusCtx = document.getElementById('project-status-chart').getContext('2d');
     new Chart(statusCtx, {
         type: 'doughnut',
         data: {
-            labels: Object.keys(data.tasksByStatus),
+            labels: Object.keys(statusDataForChart),
             datasets: [{
-                data: Object.values(data.tasksByStatus),
-                backgroundColor: [
-                    'rgba(254, 243, 199, 0.8)', // Sin empezar
-                    'rgba(219, 234, 254, 0.8)', // En progreso
-                    'rgba(209, 250, 229, 0.8)'  // Listo
-                ],
-                borderColor: [
-                    'rgba(146, 64, 14, 1)',
-                    'rgba(30, 64, 175, 1)',
-                    'rgba(6, 95, 70, 1)'
-                ],
+                data: Object.values(statusDataForChart),
+                backgroundColor: ['#FEF3C7', '#DBEAFE', '#D1FAE5'],
+                borderColor: ['#92400E', '#1E40AF', '#065F46'],
                 borderWidth: 1
             }]
         },
-        options: {
-            responsive: true,
-            plugins: { legend: { position: 'top' } }
-        }
+        options: { responsive: true, plugins: { legend: { position: 'top' } } }
     });
 
     // Renderizar Heatmap
-    if (projectHeatmap) {
-        projectHeatmap.destroy();
-    }
+    if (projectHeatmap) projectHeatmap.destroy();
     projectHeatmap = new CalHeatmap();
     projectHeatmap.paint({
-        data: {
-            source: data.heatmapData,
-            type: 'json',
-            x: 'timestamp',
-            y: 'value'
-        },
+        data: { source: data.heatmapData, type: 'json', x: 'timestamp', y: 'value' },
         date: { start: new Date(new Date().setFullYear(new Date().getFullYear() - 1)) },
         range: 12,
-        scale: {
-            color: {
-                type: 'threshold',
-                range: ['#d1fae5', '#86efac', '#4ade80', '#22c55e', '#16a34a'],
-                domain: [1, 2, 4, 6, 8]
-            }
-        },
-        domain: {
-            type: 'month',
-            gutter: 4,
-            label: { text: 'MMM', textAlign: 'start', position: 'top' }
-        },
+        scale: { color: { type: 'threshold', range: ['#d1fae5', '#86efac', '#4ade80', '#22c55e', '#16a34a'], domain: [1, 2, 4, 6, 8] } },
+        domain: { type: 'month', gutter: 4, label: { text: 'MMM', textAlign: 'start', position: 'top' } },
         subDomain: { type: 'ghDay', radius: 2, width: 11, height: 11, gutter: 4 },
         itemSelector: '#cal-heatmap-project'
     });
