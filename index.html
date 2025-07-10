@@ -1266,7 +1266,7 @@
 // ===================================
 // SCRIPT DE LA APLICACIÓN V48.0
 // ===================================
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycby5FZlFaNl3cy-62F2iRwO5rWP-nKXSAIGsxsvGXjlkBxkgcj0qAUBqC4G0Rk6X_0WkFQ/exec'; // Reemplaza con tu URL
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyOjzuxRmzFcadPSFOFxxYkveANlqGdFflskgWf21cdMwSlhOiqxnB4rwgvjaUqoKACmQ/exec'; // Reemplaza con tu URL
 
 // --- DEFINICIONES Y CACHÉ ---
 const ICONS = {
@@ -1282,6 +1282,7 @@ let publicCalendarsCache = [];
 let calendar;
 let activeProjectCharts = {};
 let projectTasksCache = {};
+let projectAnalysisTabLoaded = false;
 let temporalAnalysisTabLoaded = false;
 let temporalAnalysisChart = null;
 let projectHeatmap = null;
@@ -1326,13 +1327,13 @@ function setupEventListeners() {
 function loadSubTabData(subtabId) {
     if (subtabId === 'analisis-global') {
         const container = document.getElementById('global-vision-container');
-        if (container.innerHTML.trim() === '' || container.classList.contains('loading-container')) {
+        // Solo carga si está vacío para no repetir llamadas
+        if (container.innerHTML.trim() === "" || container.classList.contains('loading-container')) {
             loadGlobalVision();
         }
     } else if (subtabId === 'analisis-proyecto') {
-        if (!projectAnalysisTabLoaded) {
-            loadProjectAnalysisTab();
-        }
+        // Llama a la función que acabamos de crear
+        loadProjectAnalysisTab();
     } else if (subtabId === 'analisis-temporal') {
         if (!temporalAnalysisTabLoaded) {
             loadTemporalAnalysisTab();
@@ -1474,7 +1475,33 @@ function renderGlobalVision(projects) {
         container.appendChild(item);
     });
 }
+async function loadProjectAnalysisTab() {
+    if (projectAnalysisTabLoaded) return;
+    projectAnalysisTabLoaded = true; // Marcar como cargada para no repetir
+    const selectorContainer = document.getElementById('project-analysis-selector-container');
+    
+    selectorContainer.innerHTML = '<div class="message">Cargando proyectos para análisis...</div>';
 
+    // Si no hay proyectos cargados en caché, mostrar un mensaje.
+    if (!allProjectsCache || allProjectsCache.length === 0) {
+        selectorContainer.innerHTML = '<p class="message">No se encontraron proyectos para analizar. Carga la pestaña "Proyectos" primero.</p>';
+        return;
+    }
+
+    // Crear el selector de proyectos
+    selectorContainer.innerHTML = `
+        <div class="form-group">
+            <label for="project-analysis-select" class="section-title" style="border: none; margin-bottom: 10px;">Selecciona un Proyecto</label>
+            <select id="project-analysis-select">
+                <option value="">-- Elige un proyecto para auditar --</option>
+                ${allProjectsCache.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+            </select>
+        </div>
+    `;
+
+    // Añadir el listener para que, al cambiar la selección, se carguen los datos
+    document.getElementById('project-analysis-select').addEventListener('change', handleProjectAnalysisSelection);
+}
 async function toggleProjectTasksDetails(element, projectId) {
     const detailsContainer = document.getElementById(`project-tasks-${projectId}`);
     const isVisible = detailsContainer.classList.toggle('visible');
@@ -2339,77 +2366,6 @@ function renderTemporalAnalysisDashboard(data) {
             e.target.classList.add('active');
             renderChart(e.target.dataset.chart);
         });
-    });
-}
-function renderProjectAnalysisDashboard(data) {
-    const container = document.getElementById('project-analysis-dashboard');
-    container.innerHTML = `
-        <div class="tasks-by-status-grid">
-            <div class="status-column status-pending"><h4>Sin Empezar</h4><ul>${data.tasksByStatus['Sin empezar'].map(t => `<li>${t.title}</li>`).join('') || '<li>-</li>'}</ul></div>
-            <div class="status-column status-progress"><h4>En Progreso</h4><ul>${data.tasksByStatus['En progreso'].map(t => `<li>${t.title}</li>`).join('') || '<li>-</li>'}</ul></div>
-            <div class="status-column status-done"><h4>Listo</h4><ul>${data.tasksByStatus['Listo'].map(t => `<li>${t.title}</li>`).join('') || '<li>-</li>'}</ul></div>
-        </div>
-        <div class="project-chart-container">
-            <h4>Tareas Pendientes por Prioridad</h4>
-            <canvas id="project-priority-chart"></canvas>
-        </div>
-        <div class="project-chart-container">
-            <h4>Distribución de Tareas por Estado</h4>
-            <canvas id="project-status-chart"></canvas>
-        </div>
-        <div class="project-chart-container">
-            <h4>Heatmap de Tareas Completadas (Último Año)</h4>
-            <div id="cal-heatmap-project" class="cal-heatmap-container"></div>
-        </div>
-    `;
-
-    // Renderizar Gráfico de Prioridad (Barras)
-    const priorityCtx = document.getElementById('project-priority-chart').getContext('2d');
-    new Chart(priorityCtx, {
-        type: 'bar',
-        data: {
-            labels: Object.keys(data.tasksByPriority),
-            datasets: [{
-                label: 'Nº de Tareas Pendientes',
-                data: Object.values(data.tasksByPriority),
-                backgroundColor: '#0077B6'
-            }]
-        },
-        options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } } }
-    });
-
-    // Renderizar Gráfico de Estado (Anillo)
-    const statusDataForChart = {
-        'Sin empezar': data.tasksByStatus['Sin empezar'].length,
-        'En progreso': data.tasksByStatus['En progreso'].length,
-        'Listo': data.tasksByStatus['Listo'].length
-    };
-    const statusCtx = document.getElementById('project-status-chart').getContext('2d');
-    new Chart(statusCtx, {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(statusDataForChart),
-            datasets: [{
-                data: Object.values(statusDataForChart),
-                backgroundColor: ['#FEF3C7', '#DBEAFE', '#D1FAE5'],
-                borderColor: ['#92400E', '#1E40AF', '#065F46'],
-                borderWidth: 1
-            }]
-        },
-        options: { responsive: true, plugins: { legend: { position: 'top' } } }
-    });
-
-    // Renderizar Heatmap
-    if (projectHeatmap) projectHeatmap.destroy();
-    projectHeatmap = new CalHeatmap();
-    projectHeatmap.paint({
-        data: { source: data.heatmapData, type: 'json', x: 'timestamp', y: 'value' },
-        date: { start: new Date(new Date().setFullYear(new Date().getFullYear() - 1)) },
-        range: 12,
-        scale: { color: { type: 'threshold', range: ['#d1fae5', '#86efac', '#4ade80', '#22c55e', '#16a34a'], domain: [1, 2, 4, 6, 8] } },
-        domain: { type: 'month', gutter: 4, label: { text: 'MMM', textAlign: 'start', position: 'top' } },
-        subDomain: { type: 'ghDay', radius: 2, width: 11, height: 11, gutter: 4 },
-        itemSelector: '#cal-heatmap-project'
     });
 }
 </script>
