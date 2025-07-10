@@ -1352,9 +1352,8 @@ async function handleProjectAnalysisSelection(event) {
 
     try {
         const result = await apiCall({ action: 'getProjectAnalysisData', projectId: projectId });
-        renderProjectAnalysisDashboard(result.data);
+        renderProjectAnalysisDashboard(result.data); // ¡Ahora llamamos a la función de renderizado!
     } catch (error) {
-        console.error("Error en handleProjectAnalysisSelection:", error);
         dashboardContainer.innerHTML = `<div class="message error-message">Error al cargar datos del proyecto: ${error.message}</div>`;
     }
 }
@@ -2342,7 +2341,77 @@ function renderTemporalAnalysisDashboard(data) {
         });
     });
 }
+function renderProjectAnalysisDashboard(data) {
+    const container = document.getElementById('project-analysis-dashboard');
+    container.innerHTML = `
+        <div class="tasks-by-status-grid">
+            <div class="status-column status-pending"><h4>Sin Empezar</h4><ul>${data.tasksByStatus['Sin empezar'].map(t => `<li>${t.title}</li>`).join('') || '<li>-</li>'}</ul></div>
+            <div class="status-column status-progress"><h4>En Progreso</h4><ul>${data.tasksByStatus['En progreso'].map(t => `<li>${t.title}</li>`).join('') || '<li>-</li>'}</ul></div>
+            <div class="status-column status-done"><h4>Listo</h4><ul>${data.tasksByStatus['Listo'].map(t => `<li>${t.title}</li>`).join('') || '<li>-</li>'}</ul></div>
+        </div>
+        <div class="project-chart-container">
+            <h4>Tareas Pendientes por Prioridad</h4>
+            <canvas id="project-priority-chart"></canvas>
+        </div>
+        <div class="project-chart-container">
+            <h4>Distribución de Tareas por Estado</h4>
+            <canvas id="project-status-chart"></canvas>
+        </div>
+        <div class="project-chart-container">
+            <h4>Heatmap de Tareas Completadas (Último Año)</h4>
+            <div id="cal-heatmap-project" class="cal-heatmap-container"></div>
+        </div>
+    `;
 
+    // Renderizar Gráfico de Prioridad (Barras)
+    const priorityCtx = document.getElementById('project-priority-chart').getContext('2d');
+    new Chart(priorityCtx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(data.tasksByPriority),
+            datasets: [{
+                label: 'Nº de Tareas Pendientes',
+                data: Object.values(data.tasksByPriority),
+                backgroundColor: '#0077B6'
+            }]
+        },
+        options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } } }
+    });
+
+    // Renderizar Gráfico de Estado (Anillo)
+    const statusDataForChart = {
+        'Sin empezar': data.tasksByStatus['Sin empezar'].length,
+        'En progreso': data.tasksByStatus['En progreso'].length,
+        'Listo': data.tasksByStatus['Listo'].length
+    };
+    const statusCtx = document.getElementById('project-status-chart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(statusDataForChart),
+            datasets: [{
+                data: Object.values(statusDataForChart),
+                backgroundColor: ['#FEF3C7', '#DBEAFE', '#D1FAE5'],
+                borderColor: ['#92400E', '#1E40AF', '#065F46'],
+                borderWidth: 1
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'top' } } }
+    });
+
+    // Renderizar Heatmap
+    if (projectHeatmap) projectHeatmap.destroy();
+    projectHeatmap = new CalHeatmap();
+    projectHeatmap.paint({
+        data: { source: data.heatmapData, type: 'json', x: 'timestamp', y: 'value' },
+        date: { start: new Date(new Date().setFullYear(new Date().getFullYear() - 1)) },
+        range: 12,
+        scale: { color: { type: 'threshold', range: ['#d1fae5', '#86efac', '#4ade80', '#22c55e', '#16a34a'], domain: [1, 2, 4, 6, 8] } },
+        domain: { type: 'month', gutter: 4, label: { text: 'MMM', textAlign: 'start', position: 'top' } },
+        subDomain: { type: 'ghDay', radius: 2, width: 11, height: 11, gutter: 4 },
+        itemSelector: '#cal-heatmap-project'
+    });
+}
 </script>
 
 </body>
