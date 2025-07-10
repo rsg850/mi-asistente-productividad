@@ -1266,7 +1266,7 @@
 // ===================================
 // SCRIPT DE LA APLICACIÓN V48.0
 // ===================================
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyGyI5_fGLyq7fxaJbG5DpHGOzK-RvbqVGkW_ft44XEaFxZVPOiz0hKRdbSWAXXA5DUYg/exec'; // Reemplaza con tu URL
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzAXIaA56wPfHXMl90J78POVh4bnXe8KeNtWapcnb5fneIEAESlm3-hFT3lbs58a4-z4w/exec'; // Reemplaza con tu URL
 
 // --- DEFINICIONES Y CACHÉ ---
 const ICONS = {
@@ -1362,6 +1362,7 @@ async function handleProjectAnalysisSelection(event) {
 function renderAnalysisUI(projectId, chartData) {
     const dashboardContainer = document.getElementById('project-analysis-dashboard');
     
+    // Dibuja la estructura de la UI con los contenedores para los gráficos y los nuevos filtros.
     dashboardContainer.innerHTML = `
         <div class="project-chart-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
             <div>
@@ -1378,6 +1379,7 @@ function renderAnalysisUI(projectId, chartData) {
              <div class="form-group">
                 <label for="analysis-status-filter">Filtrar Tareas por Estado</label>
                 <select id="analysis-status-filter" data-project-id="${projectId}">
+                    <option value="">-- Selecciona un estado --</option>
                     <option value="all">Ver Todas</option>
                     <option value="Sin empezar">Sin empezar</option>
                     <option value="En progreso">En progreso</option>
@@ -1385,13 +1387,39 @@ function renderAnalysisUI(projectId, chartData) {
                 </select>
             </div>
         </div>
-        <div id="project-details-container"><div class="message">Selecciona un estado para ver las tareas.</div></div>
+        <div id="project-details-container"></div>
         <div id="project-heatmap-container"></div>
     `;
 
-    // Renderizar Gráficos
-    new Chart(document.getElementById('project-priority-chart').getContext('2d'), { /* ... opciones de gráfico de prioridad ... */ });
-    new Chart(document.getElementById('project-status-chart').getContext('2d'), { /* ... opciones de gráfico de estado ... */ });
+    // --- CÓDIGO COMPLETO PARA RENDERIZAR GRÁFICOS ---
+    // Renderizar Gráfico de Prioridad (Barras)
+    new Chart(document.getElementById('project-priority-chart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(chartData.tasksByPriority),
+            datasets: [{
+                label: 'N° de Tareas Pendientes',
+                data: Object.values(chartData.tasksByPriority),
+                backgroundColor: '#0077B6'
+            }]
+        },
+        options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } } }
+    });
+
+    // Renderizar Gráfico de Estado (Anillo)
+    new Chart(document.getElementById('project-status-chart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(chartData.tasksByStatus),
+            datasets: [{
+                data: Object.values(chartData.tasksByStatus),
+                backgroundColor: ['#FEF3C7', '#DBEAFE', '#D1FAE5'],
+                borderColor: ['#92400E', '#1E40AF', '#065F46'],
+                borderWidth: 1
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'top' } } }
+    });
 
     // Añadir listener al nuevo filtro de estado
     document.getElementById('analysis-status-filter').addEventListener('change', handleAnalysisFilterChange);
