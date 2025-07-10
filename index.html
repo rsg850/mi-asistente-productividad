@@ -1359,77 +1359,33 @@ async function handleProjectAnalysisSelection(event) {
     }
 }
 
+/**
+ * VERSIÓN DE PRUEBA DEFINITIVA
+ * Esta función solo intenta escribir un mensaje simple en la pantalla
+ * para confirmar que el flujo de ejecución llega hasta aquí correctamente.
+ */
 function renderAnalysisUI(projectId, chartData) {
+    console.log("RENDER UI - PASO 1: Entrando en la función de prueba.");
     const dashboardContainer = document.getElementById('project-analysis-dashboard');
     
-    // 1. Dibuja la estructura HTML
-    dashboardContainer.innerHTML = `
-        <div class="project-chart-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <div>
-                <h4>Tareas Pendientes por Prioridad</h4>
-                <canvas id="project-priority-chart"></canvas>
+    if (dashboardContainer) {
+        console.log("RENDER UI - PASO 2: Contenedor encontrado. Escribiendo HTML de prueba.");
+        dashboardContainer.innerHTML = `
+            <div style="padding: 40px; text-align: center;">
+                <h2 style="color: #00A99D; font-size: 2.5em; margin-bottom: 15px;">
+                    ✅ PRUEBA SUPERADA
+                </h2>
+                <p style="font-size: 1.2em;">Los datos han llegado al navegador y esta función se ha ejecutado.</p>
+                <p>El problema está aislado en la lógica de renderizado de los gráficos.</p>
+                <hr style="margin: 20px 0;">
+                <p><strong>Datos recibidos del servidor:</strong></p>
+                <pre style="background: #f1f3f5; padding: 15px; border-radius: 8px; text-align: left; display: inline-block;">${JSON.stringify(chartData, null, 2)}</pre>
             </div>
-            <div>
-                <h4>Distribución de Tareas por Estado</h4>
-                <canvas id="project-status-chart"></canvas>
-            </div>
-        </div>
-        <hr style="margin: 20px 0;">
-        <div id="analysis-filters" class="filters-panel" style="padding: 15px; justify-content: flex-start;">
-             <div class="form-group">
-                <label for="analysis-status-filter">Filtrar Tareas por Estado</label>
-                <select id="analysis-status-filter" data-project-id="${projectId}">
-                    <option value="">-- Selecciona un estado --</option>
-                    <option value="all">Ver Todas</option>
-                    <option value="Sin empezar">Sin empezar</option>
-                    <option value="En progreso">En progreso</option>
-                    <option value="Listo">Listo</option>
-                </select>
-            </div>
-        </div>
-        <div id="project-details-container"></div>
-        <div id="project-heatmap-container"></div>
-    `;
-
-    // 2. CORRECCIÓN CLAVE: Espera un instante a que el DOM se actualice antes de dibujar
-    setTimeout(() => {
-        try {
-            // Renderizar Gráfico de Prioridad (Barras)
-            new Chart(document.getElementById('project-priority-chart').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(chartData.tasksByPriority),
-                    datasets: [{
-                        label: 'N° de Tareas Pendientes',
-                        data: Object.values(chartData.tasksByPriority),
-                        backgroundColor: '#0077B6'
-                    }]
-                },
-                options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } } }
-            });
-
-            // Renderizar Gráfico de Estado (Anillo)
-            new Chart(document.getElementById('project-status-chart').getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(chartData.tasksByStatus),
-                    datasets: [{
-                        data: Object.values(chartData.tasksByStatus),
-                        backgroundColor: ['#FEF3C7', '#DBEAFE', '#D1FAE5'],
-                        borderColor: ['#92400E', '#1E40AF', '#065F46'],
-                        borderWidth: 1
-                    }]
-                },
-                options: { responsive: true, plugins: { legend: { position: 'top' } } }
-            });
-
-            // Añadir listener al nuevo filtro de estado
-            document.getElementById('analysis-status-filter').addEventListener('change', handleAnalysisFilterChange);
-        } catch(e) {
-            console.error("Error al renderizar los componentes de la UI de análisis:", e);
-            dashboardContainer.innerHTML = `<div class="message error-message">Error al dibujar la interfaz. Revisa la consola (F12).</div>`;
-        }
-    }, 0); // El timeout de 0 milisegundos es suficiente para que funcione.
+        `;
+        console.log("RENDER UI - PASO 3: HTML de prueba escrito en el DOM.");
+    } else {
+        console.error("RENDER UI - ERROR CRÍTICO: No se ha podido encontrar el elemento con id 'project-analysis-dashboard'.");
+    }
 }
 
 async function handleAnalysisFilterChange(event) {
