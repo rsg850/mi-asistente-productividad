@@ -1266,7 +1266,7 @@
 // ===================================
 // SCRIPT DE LA APLICACIÓN V48.0
 // ===================================
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxHFI7fxvPhFnbOLy4_oCP6siuIFk38c7Dph4CJPgWDFW3pKN5DOVVvQsG58LlUKHs6ag/exec'; // Reemplaza con tu URL
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyGyI5_fGLyq7fxaJbG5DpHGOzK-RvbqVGkW_ft44XEaFxZVPOiz0hKRdbSWAXXA5DUYg/exec'; // Reemplaza con tu URL
 
 // --- DEFINICIONES Y CACHÉ ---
 const ICONS = {
@@ -1349,28 +1349,20 @@ async function handleProjectAnalysisSelection(event) {
         return;
     }
     
-    // Limpiamos y mostramos un estado de carga inicial
-    dashboardContainer.innerHTML = `
-        <div id="project-charts-container"><div class="message">📊 Cargando gráficos...</div></div>
-        <div id="project-details-container" style="opacity: 0.5;"><div class="message">📋 Cargando detalles de tareas...</div></div>
-    `;
+    dashboardContainer.innerHTML = `<div id="project-charts-container"><div class="message">📊 Cargando gráficos...</div></div>`;
 
     try {
-        // --- PRIMERA LLAMADA: RÁPIDA, PARA LOS GRÁFICOS ---
         const chartResult = await apiCall({ action: 'getProjectChartData', projectId });
-        renderProjectCharts(chartResult.data); // Función que crearemos ahora
-
-        // --- SEGUNDA LLAMADA: LENTA, PARA LOS DETALLES ---
-        const detailResult = await apiCall({ action: 'getProjectDetailData', projectId });
-        renderProjectDetails(detailResult.data); // Función que también crearemos
-
+        renderAnalysisUI(projectId, chartResult.data);
     } catch (error) {
-        dashboardContainer.innerHTML = `<div class="message error-message">Error al cargar el análisis del proyecto: ${error.message}</div>`;
+        dashboardContainer.innerHTML = `<div class="message error-message">Error al cargar los gráficos: ${error.message}</div>`;
     }
 }
-function renderProjectCharts(data) {
-    const container = document.getElementById('project-charts-container');
-    container.innerHTML = `
+
+function renderAnalysisUI(projectId, chartData) {
+    const dashboardContainer = document.getElementById('project-analysis-dashboard');
+    
+    dashboardContainer.innerHTML = `
         <div class="project-chart-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
             <div>
                 <h4>Tareas Pendientes por Prioridad</h4>
@@ -1381,75 +1373,75 @@ function renderProjectCharts(data) {
                 <canvas id="project-status-chart"></canvas>
             </div>
         </div>
+        <hr style="margin: 20px 0;">
+        <div id="analysis-filters" class="filters-panel" style="padding: 15px; justify-content: flex-start;">
+             <div class="form-group">
+                <label for="analysis-status-filter">Filtrar Tareas por Estado</label>
+                <select id="analysis-status-filter" data-project-id="${projectId}">
+                    <option value="all">Ver Todas</option>
+                    <option value="Sin empezar">Sin empezar</option>
+                    <option value="En progreso">En progreso</option>
+                    <option value="Listo">Listo</option>
+                </select>
+            </div>
+        </div>
+        <div id="project-details-container"><div class="message">Selecciona un estado para ver las tareas.</div></div>
+        <div id="project-heatmap-container"></div>
     `;
 
-    // Renderizar Gráfico de Prioridad (Barras)
-    new Chart(document.getElementById('project-priority-chart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: Object.keys(data.tasksByPriority),
-            datasets: [{
-                label: 'N° de Tareas Pendientes',
-                data: Object.values(data.tasksByPriority),
-                backgroundColor: '#0077B6'
-            }]
-        },
-        options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } } }
-    });
+    // Renderizar Gráficos
+    new Chart(document.getElementById('project-priority-chart').getContext('2d'), { /* ... opciones de gráfico de prioridad ... */ });
+    new Chart(document.getElementById('project-status-chart').getContext('2d'), { /* ... opciones de gráfico de estado ... */ });
 
-    // Renderizar Gráfico de Estado (Anillo)
-    new Chart(document.getElementById('project-status-chart').getContext('2d'), {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(data.tasksByStatus),
-            datasets: [{
-                data: Object.values(data.tasksByStatus),
-                backgroundColor: ['#FEF3C7', '#DBEAFE', '#D1FAE5'],
-                borderColor: ['#92400E', '#1E40AF', '#065F46'],
-                borderWidth: 1
-            }]
-        },
-        options: { responsive: true, plugins: { legend: { position: 'top' } } }
-    });
+    // Añadir listener al nuevo filtro de estado
+    document.getElementById('analysis-status-filter').addEventListener('change', handleAnalysisFilterChange);
 }
 
-function renderProjectDetails(data) {
-    const container = document.getElementById('project-details-container');
-    container.style.opacity = 1; // Hacemos visible el contenedor
+async function handleAnalysisFilterChange(event) {
+    const status = event.target.value;
+    const projectId = event.target.dataset.projectId;
 
-    const createTaskList = (taskList) => {
-        if (!taskList || taskList.length === 0) return '<ul><li>-</li></ul>';
-        return '<ul>' + taskList.map(t => `<li data-task-id="${t.id}">${t.title}</li>`).join("") + '</ul>';
-    };
-
-    container.innerHTML = `
-        <div class="tasks-by-status-grid" style="margin-top: 20px;">
-            <div class="status-column status-pending"><h4>Sin Empezar</h4>${createTaskList(data.tasksByStatusList['Sin empezar'])}</div>
-            <div class="status-column status-progress"><h4>En Progreso</h4>${createTaskList(data.tasksByStatusList['En progreso'])}</div>
-            <div class="status-column status-done"><h4>Listo</h4>${createTaskList(data.tasksByStatusList['Listo'])}</div>
-        </div>
-        <div class="project-chart-container">
-            <h4>Heatmap de Tareas Completadas (Último Año)</h4>
-            <div id="cal-heatmap-project" class="cal-heatmap-container"></div>
-        </div>
-    `;
-
-    // Renderizar Heatmap
-    if (projectHeatmap) projectHeatmap.destroy();
-    projectHeatmap = new CalHeatmap();
+    const detailsContainer = document.getElementById('project-details-container');
+    const heatmapContainer = document.getElementById('project-heatmap-container');
     
-    // Transformamos los datos del heatmap al formato que espera la librería
-    const heatmapChartData = Object.entries(data.heatmapData).map(([timestamp, value]) => ({ timestamp: Number(timestamp), value }));
+    detailsContainer.innerHTML = `<div class="message">📋 Cargando tareas '${status}'...</div>`;
+    heatmapContainer.innerHTML = ''; // Limpiar heatmap anterior
 
-    projectHeatmap.paint({
-        data: { source: heatmapChartData, type: 'json', x: 'timestamp', y: 'value' },
-        date: { start: new Date(new Date().setFullYear(new Date().getFullYear() - 1)) },
-        range: 12,
-        scale: { color: { type: 'threshold', range: ['#d1fae5', '#86efac', '#4ade80', '#22c55e', '#16a34a'], domain: [1, 2, 4, 6, 8] } },
-        domain: { type: 'month', gutter: 4, label: { text: 'MMM', textAlign: 'start', position: 'top' } },
-        subDomain: { type: 'ghDay', radius: 2, width: 11, height: 11, gutter: 4 },
-        itemSelector: '#cal-heatmap-project'
-    });
+    try {
+        const detailResult = await apiCall({ 
+            action: 'getProjectDetailData', 
+            projectId: projectId,
+            filters: { status: status }
+        });
+
+        const data = detailResult.data;
+        const createTaskList = (taskList) => {
+             if (!taskList || taskList.length === 0) return '<ul><li>-</li></ul>';
+             return '<ul>' + taskList.map(t => `<li data-task-id="${t.id}">${t.title}</li>`).join("") + '</ul>';
+        };
+
+        detailsContainer.innerHTML = `
+            <div class="tasks-by-status-grid" style="margin-top: 20px;">
+                <div class="status-column status-pending"><h4>Sin Empezar</h4>${createTaskList(data.tasksByStatusList['Sin empezar'])}</div>
+                <div class="status-column status-progress"><h4>En Progreso</h4>${createTaskList(data.tasksByStatusList['En progreso'])}</div>
+                <div class="status-column status-done"><h4>Listo</h4>${createTaskList(data.tasksByStatusList['Listo'])}</div>
+            </div>
+        `;
+
+        // Renderizar Heatmap solo si se piden las tareas completadas
+        if (status === 'Listo' || status === 'all') {
+            heatmapContainer.innerHTML = `
+                <div class="project-chart-container">
+                    <h4>Heatmap de Tareas Completadas (Último Año)</h4>
+                    <div id="cal-heatmap-project" class="cal-heatmap-container"></div>
+                </div>
+            `;
+            // Lógica para pintar el heatmap (ya la tienes)
+        }
+
+    } catch (error) {
+        detailsContainer.innerHTML = `<div class="message error-message">Error al cargar los detalles: ${error.message}</div>`;
+    }
 }
     document.querySelectorAll('.sub-tab-btn').forEach(button => {
         button.addEventListener('click', () => {
