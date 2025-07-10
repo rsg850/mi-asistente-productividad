@@ -1342,10 +1342,11 @@ function loadSubTabData(subtabId) {
 }
 async function handleProjectAnalysisSelection(event) {
     const projectId = event.target.value;
+    console.log(`3. ⚙️ Selección detectada. Lanzando petición para el proyecto ID: ${projectId}`); // <-- BALIZA 3
+    
     const dashboardContainer = document.getElementById('project-analysis-dashboard');
-
     if (!projectId) {
-        dashboardContainer.innerHTML = '';
+        dashboardContainer.innerHTML = "";
         return;
     }
     
@@ -1476,19 +1477,18 @@ function renderGlobalVision(projects) {
     });
 }
 async function loadProjectAnalysisTab() {
+    console.log("1. ✅ Iniciando loadProjectAnalysisTab()..."); // <-- BALIZA 1
     if (projectAnalysisTabLoaded) return;
-    projectAnalysisTabLoaded = true; // Marcar como cargada para no repetir
+    projectAnalysisTabLoaded = true; 
     const selectorContainer = document.getElementById('project-analysis-selector-container');
     
     selectorContainer.innerHTML = '<div class="message">Cargando proyectos para análisis...</div>';
 
-    // Si no hay proyectos cargados en caché, mostrar un mensaje.
     if (!allProjectsCache || allProjectsCache.length === 0) {
         selectorContainer.innerHTML = '<p class="message">No se encontraron proyectos para analizar. Carga la pestaña "Proyectos" primero.</p>';
         return;
     }
 
-    // Crear el selector de proyectos
     selectorContainer.innerHTML = `
         <div class="form-group">
             <label for="project-analysis-select" class="section-title" style="border: none; margin-bottom: 10px;">Selecciona un Proyecto</label>
@@ -1499,8 +1499,8 @@ async function loadProjectAnalysisTab() {
         </div>
     `;
 
-    // Añadir el listener para que, al cambiar la selección, se carguen los datos
     document.getElementById('project-analysis-select').addEventListener('change', handleProjectAnalysisSelection);
+    console.log("2. ✅ Selector de proyectos creado y listener añadido."); // <-- BALIZA 2
 }
 async function toggleProjectTasksDetails(element, projectId) {
     const detailsContainer = document.getElementById(`project-tasks-${projectId}`);
@@ -2145,11 +2145,31 @@ async function handleProjectDetailsSave(event, projectId, containerId) {
     }
 }
 async function apiCall(payload) {
-    const response = await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify(payload), mode: 'cors' });
-    if (!response.ok) throw new Error(`Error del servidor: ${response.statusText}`);
-    const result = await response.json();
-    if (!result.success) throw new Error(result.error);
-    return result;
+    console.log("4. 📡 Enviando payload al backend:", payload);
+    try {
+        const response = await fetch(WEBHOOK_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            mode: 'cors'
+        });
+
+        // Ver la respuesta en bruto, sea cual sea
+        const rawResponseText = await response.text();
+        console.log("5. 📩 Respuesta BRUTA del servidor recibida (Status: " + response.status + "):", rawResponseText);
+
+        // Intentar procesar como JSON
+        const result = JSON.parse(rawResponseText);
+        console.log("6. 🧠 Respuesta procesada como JSON:", result);
+
+        if (!result.success) {
+            throw new Error(result.error);
+        }
+        return result;
+
+    } catch (error) {
+        console.error("7. ❌ ERROR CRÍTICO en la comunicación o procesamiento:", error);
+        throw error; // Propagar el error para que se vea en la consola
+    }
 }
 // ===================================
 // --- RENDERIZADO ANÁLISIS POR PROYECTO ---
